@@ -136,6 +136,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Calculates the routes required to connect the siding using
     # a dictionary (aka hash) specified in an external file
     def requiredRoutes(self, siding):
+        if type(siding) == jmri.Block:
+            siding = siding.getUserName()
         if siding in ROUTEMAP:
             return ROUTEMAP[siding]
         return siding
