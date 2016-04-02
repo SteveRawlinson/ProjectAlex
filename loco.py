@@ -99,7 +99,17 @@ class Loco:
 
     # Returns the the layout block(s) I'm in
     def myLayoutBlocks(self):
-        return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
+        #return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
+        blockList = []
+        for name in blocks.getSystemNameList():
+            lob = layoutblocks.getLayoutBlock(name)
+            if lob is not None:
+                b = lob.getBlock()
+                if type(b.getValue()) == jmri.jmrit.roster.RosterEntry and b.getValue() == self.rosterEntry():
+                    blockList.append(lob)
+                elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddress:
+                    blockList.append(lob)
+        return blockList
 
     # Sets the instance variable 'block' using information
     # from the layout
