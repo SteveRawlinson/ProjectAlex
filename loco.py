@@ -107,7 +107,7 @@ class Loco:
                 b = lob.getBlock()
                 if type(b.getValue()) == jmri.jmrit.roster.RosterEntry and b.getValue() == self.rosterEntry():
                     blockList.append(lob)
-                elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddress:
+                elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddr:
                     blockList.append(lob)
         return blockList
 
