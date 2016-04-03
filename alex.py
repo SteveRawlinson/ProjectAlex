@@ -10,6 +10,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
     def init(self):
+        self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
         # legacy block definitions
         self.sthSidings = sensors.provideSensor("34")
         self.sthSidingsClearIR = sensors.provideSensor("25")
@@ -138,6 +139,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     def requiredRoutes(self, siding):
         if type(siding) == jmri.Block:
             siding = siding.getUserName()
+        elif type(siding) == jmri.jmrit.display.layoutEditor.LayoutBlock:
+            siding = siding.getID()
         if siding in ROUTEMAP:
             return ROUTEMAP[siding]
         return siding
