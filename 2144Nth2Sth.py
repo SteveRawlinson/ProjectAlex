@@ -28,44 +28,44 @@ class Loco2144Nth2Sth(alex.Alex):
         platformWaitTimeMsecs = self.platformWaitTimeMsecs
 
         # get a 'lock' on the north link track
-        rc = self.getLock('North Link Lock', addr)
-        if rc is False:
+        lock = self.getLock('North Link Lock')
+        if lock is False:
             return False 
 
         # Out the nth sidings to PAL P1
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        rc = self.shortJourney(self.throttle, True, self.loco.block, "PAL P1", 0.4, 0.2, 6000, routes=routes)
+        rc = self.shortJourney(True, self.loco.block, "PAL P1", 0.4, 0.2, 6000, routes=routes, lock=lock)
         if rc is False:
             return False         
         print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
-        self.unlock('North Link Lock', addr)
+        self.unlock('North Link Lock')
         
         # PAL to AAP
-        rc = self.shortJourney(self.throttle, True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
+        rc = self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
         if rc is False:
             return False
         print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
         # AAP to FPK
-        rc = self.shortJourney(self.throttle, True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
+        rc = self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
         if rc is False:
             return False
         print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
         # FPK to Sth Sidings
-        rc = self.getLock('South Link Lock', addr)
+        rc = self.getLock('South Link Lock')
         if rc is False:
             return False
         # set routes to sth sidings
         siding = self.shortestBlockTrainFitsBlocking(SOUTH_SIDINGS)
         routes = self.requiredRoutes("FPK P1") + self.requiredRoutes(siding)
-        rc = self.shortJourney(self.throttle, True, "FPK P1", siding, 0.4, 0.2, 0, IRSENSORS[siding], routes=routes)
+        rc = self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, IRSENSORS[siding], routes=routes, lock=lock)
         if rc is False:
             return False
-        self.unlock('South Link Lock', addr)
+        self.unlock('South Link Lock')
         print "waiting in sidings for",  2 * platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs * 2)
 

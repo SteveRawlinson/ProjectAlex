@@ -112,7 +112,7 @@ class Loco:
             if lob is not None:
                 if type(b.getValue()) == jmri.jmrit.roster.RosterEntry and b.getValue() == self.rosterEntry():
                     blockList.append(lob)
-                elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddr:
+                elif b.getValue() == self.rosterEntry().getId() or b.getValue() == str(self.dccAddr):
                     blockList.append(lob)
         return blockList
 
@@ -126,6 +126,10 @@ class Loco:
             self.block = "multi"
         else:
             self.block = lblocks[0]
+        if self.block is None:
+            self.debug("loco " + str(self.dccAddr) + "block: None")
+        else:
+            self.debug("loco " + str(self.dccAddr) + "block: " + self.block.getID())
         return self.block
 
     # Sets this loco's block to b (if it's a block)

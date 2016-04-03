@@ -1,9 +1,9 @@
 import jmri
 import time
-
 from jmri_bindings import *
 from myroutes import ROUTEMAP
 
+DEBUG = True
 
 class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
@@ -37,45 +37,53 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.backPassage = sensors.provideSensor("17")
         self.routesToSetForNextJourney = []
         return
-    
+
+    def debug(self, message):
+        if DEBUG:
+            print message
+
     # Get's a 'lock' on a memory variable. It sets the variable
     # to the loco number but only if the value is blank. If 
     # it's already got a value then we wait for a while to see
     # if it clears, otherwise we give up.
-    def getLock(self, mem, loco = None):
+    def getLock(self, mem, loco=None):
         if loco is None:
             loco = self.loco
         lock = False
         tries = 0
+        # print loco
+        # print type(loco).__name__
+        # print loco.dccAddr
+        # print type(loco.dccAddr).__name__
         while lock is not True:
-            print loco, "getting lock on", mem
+            print loco.dccAddr, "getting lock on", mem
             value = memories.getMemory(mem).getValue()
-            if value == str(loco):
+            if value == str(loco.dccAddr):
                 return mem
             if value is None or value == '':
-                memories.getMemory(mem).setValue(str(loco))
+                memories.getMemory(mem).setValue(str(loco.dccAddr))
                 time.sleep(1)
                 value = memories.getMemory(mem).getValue()
-                if value == str(loco):
+                if value == str(loco.dccAddr):
                     lock = True
                 else:
                     # race condition and we lost
                     tries += 1
                     if tries < 20:
-                        print loco, "new memory setting did not stick, trying again"
+                        print loco.dccAddr, "new memory setting did not stick, trying again"
                         time.sleep(5)
                     else:
-                        print loco, "giving op on lock"
+                        print loco.dccAddr, "giving op on lock"
                         return False
 
             else:
                 # link track is busy
                 tries += 1
                 if tries < 40:
-                    print loco, "track is locked, waiting ..."
+                    print loco.dccAddr, "track is locked, waiting ..."
                     time.sleep(5)
                 else:
-                    print loco, "giving up on lock"
+                    print loco.dccAddr, "giving up on lock"
                     return False
             time.sleep(5)
         return mem
@@ -84,30 +92,34 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Attempts to get a lock and returns immediately whether or
     # not the attempt was successful. No race condition testing
     # is done, the calling function can do that with checkLock()
-    def getLockNonBlocking(self, mem, loco):
+    def getLockNonBlocking(self, mem, loco = None):
+        if loco is None:
+            loco = self.loco
         lock = False
-        print loco, "getting non-blocking lock on", mem
+        print loco.dccAddr, "getting non-blocking lock on", mem
         value = memories.getMemory(mem).getValue()
-        if value == str(loco):
+        if value == str(loco.dccAddr):
             return mem
         if value is None or value == '':
-            memories.getMemory(mem).setValue(str(loco))
+            memories.getMemory(mem).setValue(str(loco.dccAddr))
             return mem
-        print loco, "failed to get non-blocking lock on", mem
+        print loco.dccAddr, "failed to get non-blocking lock on", mem
         return False
 
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
-    def checkLock(self, mem, loco):
+    def checkLock(self, mem, loco = None):
+        if loco is None:
+            loco = self.loco
         memory = memories.getMemory(mem)
         if memory is None:
             memory = memories.newMemory(mem)
         if memory is None:
-            print loco, "could not create memory called", mem, "giving up"
+            print loco.dccAddr, "could not create memory called", mem, "giving up"
             raise RuntimeError('coulnd not create new memory')
         if memory and memory.getValue() == str(loco):
             return True
-        print loco, "does not have lock on ", mem
+        print loco.dccAddr, "does not have lock on ", mem
         return False
 
     # Does not actually set a route. Adds the route name
@@ -118,7 +130,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=5):
-        print self.loco, 'setting route', route
+        print self.loco.dccAddr, 'setting route', route
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
@@ -131,36 +143,38 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     def unlock(self, mem, loco = None):
         if loco is None:
             loco = self.loco
-        print loco, "unlocking", mem
+        print loco.dccAddr, "unlocking", mem
         memories.getMemory(mem).setValue(None)
 
     # Calculates the routes required to connect the siding using
     # a dictionary (aka hash) specified in an external file
     def requiredRoutes(self, siding):
+        if siding is None:
+            raise RuntimeError("siding cannot be None")
         if type(siding) == jmri.Block:
             siding = siding.getUserName()
         elif type(siding) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             siding = siding.getID()
         if siding in ROUTEMAP:
             return ROUTEMAP[siding]
-        return siding
+        return [siding]
 
     # Brings the locomotive controlled by the supplied throttle
     # to a gradual halt by reducing the speed setting over time seconds
     def gradualHalt(self, throttle, time = 5, granularity = 1):
         if time <= granularity:
-            print self.loco, "stopping train"
+            print self.loco.dccAddr, "stopping train"
             throttle.setSpeedSetting(0)
             self.waitMsec(250)
             throttle.setSpeedSetting(0)
             return
         if granularity < 0.25:
             granularity = 0.25 # avoid too many loconet messages
-        print self.loco, "bringing train to halt over", time, "secs"
+        print self.loco.dccAddr, "bringing train to halt over", time, "secs"
         speed = throttle.getSpeedSetting()
         times = time / granularity
         speedDiff = speed / times
-        print self.loco, "speed:", speed, "times:", times, "speedDiff:", speedDiff
+        print self.loco.dccAddr, "speed:", speed, "times:", times, "speedDiff:", speedDiff
         while True:
             speed = throttle.getSpeedSetting()
             newSpeed = speed - speedDiff
@@ -174,12 +188,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy memory values.
-    def shortJourney(self, throttle, direction, startBlock, endBlock, 
-                     normalSpeed, slowSpeed, slowTime=0,
+    def shortJourney(self, direction, startBlock, endBlock,
+                     normalSpeed, slowSpeed, slowTime=0, throttle = None,
                      stopIRClear=None, checkSensor=None, routes=None, lock=None):
 
-        # get the loco number for console messages
-        loco = throttle.getLocoAddress().getNumber()
+        # set the throttle
+        if throttle is None:
+            throttle = self.throttle
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
@@ -187,7 +202,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         else:
             moving = False
 
-        print loco, "called shortJourney()"
+        print self.loco.dccAddr, "called shortJourney()"
 
         # determine what startBlock is (string name of block, the block itself, or the sensor of the block)
         # and get the sensor one way or the other
@@ -224,12 +239,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
-            print loco, "start block is not occupied"
+            print self.loco.dccAddr, "start block is not occupied"
             if self.knownLocation is None:
-                print "and no known location,", loco, "exiting"
+                print "and no known location,", self.loco.dccAddr, "exiting"
                 return False
             if self.knownLocation != startBlock:
-                print "and known location does not match start block,", loco, "exiting"
+                print "and known location does not match start block,", self.loco.dccAddr, "exiting"
                 return False
 
         # check we are ok to start moving (ie. the target block is free)
@@ -237,20 +252,20 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         tries = 0
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
-                print loco, "endblock is occupied"
+                print self.loco.dccAddr, "endblock is occupied"
                 if lock:
-                    print loco, "relinquising lock"
-                    if self.checkLock(lock, loco):
-                        self.unlock(lock, loco)
+                    print self.loco.dccAddr, "relinquising lock"
+                    if self.checkLock(lock, self.loco.dccAddr):
+                        self.unlock(lock, self.loco.dccAddr)
                 if moving:
-                    print loco, "stopping"
+                    print self.loco.dccAddr, "stopping"
                     throttle.setSpeedSetting(0)
                 if tries < 40:
-                    print loco, "waiting..."
+                    print self.loco.dccAddr, "waiting..."
                     time.sleep(5)
                     tries += 1
                 else:
-                    print loco, "giving up"
+                    print self.loco.dccAddr, "giving up"
                     return False
             else:
                 ok_to_go = True
@@ -259,17 +274,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # before we set routes or we might get to the next turnout
         # too soon, too fast
         if moving:
-            print loco, "we are already moving, setting normal speed:", normalSpeed
+            print self.loco.dccAddr, "we are already moving, setting normal speed:", normalSpeed
             throttle.setSpeedSetting(normalSpeed)
             self.waitMsec(250)
             throttle.setSpeedSetting(normalSpeed)
             
         # If we have a lock specified, check we've got it
         if lock:
-            if not self.checkLock(lock, loco):
-                lock = self.getLock(lock, loco)
+            if not self.checkLock(lock, self.loco.dccAddr):
+                lock = self.getLock(lock, self.loco.dccAddr)
                 if lock is False:
-                    print loco, "failed to get lock on", lock, "giving up"
+                    print self.loco.dccAddr, "failed to get lock on", lock, "giving up"
                     return False
             
         # Set Routes. These can be provided by the routes
@@ -292,7 +307,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 dir = 'forward'
             else:
                 dir = 'reverse'
-            print loco, "setting direction to", dir
+            print self.loco.dccAddr, "setting direction to", dir
             throttle.setIsForward(direction) 
             self.waitMsec(250)
             throttle.setIsForward(direction) 
@@ -301,30 +316,30 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # set throttle position if we're not already moving (if we
         # are moving we set the throttle earlier
         if not moving:
-            print loco, "Setting normal Speed", normalSpeed
+            print self.loco.dccAddr, "Setting normal Speed", normalSpeed
             throttle.setSpeedSetting(normalSpeed)
             # sometimes the first instruction gets lost
             self.waitMsec(250)
             throttle.setSpeedSetting(normalSpeed)
 
         # wait for a sensor uproute to change
-        print loco, "waiting for block", endBlock.userName, "to becoming active"
+        print self.loco.dccAddr, "waiting for block", endBlock.userName, "to becoming active"
         if checkSensor:
             # we have an 'overrun' sensor to check as well as the
             # one we expect to change
             self.waitChanges([endBlockSensor, checkSensor])
             if endBlockSensor.knownState != ACTIVE and checkSensor.knownState == ACTIVE:
                 # loco has overrun
-                print loco, "has overrun, aborting"
+                print self.loco.dccAddr, "has overrun, aborting"
                 throttle.setSpeedSetting(-1)
                 return False
         else:
             self.waitSensorActive(endBlockSensor)
-        print loco, "block", endBlock.userName, "is active"
+        print self.loco.dccAddr, "block", endBlock.userName, "is active"
 
         # if there was a lock specified it means the calling method
         # wants us to release it now
-        if lock != None:
+        if lock is not None:
             self.unlock(lock)
 
 
@@ -334,19 +349,19 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if mem is None:
                 mem = memories.newMemory(endBlock.userName)
             if mem:
-                print loco, "setting value of newly occupied block", endBlock.userName, "to", loco
-                mem.setValue(loco)
+                print self.loco.dccAddr, "setting value of newly occupied block", endBlock.userName, "to", self.loco.dccAddr
+                mem.setValue(self.loco.dccAddr)
             else:
-                print loco, "couldn't find memory called ", endBlock.userName, "and couldn't create a new one"
+                print self.loco.dccAddr, "couldn't find memory called ", endBlock.userName, "and couldn't create a new one"
  
         # slow the loco down in preperation for a stop (if slowSpeed is set)
         if slowSpeed < 0:
-            print loco, "continuing ... "
+            print self.loco.dccAddr, "continuing ... "
             # do nothing
         else:
             if slowSpeed > 0:
                 # slow train to 'slowspeed'
-                print loco, "endBlock occupied, setting slowspeed", slowSpeed
+                print self.loco.dccAddr, "endBlock occupied, setting slowspeed", slowSpeed
                 throttle.setSpeedSetting(slowSpeed)
             if stopIRClear:
                 # wait till the IR sensor is clear
@@ -354,17 +369,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     sn = stopIRClear.userName
                     if sn is None:
                         sn = stopIRClear.systemName
-                    print loco, "waiting for IR sensor", sn ,"to be active"
+                    print self.loco.dccAddr, "waiting for IR sensor", sn ,"to be active"
                     self.waitSensorActive(stopIRClear)
-                print loco, "waiting for IR sensor to be inactive"
+                print self.loco.dccAddr, "waiting for IR sensor to be inactive"
                 self.waitSensorInactive(stopIRClear)
             else:
                 # there is no IR sensor to wait for, wait the specified time
-                print loco, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
+                print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
                 self.waitMsec(slowTime)
         
             # stop the train
-            print "stopping loco", loco
+            print "stopping loco", self.loco.dccAddr
             throttle.setSpeedSetting(0)
             self.waitMsec(500)
             throttle.setSpeedSetting(0)
@@ -372,7 +387,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # we know where we are now
         self.knownLocation = endBlock
         
-        print loco, "shortJourney() returning"
+        print self.loco.dccAddr, "shortJourney() returning"
         return True
                 
     def handle(self):

@@ -16,12 +16,32 @@ class StartUp :
             if r == None:
                 tries += 1
                 print "tries:", tries
-                time.sleep(1)
-                next
+                time.sleep(2)
 
         r.activateRoute()
         r.setRoute()
+        time.sleep(2)
 
-        print "StartUp done."
+        r = routes.getRoute('Hertford Nth Inner')
+        r.activateRoute()
+        r.setRoute()
+        time.sleep(2)
+
+        r = routes.getRoute('Sth Sidings 1')
+        r.activateRoute()
+        r.setRoute()
+        time.sleep(2)
+
+        r = routes.getRoute('Back Passage')
+        r.activateRoute()
+        r.setRoute()
+        time.sleep(2)
+
+        r = routes.getRoute('Nth Sidings 1')
+        r.activateRoute()
+        r.setRoute()
+
+
+print "StartUp done."
 
 StartUp().do()
