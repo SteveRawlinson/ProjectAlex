@@ -13,7 +13,7 @@ MOVING = 2
 
 class Loco:
     
-    def __init__(self, dccAddr):
+    def __init__(self, dccAddr, longAddr = True):
         self.dccAddr = dccAddr
         self._trainLength = None
         self._rosterEntry = None
@@ -21,6 +21,7 @@ class Loco:
         self.roster = jmri.jmrit.roster.Roster.instance()
         self.block = None
         self.status = SIDINGS
+        self.longAddr = longAddr
 
 
     def debug(self, message):
@@ -51,7 +52,8 @@ class Loco:
     def rosterEntry(self):
         if self._rosterEntry is None:
             self.debug("getting roster entry for " + str(self.dccAddr))
-            roster_entries = self.roster.getEntriesByDccAddress(str(self.dccAddr))
+            #roster_entries = self.roster.getEntriesByDccAddress(str(self.dccAddr))
+            roster_entries = self.roster.getEntriesMatchingCriteria(None, None, str(self.dccAddr), None, None, None, None, None)
             if len(roster_entries) == 0:
                 raise RuntimeError("no Roster Entry for address", str(self.dccAddr))
             self._rosterEntry = roster_entries[0]
@@ -102,9 +104,15 @@ class Loco:
         #return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
         blockList = []
         for name in blocks.getSystemNameList():
-            lob = layoutblocks.getLayoutBlock(name)
+            print "checking block", name
+            b = blocks.getBySystemName(name)
+            if b.getUserName() is not None:
+                lob = layoutblocks.getLayoutBlock(b.getUserName())
+            else:
+                lob = None
             if lob is not None:
-                b = lob.getBlock()
+                print "found layout block", lob.getID()
+                print "block value:", b.getValue()
                 if type(b.getValue()) == jmri.jmrit.roster.RosterEntry and b.getValue() == self.rosterEntry():
                     blockList.append(lob)
                 elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddr:
