@@ -104,15 +104,12 @@ class Loco:
         #return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
         blockList = []
         for name in blocks.getSystemNameList():
-            print "checking block", name
             b = blocks.getBySystemName(name)
             if b.getUserName() is not None:
                 lob = layoutblocks.getLayoutBlock(b.getUserName())
             else:
                 lob = None
             if lob is not None:
-                print "found layout block", lob.getID()
-                print "block value:", b.getValue()
                 if type(b.getValue()) == jmri.jmrit.roster.RosterEntry and b.getValue() == self.rosterEntry():
                     blockList.append(lob)
                 elif b.getValue() == self.rosterEntry().getId() or b.getValue() == self.dccAddr:
