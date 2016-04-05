@@ -26,7 +26,7 @@ class Loco:
 
     def debug(self, message):
         if DEBUG:
-            print "Loco:", message
+            print "Loco: ", str(self.dccAddr) + ': ' + message
 
     # Returns the roster ID (ie. the name)
     def name(self):
@@ -127,9 +127,9 @@ class Loco:
         else:
             self.block = lblocks[0]
         if self.block is None:
-            self.debug("loco " + str(self.dccAddr) + "block: None")
+            self.debug("loco " + str(self.dccAddr) + " block: None")
         else:
-            self.debug("loco " + str(self.dccAddr) + "block: " + self.block.getID())
+            self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getID())
         return self.block
 
     # Sets this loco's block to b (if it's a block)

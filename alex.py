@@ -40,7 +40,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def debug(self, message):
         if DEBUG:
-            print message
+            print str(self.loco.dccAddr) + ': ' + message
 
     # Get's a 'lock' on a memory variable. It sets the variable
     # to the loco number but only if the value is blank. If 
@@ -59,12 +59,14 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             print loco.dccAddr, "getting lock on", mem
             value = memories.getMemory(mem).getValue()
             if value == str(loco.dccAddr):
+                self.debug("already had a lock, returning")
                 return mem
             if value is None or value == '':
                 memories.getMemory(mem).setValue(str(loco.dccAddr))
                 time.sleep(1)
                 value = memories.getMemory(mem).getValue()
                 if value == str(loco.dccAddr):
+                    self.debug("lock acquired")
                     lock = True
                 else:
                     # race condition and we lost
@@ -85,7 +87,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 else:
                     print loco.dccAddr, "giving up on lock"
                     return False
-            time.sleep(5)
         return mem
 
 
@@ -291,12 +292,14 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # argument or stored up in a list by previous calls
         # to setMyRoute(), or both.
 
+        routelen = 0
         if routes is not None:
+            routelen = len(routes)
             for r in routes:
                 self.setRoute(r)
         for r in self.routesToSetForNextJourney:
             self.setRoute(r)
-        if len(routes) + len(self.routesToSetForNextJourney) > 1:
+        if routelen + len(self.routesToSetForNextJourney) > 1:
             time.sleep(5)
         self.routesToSetForNextJourney = []
         
