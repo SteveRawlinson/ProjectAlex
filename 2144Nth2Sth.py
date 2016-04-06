@@ -27,6 +27,7 @@ class Loco2144Nth2Sth(alex.Alex):
 
         start = time.time()
         platformWaitTimeMsecs = self.platformWaitTimeMsecs
+        addr = self.loco.dccAddr
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
@@ -38,7 +39,7 @@ class Loco2144Nth2Sth(alex.Alex):
         rc = self.shortJourney(True, self.loco.block, "PAL P1", 0.4, 0.2, 6000, routes=routes, lock=lock)
         if rc is False:
             return False         
-        print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
+        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
         self.unlock('North Link Lock')
         
@@ -53,7 +54,7 @@ class Loco2144Nth2Sth(alex.Alex):
         rc = self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
         if rc is False:
             return False
-        print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
+        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
         # FPK to Sth Sidings
@@ -62,6 +63,7 @@ class Loco2144Nth2Sth(alex.Alex):
             return False
         # set routes to sth sidings
         siding = self.loco.shortestBlockTrainFitsBlocking(SOUTH_SIDINGS)
+        print addr, "selected siding", siding.getID()
         routes = self.requiredRoutes("FPK P1") + self.requiredRoutes(siding)
         rc = self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, IRSENSORS[siding.getID()], routes=routes, lock=lock)
         if rc is False:
