@@ -111,7 +111,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
-    def checkLock(self, mem, loco = None):
+    def checkLock(self, mem, loco=None):
         if loco is None:
             loco = self.loco
         memory = memories.getMemory(mem)
@@ -143,10 +143,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             time.sleep(sleeptime)
 
     # removes a lock
-    def unlock(self, mem, loco = None):
+    def unlock(self, mem, loco=None):
         if loco is None:
             loco = self.loco
         print loco.dccAddr, "unlocking", mem
+        if memories.getMemory(mem).getValue() != str(loco.dccAddr):
+            raise RuntimeError("loco " + str(loco.dccAddr) + " attempted to remove lock it does not own on mem " + mem)
         memories.getMemory(mem).setValue(None)
 
     # Calculates the routes required to connect the siding using
@@ -263,8 +265,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 print self.loco.dccAddr, "endblock is occupied"
                 if lock:
                     print self.loco.dccAddr, "relinquising lock"
-                    if self.checkLock(lock, self.loco.dccAddr):
-                        self.unlock(lock, self.loco.dccAddr)
+                    if self.checkLock(lock, self.loco):
+                        self.unlock(lock, self.loco)
                 if moving:
                     print self.loco.dccAddr, "stopping"
                     throttle.setSpeedSetting(0)
