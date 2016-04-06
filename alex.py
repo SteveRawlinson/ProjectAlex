@@ -120,7 +120,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if memory is None:
             print loco.dccAddr, "could not create memory called", mem, "giving up"
             raise RuntimeError('coulnd not create new memory')
-        if memory and memory.getValue() == str(loco):
+        if memory and memory.getValue() == str(loco.dccAddr):
             return True
         print loco.dccAddr, "does not have lock on ", mem
         return False
@@ -144,6 +144,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # removes a lock
     def unlock(self, mem, loco=None):
+        # if there's no lock silently return
+        if memories.getMemory(mem).getValue() is None or memories.getMemory(mem).getValue() == "":
+            return
         if loco is None:
             loco = self.loco
         print loco.dccAddr, "unlocking", mem
@@ -291,8 +294,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             
         # If we have a lock specified, check we've got it
         if lock:
-            if not self.checkLock(lock, self.loco.dccAddr):
-                lock = self.getLock(lock, self.loco.dccAddr)
+            if not self.checkLock(lock, self.loco):
+                lock = self.getLock(lock, self.loco)
                 if lock is False:
                     print self.loco.dccAddr, "failed to get lock on", lock, "giving up"
                     return False

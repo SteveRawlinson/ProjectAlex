@@ -21,5 +21,14 @@ ROUTEMAP = {
             "Sth Sidings 5": ["Sth Sidings 5", "Back Passage"],
             "FP sidings": ["Sth Sidings"],
             "PAL P1": ["Hertford Nth Inner"],
-            "PAL P2": ["Hertford Nth Outer"]
-        }
+            "PAL P2": ["Hertford Nth Outer"],
+            "FPK P1": ["Sth Hertford Inner"],
+            "FPK P2": ["Sth Hertford Outer"],
+            "FPK P3": ["Sth Welwyn Inner"],
+            "FPK P4": ["Sth Welwyn Outer"],
+            "FPK P7": ["Sth Fast Inner"],
+            "FPK P8": ["Sth Fast Outer"],
+            "NSG P1": ["Welwyn Inner"],
+            "NSG P2": ["Welwyn Outer"]
+
+            }
