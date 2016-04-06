@@ -11,6 +11,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # any necessary configuration.
     def init(self):
         self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
+        self.debug("throttle is set, type is " + type(self.throttle).__name__)
+        self.platformWaitTimeMsecs = 3000
         # legacy block definitions
         self.sthSidings = sensors.provideSensor("34")
         self.sthSidingsClearIR = sensors.provideSensor("25")
@@ -33,7 +35,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.palP1 = sensors.provideSensor("6")
         self.palP2 = sensors.provideSensor("5")
         self.sthLink = sensors.provideSensor("33")
-        self.platformWaitTimeMsecs = 10000
+
         self.backPassage = sensors.provideSensor("17")
         self.routesToSetForNextJourney = []
         return
@@ -190,12 +192,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy memory values.
     def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed, slowTime=0, throttle = None,
+                     normalSpeed, slowSpeed, slowTime=0, throttle=None,
                      stopIRClear=None, checkSensor=None, routes=None, lock=None):
 
         # set the throttle
         if throttle is None:
+            self.debug("throttle was not passed, using self.throttle")
             throttle = self.throttle
+
+        self.debug("throttle is type " + type(throttle).__name__)
+        if type(throttle) == str:
+            self.debug("throttle is " + throttle)
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
@@ -326,7 +333,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             throttle.setSpeedSetting(normalSpeed)
 
         # wait for a sensor uproute to change
-        print self.loco.dccAddr, "waiting for block", endBlock.userName, "to becoming active"
+        print self.loco.dccAddr, "waiting for block", endBlock.userName, "to become active"
         if checkSensor:
             # we have an 'overrun' sensor to check as well as the
             # one we expect to change

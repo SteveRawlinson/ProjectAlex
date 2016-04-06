@@ -65,12 +65,10 @@ class Loco2144Nth2Sth(alex.Alex):
         siding = self.loco.shortestBlockTrainFitsBlocking(SOUTH_SIDINGS)
         print addr, "selected siding", siding.getID()
         routes = self.requiredRoutes("FPK P1") + self.requiredRoutes(siding)
-        rc = self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        rc = self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         if rc is False:
             return False
         self.unlock('South Link Lock')
-        print "waiting in sidings for",  2 * platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs * 2)
 
         print "route complete."
         stop = time.time()
