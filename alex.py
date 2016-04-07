@@ -267,7 +267,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor.knownState == ACTIVE:
                 print self.loco.dccAddr, "endblock is occupied"
                 if lock:
-                    print self.loco.dccAddr, "relinquising lock"
+                    print self.loco.dccAddr, "relinquishing lock"
                     if self.checkLock(lock, self.loco):
                         self.unlock(lock, self.loco)
                 if moving:
