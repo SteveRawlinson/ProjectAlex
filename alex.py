@@ -197,8 +197,24 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy memory values.
     def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed, slowTime=0, throttle=None,
-                     stopIRClear=None, checkSensor=None, routes=None, lock=None):
+                     normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
+                     stopIRClear=None, routes=None, lock=None, unlockOnIRClear=None):
+
+        # unlockOnIRClear means remove the lock when the supplied IR sensor moves from
+        # ACTIVE to any other state. It should default to True if there is an IR Sensor supplied
+        if unlockOnIRClear is None and lock:
+            if stopIRClear:
+                unlockOnIRClear = True
+            else:
+                unlockOnIRClear = False
+
+        # if unlockOnBlock is set it means we remove the supplied lock when the block
+        # with a matching name moves from ACTIVE to any other state. Get the sensor
+        # we need to watch
+        if unlockOnBlock and lock:
+            unlockSensor = layoutblocks.getLayoutBlock(lock.replace(" Lock", "")).getBlock().getSensor()
+        else:
+            unlockSensor = None
 
         # set the throttle
         if throttle is None:
