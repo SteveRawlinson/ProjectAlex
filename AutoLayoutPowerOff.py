@@ -21,15 +21,15 @@ debug = False
 class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton) :
         
         
-    def init(self) :
+    def init(self):
         # set the timeout
         self.timeout = timeOutInMinutes
         # get the list of sensors in use as block occupancy detectors
         self.blocklist = blocks.getNamedBeanList()
         self.blockOccupancySensors = []
-        for b in self.blocklist :
+        for b in self.blocklist:
             s = b.getSensor()
-            if s != None :
+            if s is not None:
                 self.blockOccupancySensors.append(s)
         
                 
@@ -41,11 +41,11 @@ class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton) :
         # get the current power state
         self.powerState = powermanager.getPower()
         if debug:
-            if self.powerState  != jmri.PowerManager.ON :
+            if self.powerState != jmri.PowerManager.ON:
                 print "AutoLayoutPowerOff: Layout power is off, sleeping until it comes on"
 
         # If the power is off, do nothing, checking every minute
-        while powermanager.getPower() != jmri.PowerManager.ON :
+        while powermanager.getPower() != jmri.PowerManager.ON:
             time.sleep(60)
         
         if debug:
@@ -57,11 +57,11 @@ class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton) :
             startTime = time.time()
             self.waitChange(self.blockOccupancySensors, self.timeout * 60 * 1000)
             stopTime = time.time()
-            if stopTime - startTime > self.timeout * 60 :
+            if stopTime - startTime > self.timeout * 60:
                 print "AutoLayoutPowerOff: timeout waiting for activity, turning layout power OFF"
                 powermanager.setPower(jmri.PowerManager.OFF)
                 return True # start again
-            else :
+            else:
                 if debug:
                     print "AutoLayoutPowerOff: activity detected at", stopTime
             
