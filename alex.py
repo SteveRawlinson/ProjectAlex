@@ -198,15 +198,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # and stops it there. Tries to update block occupancy memory values.
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, unlockOnIRClear=None):
+                     stopIRClear=None, routes=None, lock=None):
 
-        # unlockOnIRClear means remove the lock when the supplied IR sensor moves from
-        # ACTIVE to any other state. It should default to True if there is an IR Sensor supplied
-        if unlockOnIRClear is None and lock:
-            if stopIRClear:
-                unlockOnIRClear = True
-            else:
-                unlockOnIRClear = False
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
@@ -319,7 +312,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # Set Routes. These can be provided by the routes
         # argument or stored up in a list by previous calls
         # to setMyRoute(), or both.
-
         routelen = 0
         if routes is not None:
             routelen = len(routes)
@@ -353,26 +345,31 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             self.waitMsec(250)
             throttle.setSpeedSetting(normalSpeed)
 
-        # wait for a sensor uproute to change
+        # wait for a sensor to change
         print self.loco.dccAddr, "waiting for block", endBlock.userName, "to become active"
-        if checkSensor:
-            # we have an 'overrun' sensor to check as well as the
-            # one we expect to change
-            self.waitChanges([endBlockSensor, checkSensor])
-            if endBlockSensor.knownState != ACTIVE and checkSensor.knownState == ACTIVE:
-                # loco has overrun
-                print self.loco.dccAddr, "has overrun, aborting"
-                throttle.setSpeedSetting(-1)
-                return False
-        else:
-            self.waitSensorActive(endBlockSensor)
+        sensorList = [endBlockSensor]
+        if unlockSensor:
+            sensorList.append(unlockSensor)
+        changedList = []
+        arrived = False
+        while not arrived:
+            while len(changedList) == 0:
+                states = self.recordNamedBeanStates(sensorList)
+                self.waitChange(sensorList)
+                changedList = self.changedNamedBeans(sensorList, states)
+            # check if we should release the lock
+            if unlockSensor and unlockSensor in changedList:
+                self.unlock(lock)
+            # check if we have reached the endBlock
+            if endBlockSensor in changedList:
+                arrived = True
+
         print self.loco.dccAddr, "block", endBlock.userName, "is active"
 
         # if there was a lock specified it means the calling method
         # wants us to release it now
         if lock is not None:
             self.unlock(lock)
-
 
         # set the memory value in the new occupied block
         if endBlock:
@@ -385,7 +382,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             else:
                 print self.loco.dccAddr, "couldn't find memory called ", endBlock.userName, "and couldn't create a new one"
  
-        # slow the loco down in preperation for a stop (if slowSpeed is set)
+        # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed < 0:
             print self.loco.dccAddr, "continuing ... "
             # do nothing
