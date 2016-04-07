@@ -379,6 +379,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 print self.loco.dccAddr, "endBlock occupied, setting slowspeed", slowSpeed
                 throttle.setSpeedSetting(slowSpeed)
             if stopIRClear:
+                # check we have a sensor not a name
+                if type(stopIRClear) == str:
+                    stopIRClear = sensors.getSensor(stopIRClear)
                 # wait till the IR sensor is clear
                 if stopIRClear.knownState != ACTIVE:
                     sn = stopIRClear.userName
