@@ -276,20 +276,27 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor.knownState == ACTIVE:
                 print self.loco.dccAddr, "endblock is occupied"
                 if lock:
+                    # let another loco have the lock
                     print self.loco.dccAddr, "relinquishing lock"
                     if self.checkLock(lock, self.loco):
                         self.unlock(lock, self.loco)
                 if moving:
+                    # stop!
                     print self.loco.dccAddr, "stopping"
                     throttle.setSpeedSetting(0)
                 if tries < 40:
+                    # wait ...
                     print self.loco.dccAddr, "waiting..."
                     time.sleep(5)
                     tries += 1
                 else:
+                    # give up.
                     print self.loco.dccAddr, "giving up"
                     return False
             else:
+                # check if we need to get the lock back
+                if not self.checkLock(lock):
+                    self.getLock(lock)
                 ok_to_go = True
 
         # if we are already moving set the new throttle setting
