@@ -15,10 +15,10 @@ import jmri
 
 # Edit this:
 timeOutInMinutes = 30
-debug = False
+debug = True
 
 
-class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton) :
+class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton):
         
         
     def init(self):
@@ -60,7 +60,7 @@ class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton) :
             if stopTime - startTime > self.timeout * 60:
                 print "AutoLayoutPowerOff: timeout waiting for activity, turning layout power OFF"
                 powermanager.setPower(jmri.PowerManager.OFF)
-                return True # start again
+                return True  # start again
             else:
                 if debug:
                     print "AutoLayoutPowerOff: activity detected at", stopTime
