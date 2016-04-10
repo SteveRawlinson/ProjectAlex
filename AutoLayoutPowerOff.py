@@ -55,7 +55,9 @@ class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton):
             if debug:
                 print "AutoLayoutPowerOff: monitoring activity on", len(self.blockOccupancySensors), "sensors"
             startTime = time.time()
-            changed = self.waitChange(self.blockOccupancySensors, self.timeout * 60 * 1000)
+            self.changedSensors(self.blockOccupancySensors)  # record the current state
+            self.waitChange(self.blockOccupancySensors, self.timeout * 60 * 1000)
+            changed = self.changedSensors(self.blockOccupancySensors)  # get a list of sensors that have changed
             stopTime = time.time()
             if stopTime - startTime > self.timeout * 60:
                 print "AutoLayoutPowerOff: timeout waiting for activity, turning layout power OFF"
