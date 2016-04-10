@@ -193,13 +193,32 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if newSpeed == 0:
                 return
 
+    # Acts differently on alternate calls. On calls 0, 2, 4 ...
+    # it records the state of a list of sensors. On calls 1, 3 ...
+    # it returns a list of sensors which have changed state since
+    # the previous call.
+    #
+    # The intended use is to call this method twice with the same
+    # list of sensors, once just before a call to waitChange() and
+    # one after, to determine which sensor(s) has changed.
+    def changedSensors(self, sensorList):
+        if self.sensorStates is None:
+            self.sensorStates = []
+            for s in sensorList:
+                self.sensorStates.append(s.getState())
+            return
+        changedList = []
+        for i in range(len(sensorList)):
+            if sensorList[i].getState() != self.sensorStates[i]:
+                changedList.append(sensorList[i])
+        self.sensorStates = None
+        return changedList
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy memory values.
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None):
-
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
