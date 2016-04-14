@@ -380,9 +380,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         arrived = False
         while not arrived:
             while len(changedList) == 0:
-                states = self.recordNamedBeanStates(sensorList)
+                self.changedSensors(sensorList)
                 self.waitChange(sensorList)
-                changedList = self.changedNamedBeans(sensorList, states)
+                changedList = self.changedSensors(sensorList, states)
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
                 self.unlock(lock)
