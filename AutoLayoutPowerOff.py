@@ -15,7 +15,7 @@ import jmri
 
 # Edit this:
 timeOutInMinutes = 30
-debug = True
+debug = False
 
 
 class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton):
