@@ -34,14 +34,15 @@ class Loco2144Nth2Sth(alex.Alex):
         if lock is False:
             return False 
 
-        # Out the nth sidings to PAL P1
+        # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        rc = self.shortJourney(True, self.loco.block, "PAL P1", 0.4, 0.2, 6000, routes=routes, lock=lock)
-        if rc is False:
-            return False         
+        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes, lock=lock)
+        self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
+
+        # on to PAL P1
+        self.shortJourney(True, self.loco.block, "PAL P1", 0.4, slowSpeed=0.2, slowTime=6000)
         print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
-        self.unlock('North Link Lock')
         
         # PAL to AAP
         rc = self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
