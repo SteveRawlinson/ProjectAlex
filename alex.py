@@ -12,6 +12,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     def init(self):
         self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
         self.debug("throttle is set, type is " + type(self.throttle).__name__)
+        self.sensorStates = None
         self.platformWaitTimeMsecs = 3000
         # legacy block definitions
         self.sthSidings = sensors.provideSensor("34")
@@ -220,6 +221,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                      normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None):
 
+        self.debug("called shortJourney()")
+
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
         # we need to watch
@@ -239,11 +242,11 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
+            self.debug("we are moving")
             moving = True
         else:
+            self.debug("we are not moving")
             moving = False
-
-        print self.loco.dccAddr, "called shortJourney()"
 
         # determine what startBlock is (string name of block, the block itself, or the sensor of the block)
         # and get the sensor one way or the other
@@ -314,8 +317,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     return False
             else:
                 # check if we need to get the lock back
-                if not self.checkLock(lock):
-                    self.getLock(lock)
+                if lock:
+                    debug("checking if we need to re-establish a lock")
+                    if not self.checkLock(lock):
+                        self.getLock(lock)
                 ok_to_go = True
 
         # if we are already moving set the new throttle setting
@@ -329,6 +334,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             
         # If we have a lock specified, check we've got it
         if lock:
+            self.debug("checking lock " + lock)
             if not self.checkLock(lock, self.loco):
                 lock = self.getLock(lock, self.loco)
                 if lock is False:
@@ -382,7 +388,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             while len(changedList) == 0:
                 self.changedSensors(sensorList)
                 self.waitChange(sensorList)
-                changedList = self.changedSensors(sensorList, states)
+                changedList = self.changedSensors(sensorList)
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
                 self.unlock(lock)
