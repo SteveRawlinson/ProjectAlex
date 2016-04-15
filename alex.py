@@ -214,7 +214,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
+                     normalSpeed, slowSpeed=None, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None):
 
         self.debug("called shortJourney()")
@@ -281,11 +281,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if startBlockSensor.knownState != ACTIVE:
             print self.loco.dccAddr, "start block is not occupied"
             if self.knownLocation is None:
-                print "and no known location,", self.loco.dccAddr, "exiting"
-                return False
+                raise RuntimeError("start block is not occupied and no known location")
             if self.knownLocation != startBlock:
-                print "and known location does not match start block,", self.loco.dccAddr, "exiting"
-                return False
+                raise RuntimeError("start block is not occupied and known location does not match start block")
 
         # check we are ok to start moving (ie. the target block is free)
         ok_to_go = False
@@ -309,8 +307,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     tries += 1
                 else:
                     # give up.
-                    print self.loco.dccAddr, "giving up"
-                    return False
+                    raise RuntimeError("timeout waiting for endblock to be free")
             else:
                 # check if we need to get the lock back
                 if lock:
@@ -334,9 +331,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if not self.checkLock(lock, self.loco):
                 lock = self.getLock(lock, self.loco)
                 if lock is False:
-                    print self.loco.dccAddr, "failed to get lock on", lock, "giving up"
-                    return False
-            
+                    raise RuntimeError("lock specified but not held and attempt to get lock failed")
+
         # Set initial route. It is assumed that only the first route
         # needs to be set before we start moving.
         if routes is not None and len(routes) > 0:
@@ -404,32 +400,27 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             endBlock.getBlock().setValue(str(self.loco.dccAddr))
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
-        if slowSpeed < 0:
-            print self.loco.dccAddr, "continuing ... "
-            # do nothing
+        if slowSpeed is not None and slowSpeed > 0:
+            # slow train to 'slowspeed'
+            print self.loco.dccAddr, "endBlock occupied, setting slowspeed", slowSpeed
+            throttle.setSpeedSetting(slowSpeed)
+
+        if stopIRClear:
+            # check if we have a sensor or the name of a sensor
+            if type(stopIRClear) == str:
+                stopIRClear = sensors.getSensor(stopIRClear)
+            # wait till the IR sensor is clear
+            if stopIRClear.knownState != ACTIVE:
+                print self.loco.dccAddr, "waiting for IR sensor to be active"
+                self.waitSensorActive(stopIRClear)
+            print self.loco.dccAddr, "waiting for IR sensor to be inactive"
+            self.waitSensorInactive(stopIRClear)
         else:
-            if slowSpeed > 0:
-                # slow train to 'slowspeed'
-                print self.loco.dccAddr, "endBlock occupied, setting slowspeed", slowSpeed
-                throttle.setSpeedSetting(slowSpeed)
-            if stopIRClear:
-                # check we have a sensor not a name
-                if type(stopIRClear) == str:
-                    stopIRClear = sensors.getSensor(stopIRClear)
-                # wait till the IR sensor is clear
-                if stopIRClear.knownState != ACTIVE:
-                    sn = stopIRClear.userName
-                    if sn is None:
-                        sn = stopIRClear.systemName
-                    print self.loco.dccAddr, "waiting for IR sensor", sn ,"to be active"
-                    self.waitSensorActive(stopIRClear)
-                print self.loco.dccAddr, "waiting for IR sensor to be inactive"
-                self.waitSensorInactive(stopIRClear)
-            else:
-                # there is no IR sensor to wait for, wait the specified time
-                print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
-                self.waitMsec(slowTime)
-        
+            # there is no IR sensor to wait for, wait the specified time
+            print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
+            self.waitMsec(slowTime)
+
+        if slowSpeed is not None:
             # stop the train
             print "stopping loco", self.loco.dccAddr
             throttle.setSpeedSetting(0)
@@ -439,7 +430,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # we know where we are now
         self.knownLocation = endBlock
         
-        print self.loco.dccAddr, "shortJourney() returning"
+        self.debug("shortJourney() returning")
         return True
                 
     def handle(self):
