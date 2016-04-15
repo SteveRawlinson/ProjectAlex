@@ -5,6 +5,8 @@ from myroutes import ROUTEMAP
 
 DEBUG = True
 
+
+# noinspection PyInterpreter
 class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # init() is called exactly once at the beginning to do
@@ -133,7 +135,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.routesToSetForNextJourney.append(route)
 
     # sets (triggers) a route
-    def setRoute(self, route, sleeptime=5):
+    def setRoute(self, route, sleeptime=2):
         print self.loco.dccAddr, 'setting route', route
         r = routes.getRoute(route)
         if r is None:
@@ -386,9 +388,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         arrived = False
         while not arrived:
             while len(changedList) == 0:
-                self.changedSensors(sensorList)
+                self.changedSensors(sensorList) # record the current states
                 self.waitChange(sensorList)
-                changedList = self.changedSensors(sensorList)
+                changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
                 self.unlock(lock)
@@ -396,24 +398,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor in changedList:
                 arrived = True
 
-        print self.loco.dccAddr, "block", endBlock.userName, "is active"
+        print self.loco.dccAddr, "destination block", endBlock.userName, "is active"
 
         # if there was a lock specified it means the calling method
         # wants us to release it now
         if lock is not None:
             self.unlock(lock)
 
-        # set the memory value in the new occupied block
+        # set the value in the new occupied block
         if endBlock:
-            mem = memories.getMemory(endBlock.userName)
-            if mem is None:
-                mem = memories.newMemory(endBlock.userName)
-            if mem:
-                print self.loco.dccAddr, "setting value of newly occupied block", endBlock.userName, "to", self.loco.dccAddr
-                mem.setValue(self.loco.dccAddr)
-            else:
-                print self.loco.dccAddr, "couldn't find memory called ", endBlock.userName, "and couldn't create a new one"
- 
+            endBlock.setValue(str(self.loco.dccAddr))
+
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed < 0:
             print self.loco.dccAddr, "continuing ... "
