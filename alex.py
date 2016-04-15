@@ -318,7 +318,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             else:
                 # check if we need to get the lock back
                 if lock:
-                    debug("checking if we need to re-establish a lock")
+                    self.debug("checking if we need to re-establish a lock")
                     if not self.checkLock(lock):
                         self.getLock(lock)
                 ok_to_go = True
