@@ -128,12 +128,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         print loco.dccAddr, "does not have lock on ", mem
         return False
 
-    # Does not actually set a route. Adds the route name
-    # to a list which will be set next time a journey
-    # is undertaken
-    def setMyRoute(self, route):
-        self.routesToSetForNextJourney.append(route)
-
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=2):
         print self.loco.dccAddr, 'setting route', route
@@ -218,7 +212,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         return changedList
 
     # Gets a train from startBlock to endBlock and optionally slows it down
-    # and stops it there. Tries to update block occupancy memory values.
+    # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None):
@@ -343,21 +337,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     print self.loco.dccAddr, "failed to get lock on", lock, "giving up"
                     return False
             
-        # Set Routes. These can be provided by the routes
-        # argument or stored up in a list by previous calls
-        # to setMyRoute(), or both.
-        routelen = 0
-        if routes is not None:
-            routelen = len(routes)
-            for r in routes:
-                self.setRoute(r)
-        for r in self.routesToSetForNextJourney:
-            self.setRoute(r)
-        if routelen + len(self.routesToSetForNextJourney) > 1:
-            time.sleep(5)
-        self.routesToSetForNextJourney = []
-        
-        # if we are stationary, and the current direction is different
+        # Set initial route. It is assumed that only the first route
+        # needs to be set before we start moving.
+        if routes is not None and len(routes) > 0:
+            self.debug("setting initial route")
+            self.setRoute(routes[0])
+
+        # If we are stationary, and the current direction is different
         # from the direction requested, set direction
         if not moving and throttle.getIsForward() != direction:
             if direction is True:
@@ -368,16 +354,24 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             throttle.setIsForward(direction) 
             self.waitMsec(250)
             throttle.setIsForward(direction) 
-            self.waitMsec(500)
+            self.waitMsec(250)
         
         # set throttle position if we're not already moving (if we
-        # are moving we set the throttle earlier
+        # are moving we set the throttle earlier)
         if not moving:
             print self.loco.dccAddr, "Setting normal Speed", normalSpeed
             throttle.setSpeedSetting(normalSpeed)
             # sometimes the first instruction gets lost
             self.waitMsec(250)
             throttle.setSpeedSetting(normalSpeed)
+
+        # Set remaining routes
+        if routes is not None and len(routes) > 1:
+            self.debug("setting subsequent routes")
+            for r in routes:
+                if r == routes[0]:
+                    continue
+                self.setRoute(r)
 
         # wait for a sensor to change
         print self.loco.dccAddr, "waiting for block", endBlock.userName, "to become active"
