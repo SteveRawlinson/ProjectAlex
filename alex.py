@@ -407,7 +407,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # set the value in the new occupied block
         if endBlock:
-            endBlock.setValue(str(self.loco.dccAddr))
+            endBlock.getBlock().setValue(str(self.loco.dccAddr))
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed < 0:
