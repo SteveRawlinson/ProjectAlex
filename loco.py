@@ -99,7 +99,7 @@ class Loco:
             sbtf = self.shortestBlockTrainFits(blocklist)
         return sbtf
 
-    # Returns the the layout block(s) I'm in
+    # Returns the list of layout block(s) I'm in
     def myLayoutBlocks(self):
         #return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
         blockList = []
@@ -122,14 +122,13 @@ class Loco:
         lblocks = self.myLayoutBlocks()
         if len(lblocks) == 0:
             self.block = None
-        elif len(lblocks) > 1:
-            self.block = "multi"
         else:
             self.block = lblocks[0]
-        if self.block is None:
-            self.debug("loco " + str(self.dccAddr) + " block: None")
-        else:
-            self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getID())
+        if debug:
+            if self.block is None:
+                self.debug("loco " + str(self.dccAddr) + " block: None")
+            else:
+                self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getID())
         return self.block
 
     # Sets this loco's block to b (if it's a block)
