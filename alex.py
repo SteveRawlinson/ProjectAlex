@@ -246,6 +246,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # determine what startBlock is (string name of block, the block itself, or the sensor of the block)
         # and get the sensor one way or the other
+        self.debug("startBlock supplied is a " + type(startBlock).__name__)
         if type(startBlock) == str:
             sb = layoutblocks.getLayoutBlock(startBlock)
             if sb is None:
@@ -255,12 +256,20 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         elif type(startBlock) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             # startBlock is a LayoutBlock
             startBlockSensor = startBlock.getOccupancySensor()
+        elif type(startBlock) == jmri.Block:
+            # startBlock is a Block
+            sb = layoutblocks.getLayoutBlock(startBlock.getUserName())
+            if sb is None:
+                raise RuntimeError("no such layoutBlock: " + startBlock.getUserName())
+            startBlock = sb
         else:
             # startBlock is the sensor
             startBlockSensor = startBlock
             startBlock = layoutblocks.getBlockWithSensorAssigned(startBlockSensor)
+        self.debug("startblock converted to " + type(startBlock).__name__)
 
         # and again with endBlock
+        self.debug("endBlock supplied is a " + type(endBlock).__name__)
         if type(endBlock) == str:
             eb = layoutblocks.getLayoutBlock(endBlock)
             if eb is None:
@@ -276,6 +285,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlock is None:
                 print "end block sensor provided is not assigned to a layout block"
                 raise RuntimeError("end block sensor provided is not assigned to a layout block")
+        self.debug("endblock converted to " + type(endBlock).__name__)
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
@@ -429,6 +439,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # we know where we are now
         self.knownLocation = endBlock
+        self.debug("setting loco " + str(self.loco.dccAddr) + "to type " + type(endBlock).__name__)
+        self.loco.setBlock(endBlock)
         
         self.debug("shortJourney() returning")
         return True
