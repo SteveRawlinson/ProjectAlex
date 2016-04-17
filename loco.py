@@ -124,11 +124,11 @@ class Loco:
             self.block = None
         else:
             self.block = lblocks[0].getBlock()
-        if debug:
+        if DEBUG:
             if self.block is None:
                 self.debug("loco " + str(self.dccAddr) + " block: None")
             elif type(self.block) == jmri.Block:
-                self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getID())
+                self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getUserName())
             else:
                 raise RuntimeError("loco " + str(self.dccAddr) + " block has unknown type: " + type(self.block).__name__)
         return self.block
