@@ -262,6 +262,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if sb is None:
                 raise RuntimeError("no such layoutBlock: " + startBlock.getUserName())
             startBlock = sb
+            startBlockSensor = startBlock.getOccupancySensor()
         else:
             # startBlock is the sensor
             startBlockSensor = startBlock
