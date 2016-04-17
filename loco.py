@@ -13,7 +13,7 @@ MOVING = 2
 
 class Loco:
     
-    def __init__(self, dccAddr, longAddr = True):
+    def __init__(self, dccAddr, longAddr=True):
         self.dccAddr = dccAddr
         self._trainLength = None
         self._rosterEntry = None
@@ -22,7 +22,7 @@ class Loco:
         self.block = None
         self.status = SIDINGS
         self.longAddr = longAddr
-
+        self._reversible = None
 
     def debug(self, message):
         if DEBUG:
@@ -47,13 +47,24 @@ class Loco:
             else:
                 self._rarity = 0
         return self._rarity
+
+    # Returns True if this train can move in both directions, False otherwise
+    def reversible(self):
+        if self._reversible is None:
+            r = self.rosterEntry().getAttribute('reversible')
+            if r is None:
+                self._reversible = True # this is the default
+            if r == 'false':
+                self._reversible = False
+        return self._reversible
     
     # Returns the roster entry for the current loco
     def rosterEntry(self):
         if self._rosterEntry is None:
             self.debug("getting roster entry for " + str(self.dccAddr))
-            #roster_entries = self.roster.getEntriesByDccAddress(str(self.dccAddr))
-            roster_entries = self.roster.getEntriesMatchingCriteria(None, None, str(self.dccAddr), None, None, None, None, None)
+            # # roster_entries = self.roster.getEntriesByDccAddress(str(self.dccAddr))
+            roster_entries = self.roster.getEntriesMatchingCriteria(None, None, str(self.dccAddr),
+                                                                    None, None, None, None, None)
             if len(roster_entries) == 0:
                 raise RuntimeError("no Roster Entry for address", str(self.dccAddr))
             self._rosterEntry = roster_entries[0]
@@ -101,7 +112,7 @@ class Loco:
 
     # Returns the list of layout block(s) I'm in
     def myLayoutBlocks(self):
-        #return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
+        # return layoutblocks.getLayoutBlocksOccupiedByRosterEntry(self.rosterEntry())
         blockList = []
         for name in blocks.getSystemNameList():
             b = blocks.getBySystemName(name)
