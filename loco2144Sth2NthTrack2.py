@@ -24,8 +24,6 @@ class Loco2144Sth2NthTrack2(alex.Alex):
 
         # out of sth sidings to FPK
         lock = self.getLock('South Link Lock', loco)
-
-        # set routes to nth siding 1
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('Sth Hertford Outer')
         self.shortJourney(False, self.loco.block, "FPK P2", 0.4, 0.3, 3000, routes=routes, lock=lock)
         self.waitAtPlatform()
@@ -41,12 +39,12 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         # PAL to North sidings
         lock = self.getLock('North Link Lock', loco)
         siding = self.loco.shortestBlockTrainFitsBlocking(NORTH_SIDINGS)
-        print addr, "selected siding", siding.getID()
+        print self.loco.dccAddr, "selected siding", siding.getID()
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
         self.shortJourney(False, "PAL P2", siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 
         stop = time.time()
-        print "route took", stop - start, 'seconds'
+        print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
 
         return False
 
