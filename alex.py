@@ -81,8 +81,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                         time.sleep(5)
                     else:
                         print loco.dccAddr, "giving op on lock"
-                        return False
-
+                        raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
             else:
                 # link track is busy
                 tries += 1
@@ -91,7 +90,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     time.sleep(5)
                 else:
                     print loco.dccAddr, "giving up on lock"
-                    return False
+                    raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
         return mem
 
 
