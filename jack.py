@@ -3,13 +3,12 @@ sys.path.append('C:\\Users\\steve\\Documents\\Github\\JMRI')
 import jmri as jmri
 import time
 sys.path.append('C:\\Users\\steve\\JMRI\\jython')
-import alex
 import loco
 import java
 from javax.swing import JOptionPane
 from jmri_bindings import *
 from myroutes import *
-
+from loco2144Nth2SthTrack1 import *
 
 # alex.sensors = sensors
 # alex.memories = memories
@@ -19,11 +18,10 @@ from myroutes import *
 # alex.ACTIVE = ACTIVE
 
 
-DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
+# DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
+DCC_ADDRESSES = [2144]
 DEBUG = True
 
-alex.SOUTH_SIDINGS = SOUTH_SIDINGS
-alex.NORTH_SIDINGS = NORTH_SIDINGS
 
 class Jack:
     
@@ -69,18 +67,33 @@ class Jack:
             if newloco.block is not None:
                 self.locos.append(newloco)
 
+    # Returns True if the loco supplied is in the north sidings
     def northSidings(self, loc):
-        if loc.status == loco.SIDINGS and loc.block in NORTH_SIDINGS:
-            return True
+        if loc.status == loco.SIDINGS:
+            if loc.block.getUserName() in NORTH_SIDINGS or loc.block.getUserName() == NORTH_REVERSE_LOOP:
+                return True
         return False
 
+    # Returns True is hte loco supplied in south sidings
     def southSidings(self, loc):
-        if loc.status == loco.SIDINGS and loc.block in SOUTH_SIDINGS:
-            return True
+        if loc.status == loco.SIDINGS:
+            if loc.block.getUserName() in SOUTH_SIDINGS or loc.block.getUserName() == SOUTH_REVERSE_LOOP:
+                return True
         return False
 
+    def locosSouth(self):
+        southList = []
+        for l in self.locos:
+            if self.southSidings(l):
+                southList.append(l)
+        return southList
 
-    def handle(self) :
+    def startJourney(self, loco, klass):
+        mem = memories.provideMemory(klass.__name__)
+        mem.setValue(1)
+        klass().start(loco)
+
+    def handle(self):
         self.debug("Starting")
         
         # turn layout power on
@@ -93,10 +106,7 @@ class Jack:
         # Initialise locomotives and get their location.
         self.initLocos()
 
+        self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
 
 
-
-
-
-
-Jack().initLocos()
+Jack().start()
