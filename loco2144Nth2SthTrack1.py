@@ -33,8 +33,6 @@ class Loco2144Nth2SthTrack1(alex.Alex):
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
-        if lock is False:
-            return False 
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
@@ -47,30 +45,23 @@ class Loco2144Nth2SthTrack1(alex.Alex):
         self.waitMsec(platformWaitTimeMsecs)
         
         # PAL to AAP
-        rc = self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
-        if rc is False:
-            return False
+        self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
         print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
         # AAP to FPK
-        rc = self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
-        if rc is False:
-            return False
+        self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
         print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
         # FPK to Sth Sidings
-        rc = self.getLock('South Link Lock')
-        if rc is False:
-            return False
+        self.getLock('South Link Lock')
+
         # set routes to sth sidings
         siding = self.loco.shortestBlockTrainFitsBlocking(SOUTH_SIDINGS)
         print addr, "selected siding", siding.getID()
         routes = self.requiredRoutes("FPK P1") + self.requiredRoutes(siding)
-        rc = self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
-        if rc is False:
-            return False
+        self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
 
         print "route complete."
