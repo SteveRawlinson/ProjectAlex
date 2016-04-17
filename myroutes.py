@@ -1,5 +1,8 @@
 SOUTH_SIDINGS = ['FP sidings', 'Sth Sidings 1', 'Sth Sidings 2', 'Sth Sidings 3', 'Sth Sidings 5']
 NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3']
+NORTH_REVERSE_LOOP = 'Nth Reverse Loop'
+SOUTH_REVERSE_LOOP = 'Sth Reverse Loop'
+
 
 IRSENSORS = {
     "Sth Sidings 1": "LS61",
