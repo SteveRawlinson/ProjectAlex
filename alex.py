@@ -214,6 +214,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     def platformMessage(self):
         print self.loco.dccAddr, "waiting at platform for ", self.platformWaitTimeMsecs / 1000, "secs"
 
+    def waitAtPlatform(self):
+        self.platformMessage()
+        self.waitMsec(self.platformWaitTimeMsecs)
+
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
