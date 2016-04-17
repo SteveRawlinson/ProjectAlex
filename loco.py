@@ -123,17 +123,19 @@ class Loco:
         if len(lblocks) == 0:
             self.block = None
         else:
-            self.block = lblocks[0]
+            self.block = lblocks[0].getBlock()
         if debug:
             if self.block is None:
                 self.debug("loco " + str(self.dccAddr) + " block: None")
-            else:
+            elif type(self.block) == jmri.Block:
                 self.debug("loco " + str(self.dccAddr) + " block: " + self.block.getID())
+            else:
+                raise RuntimeError("loco " + str(self.dccAddr) + " block has unknown type: " + type(self.block).__name__)
         return self.block
 
     # Sets this loco's block to b (if it's a block)
     # or to b's block (if it's a layoutblock) or to
-    # the block whose name is b (it it's a string).
+    # the block whose name is b (if it's a string).
     # Also sets the block's value to the loco's
     # dcc address.
     def setBlock(self, b):
