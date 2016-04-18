@@ -38,7 +38,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.palP1 = sensors.provideSensor("6")
         self.palP2 = sensors.provideSensor("5")
         self.sthLink = sensors.provideSensor("33")
-
         self.backPassage = sensors.provideSensor("17")
         self.routesToSetForNextJourney = []
         return
