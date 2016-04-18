@@ -108,7 +108,9 @@ class Jack:
 
         self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
 
+        time.sleep(5)
         print "Jack continues"
+        print "loco", self.locos[0].dccAddr, "status is " self.locos[0].status
 
 
 Jack().start()
