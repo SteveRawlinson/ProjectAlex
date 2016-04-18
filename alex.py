@@ -165,27 +165,27 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # Brings the locomotive controlled by the supplied throttle
     # to a gradual halt by reducing the speed setting over time seconds
-    def gradualHalt(self, throttle, time = 5, granularity = 1):
+    def gradualHalt(self, time=5, granularity=1):
         if time <= granularity:
             print self.loco.dccAddr, "stopping train"
-            throttle.setSpeedSetting(0)
+            self.throttle.setSpeedSetting(0)
             self.waitMsec(250)
-            throttle.setSpeedSetting(0)
+            self.throttle.setSpeedSetting(0)
             return
         if granularity < 0.25:
             granularity = 0.25 # avoid too many loconet messages
         print self.loco.dccAddr, "bringing train to halt over", time, "secs"
-        speed = throttle.getSpeedSetting()
+        speed = self.throttle.getSpeedSetting()
         times = time / granularity
         speedDiff = speed / times
         print self.loco.dccAddr, "speed:", speed, "times:", times, "speedDiff:", speedDiff
         while True:
-            speed = throttle.getSpeedSetting()
+            speed = self.throttle.getSpeedSetting()
             newSpeed = speed - speedDiff
             if newSpeed < 0:
                 newSpeed = 0
             print "    gradual halt setting speed", newSpeed
-            throttle.setSpeedSetting(newSpeed)
+            self.throttle.setSpeedSetting(newSpeed)
             if newSpeed == 0:
                 return
 
@@ -404,7 +404,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # check if we have reached the endBlock
             if endBlockSensor in changedList:
                 arrived = True
-
 
         print self.loco.dccAddr, "destination block", endBlock.userName, "is active"
 
