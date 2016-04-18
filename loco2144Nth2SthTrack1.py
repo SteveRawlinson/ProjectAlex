@@ -57,9 +57,8 @@ class Loco2144Nth2SthTrack1(alex.Alex):
         # FPK to Sth Sidings
         self.getLock('South Link Lock')
 
-        # set routes to sth sidings
-        siding = self.loco.shortestBlockTrainFitsBlocking(SOUTH_SIDINGS)
-        print addr, "selected siding", siding.getID()
+        # select a siding
+        siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes("FPK P1") + self.requiredRoutes(siding)
         self.shortJourney(True, "FPK P1", siding, 0.4, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
