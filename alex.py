@@ -52,6 +52,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # if it clears, otherwise we give up.
     def getLock(self, mem, loco=None):
         if loco is None:
+            self.debug("getLock: loco was not set, setting to self.loco which is a " + type(self.loco).__name__)
             loco = self.loco
         lock = False
         tries = 0
@@ -408,8 +409,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         print self.loco.dccAddr, "destination block", endBlock.userName, "is active"
 
         # set the value in the new occupied block
-        if endBlock:
-            endBlock.getBlock().setValue(str(self.loco.dccAddr))
+        self.loco.setBlock(endBlock)
 
         # if there was a lock specified it means the calling method
         # wants us to release it now
@@ -440,14 +440,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if slowSpeed is not None:
             # stop the train
             print "stopping loco", self.loco.dccAddr
-            throttle.setSpeedSetting(0)
-            self.waitMsec(500)
-            throttle.setSpeedSetting(0)
+            if stopIRClear is not None:
+                spd = -1
+            else:
+                spd = 0
+            throttle.setSpeedSetting(spd)
+            self.waitMsec(300)
+            throttle.setSpeedSetting(spd)
 
         # we know where we are now
         self.knownLocation = endBlock
-        self.debug("setting loco " + str(self.loco.dccAddr) + "to type " + type(endBlock).__name__)
-        self.loco.setBlock(endBlock)
+
         
         self.debug("shortJourney() returning")
         return True
