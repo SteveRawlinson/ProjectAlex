@@ -1,5 +1,19 @@
-import loco
+import jmri
+import time
 
-l = loco.Loco(2144)
-lbs = l.myLayoutBlocks()
-print len(lbs)
+
+class MyTest(jmri.jmrit.automat.AbstractAutomaton):
+
+    def init(self):
+        t = self.getThrottle(2144, True)
+
+    def handle:
+        print "speed 0.2"
+        t.setSpeed(0.2)
+        time.sleep(3)
+        print "speed -1"
+        t.setSpeed(-1)
+        time.sleep(3)
+        print "speed 0"
+
+MyTest().start()
