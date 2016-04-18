@@ -91,9 +91,9 @@ class Jack:
     def startJourney(self, loco, klass):
         mem = memories.provideMemory(klass.__name__)
         mem.setValue(1)
-        klass().start(loco)
+        klass(loco).start()
 
-    def handle(self):
+    def start(self):
         self.debug("Starting")
         
         # turn layout power on
@@ -107,6 +107,8 @@ class Jack:
         self.initLocos()
 
         self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
+
+        print "Jack continues"
 
 
 Jack().start()
