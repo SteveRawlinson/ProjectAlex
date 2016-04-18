@@ -26,10 +26,10 @@ class LocoAnyNth2SthTrack1(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.4, routes=routes, lock=lock)
 
         # All the way to FPK P7
-        self.shortJourney(True, self.loco.block, "FPK P7", 0.6)
+        self.shortJourney(True, self.loco.block, "FPK P7", 0.4)
 
         # get a lock on the south link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('South Link Lock', loco)
@@ -52,7 +52,7 @@ class LocoAnyNth2SthTrack1(alex.Alex):
         # select a siding
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 0.5, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, siding, 0.4, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
 
         print "route complete."
@@ -62,6 +62,7 @@ class LocoAnyNth2SthTrack1(alex.Alex):
 
         return False
 
-# l = loco.Loco(2144)
-# l.initBlock()
-# Loco2144Nth2SthTrack(l).start()
+l = loco.Loco(2144)
+l.initBlock()
+LocoAnyNth2SthTrack1(l).start()
+
