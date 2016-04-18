@@ -440,7 +440,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # stop the train
             print "stopping loco", self.loco.dccAddr
             if stopIRClear is not None:
-                spd = -1
+                spd = 0  # TODO: put this back to -1
             else:
                 spd = 0
             throttle.setSpeedSetting(spd)
