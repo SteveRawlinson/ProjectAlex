@@ -404,16 +404,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor in changedList:
                 arrived = True
 
+
         print self.loco.dccAddr, "destination block", endBlock.userName, "is active"
+
+        # set the value in the new occupied block
+        if endBlock:
+            endBlock.getBlock().setValue(str(self.loco.dccAddr))
 
         # if there was a lock specified it means the calling method
         # wants us to release it now
         if lock is not None:
             self.unlock(lock)
-
-        # set the value in the new occupied block
-        if endBlock:
-            endBlock.getBlock().setValue(str(self.loco.dccAddr))
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
