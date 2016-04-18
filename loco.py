@@ -175,16 +175,17 @@ class Loco:
     def setBlock(self, b):
         self.debug("type: " + type(b).__name__)
         if type(b) == str or type(b) == unicode:
-            self.debug("string")
             lblk = layoutblocks.getLayoutBlock(b)
             blk = lblk.getBlock()
         elif type(b) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            self.debug("layoutblock")
             blk = b.getBlock()
         else:
-            self.debug("block")
             blk = b
         self.debug("setting " + blk.getUserName() + " block to " + self.name())
         self.block = blk
         blk.setValue(str(self.dccAddr))
+        mem = memories.getMemory("Siding " + blk.getUserName())
+        if mem is not None and mem.getValue() == str(self.dccAddr):
+            # The block we are now in is a siding we reserved. Remove the reservation.
+            mem.setValue(None)
         self.debug("new block value: " + blk.getValue())
