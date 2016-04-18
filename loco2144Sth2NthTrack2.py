@@ -39,20 +39,14 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         # PAL to North sidings
         lock = self.getLock('North Link Lock')
         siding = self.loco.selectSiding(NORTH_SIDINGS)
-        print self.loco.dccAddr, "selected siding", siding.getID()
-
-        if siding.getID() == "FP sidings":
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(False, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
-        else:
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        routes = self.requiredRoutes(self.loco.block)
+        self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes)
+        routes = self.requiredRoutes(siding)
+        self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
-
+        self.loco.status = loco.SIDINGS
         return False
 
 l = loco.Loco(2144)
