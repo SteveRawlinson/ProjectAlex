@@ -23,21 +23,21 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         start = time.time()
 
         # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock', loco)
+        lock = self.getLock('South Link Lock')
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('Sth Hertford Outer')
         self.shortJourney(False, self.loco.block, "FPK P2", 0.4, 0.3, 3000, routes=routes, lock=lock)
         self.waitAtPlatform()
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 2000)
-        self.waitAtPlatform()
+        # self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 2000)
+        # self.waitAtPlatform()
 
         # AAP to PAL
-        self.shortJourney(False, self.aapP3, self.palP2, 0.4, 0.3, 1000)
+        self.shortJourney(False, self.loco.block, "PAL P2", 0.4, 0.3, 1000)
         self.waitAtPlatform()
 
         # PAL to North sidings
-        lock = self.getLock('North Link Lock', loco)
+        lock = self.getLock('North Link Lock')
         siding = self.loco.selectSiding(NORTH_SIDINGS)
         print self.loco.dccAddr, "selected siding", siding.getID()
 
@@ -45,9 +45,9 @@ class Loco2144Sth2NthTrack2(alex.Alex):
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
             self.shortJourney(False, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("North Link")
+            routes = self.requiredRoutes(self.loco.block)
             self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes)
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+            routes = self.requiredRoutes(siding)
             self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 
         stop = time.time()
