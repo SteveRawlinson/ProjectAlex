@@ -32,6 +32,8 @@ ROUTEMAP = {
             "FPK P7": ["Sth Fast Inner"],
             "FPK P8": ["Sth Fast Outer"],
             "NSG P1": ["Welwyn Inner"],
-            "NSG P2": ["Welwyn Outer"]
+            "NSG P2": ["Welwyn Outer"],
+            "Nth Fast Inner 1": ["Nth Fast Inner"],
+            "Nth Fast Outer 1": ["Nth Fast Outer"]
 
             }
