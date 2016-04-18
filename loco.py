@@ -1,8 +1,6 @@
 import jmri
 import time
-from jmri_bindings import layoutblocks
-from jmri_bindings import blocks
-from jmri_bindings import OCCUPIED
+from jmri_bindings import *
 
 DEBUG = True
 
@@ -89,10 +87,13 @@ class Loco:
         for b in blocklist:
             self.debug("considering block " + b)
             block = layoutblocks.getLayoutBlock(b)
+            mem = memories.getMemory("Siding " + b)
             if block is None:
                 self.debug("no such block: " + b)
             elif block.getState() == OCCUPIED:
                 self.debug("block " + b + " is occupied")
+            elif mem is not None and mem.getValue() == 1:
+                self.debug("block " + b + " is selected")
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 self.debug("might assign block to sbtf")
                 if self.willFitInBlock(block):
@@ -109,6 +110,28 @@ class Loco:
             time.sleep(5)
             sbtf = self.shortestBlockTrainFits(blocklist)
         return sbtf
+
+    # Selects a siding from a list and sets a memory value to prevent
+    # another loco selecting the same one.
+    def selectSiding(self, sidings, blocking=True):
+        if blocking:
+            siding = self.shortestBlockTrainFitsBlocking(sidings)
+        else:
+            siding = self.shortestBlockTrainFits(self, sidings)
+        mem = memories.provideMemory("Siding " + siding.getID())
+        mem.setValue("selected")
+        self.debug("selected siding " + siding.getID())
+        return siding
+
+    # Removes the memory which reserves the siding.
+    def unselectSiding(self, siding):
+        if  type(siding) == str:
+            mem = memories.provideMemory("Siding " + siding)
+        elif type(siding) == jmri.Block:
+            mem = memories.provideMemory("Siding " + siding.getUserName())
+        else:
+            mem = memories.provideMemory("Siding " + siding.getID())
+        mem.setValue(None)
 
     # Returns the list of layout block(s) I'm in
     def myLayoutBlocks(self):
