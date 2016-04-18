@@ -2,6 +2,7 @@ import jmri
 import time
 
 class StartUp :
+
     def do(self) :
     
         self.powerState = powermanager.getPower()
@@ -42,6 +43,14 @@ class StartUp :
         r.setRoute()
 
 
-print "StartUp done."
+        mem = memories.getMemory("North Link Lock")
+        if mem is not None:
+            mem.setValue(None)
+
+        mem = memories.getMemory("South Link Lock")
+        if mem is not None:
+            mem.setValue(None)
+
+        print "StartUp done."
 
 StartUp().do()
