@@ -235,12 +235,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # set the throttle
         if throttle is None:
-            self.debug("throttle was not passed, using self.throttle")
+            # self.debug("throttle was not passed, using self.throttle")
             throttle = self.throttle
 
-        self.debug("throttle is type " + type(throttle).__name__)
-        if type(throttle) == str:
-            self.debug("throttle is " + throttle)
+        # self.debug("throttle is type " + type(throttle).__name__)
+        # if type(throttle) == str:
+        #     self.debug("throttle is " + throttle)
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
@@ -252,7 +252,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # determine what startBlock is (string name of block, the block itself, or the sensor of the block)
         # and get the sensor one way or the other
-        self.debug("startBlock supplied is a " + type(startBlock).__name__)
+        # self.debug("startBlock supplied is a " + type(startBlock).__name__)
         if type(startBlock) == str:
             sb = layoutblocks.getLayoutBlock(startBlock)
             if sb is None:
@@ -273,10 +273,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # startBlock is the sensor
             startBlockSensor = startBlock
             startBlock = layoutblocks.getBlockWithSensorAssigned(startBlockSensor)
-        self.debug("startblock converted to " + type(startBlock).__name__)
+        # self.debug("startblock converted to " + type(startBlock).__name__)
 
         # and again with endBlock
-        self.debug("endBlock supplied is a " + type(endBlock).__name__)
+        # self.debug("endBlock supplied is a " + type(endBlock).__name__)
         if type(endBlock) == str:
             eb = layoutblocks.getLayoutBlock(endBlock)
             if eb is None:
@@ -292,7 +292,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlock is None:
                 print "end block sensor provided is not assigned to a layout block"
                 raise RuntimeError("end block sensor provided is not assigned to a layout block")
-        self.debug("endblock converted to " + type(endBlock).__name__)
+        # self.debug("endblock converted to " + type(endBlock).__name__)
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
@@ -431,7 +431,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.waitSensorActive(stopIRClear)
             print self.loco.dccAddr, "waiting for IR sensor to be inactive"
             self.waitSensorInactive(stopIRClear)
-        else:
+        elif slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
             self.waitMsec(slowTime)
