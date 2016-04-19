@@ -110,7 +110,7 @@ class Jack:
 
         time.sleep(5)
         print "Jack continues"
-        print "loco", self.locos[0].dccAddr, "status is " self.locos[0].status
+        print "loco", self.locos[0].dccAddr, "status is", self.locos[0].status
 
 
 Jack().start()

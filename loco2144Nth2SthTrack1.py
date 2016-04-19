@@ -61,12 +61,12 @@ class Loco2144Nth2SthTrack1(alex.Alex):
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         if siding.getID() == "FP sidings":
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(False, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         else:
             routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes)
+            self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes)
             routes = self.requiredRoutes(siding)
-            self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
