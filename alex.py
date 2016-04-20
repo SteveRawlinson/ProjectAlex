@@ -17,29 +17,29 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.sensorStates = None
         self.platformWaitTimeMsecs = 3000
         # legacy block definitions
-        self.sthSidings = sensors.provideSensor("34")
-        self.sthSidingsClearIR = sensors.provideSensor("25")
-        self.fpkP4 = sensors.provideSensor("22")
-        self.aapP1 = sensors.provideSensor("4")
-        self.aapP2 = sensors.provideSensor("2")
-        self.aapP3 = sensors.provideSensor("3")
-        self.aapP4 = sensors.provideSensor("1")
-        self.nsgP2 = sensors.provideSensor("8")
-        self.nsgP1 = sensors.provideSensor("7")
-        self.nthSiding1 = sensors.provideSensor("37")
-        self.nthSiding1ClearIR = sensors.provideSensor("27")
-        self.nthSiding2ClearIR = sensors.provideSensor("28")
-        self.fpkP2 = sensors.provideSensor("21")
-        self.fpkP1 = sensors.provideSensor("24")
-        self.fpkP3 = sensors.provideSensor("23")
-        self.fpkP8 = sensors.provideSensor("36")
-        self.nthReverseLoop = sensors.provideSensor("19")
-        self.sthReverseLoop = sensors.provideSensor("35")
-        self.palP1 = sensors.provideSensor("6")
-        self.palP2 = sensors.provideSensor("5")
-        self.sthLink = sensors.provideSensor("33")
-        self.backPassage = sensors.provideSensor("17")
-        self.routesToSetForNextJourney = []
+        # self.sthSidings = sensors.provideSensor("34")
+        # self.sthSidingsClearIR = sensors.provideSensor("25")
+        # self.fpkP4 = sensors.provideSensor("22")
+        # self.aapP1 = sensors.provideSensor("4")
+        # self.aapP2 = sensors.provideSensor("2")
+        # self.aapP3 = sensors.provideSensor("3")
+        # self.aapP4 = sensors.provideSensor("1")
+        # self.nsgP2 = sensors.provideSensor("8")
+        # self.nsgP1 = sensors.provideSensor("7")
+        # self.nthSiding1 = sensors.provideSensor("37")
+        # self.nthSiding1ClearIR = sensors.provideSensor("27")
+        # self.nthSiding2ClearIR = sensors.provideSensor("28")
+        # self.fpkP2 = sensors.provideSensor("21")
+        # self.fpkP1 = sensors.provideSensor("24")
+        # self.fpkP3 = sensors.provideSensor("23")
+        # self.fpkP8 = sensors.provideSensor("36")
+        # self.nthReverseLoop = sensors.provideSensor("19")
+        # self.sthReverseLoop = sensors.provideSensor("35")
+        # self.palP1 = sensors.provideSensor("6")
+        # self.palP2 = sensors.provideSensor("5")
+        # self.sthLink = sensors.provideSensor("33")
+        # self.backPassage = sensors.provideSensor("17")
+        # self.routesToSetForNextJourney = []
         return
 
     def debug(self, message):
@@ -92,7 +92,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                     print loco.dccAddr, "giving up on lock"
                     raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
         return mem
-
 
     # Attempts to get a lock and returns immediately whether or
     # not the attempt was successful. No race condition testing
@@ -440,7 +439,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # stop the train
             print "stopping loco", self.loco.dccAddr
             if stopIRClear is not None:
-                spd = 0  # TODO: put this back to -1
+                spd = 0  # TO DO: put this back to -1
             else:
                 spd = 0
             throttle.setSpeedSetting(spd)

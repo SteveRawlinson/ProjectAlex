@@ -31,11 +31,8 @@ class LocoAnyNth2SthTrack1(alex.Alex):
         # slower round the bend
         self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.3)
 
-        # All the way to FPK P7
+        # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 0.5)
-
-        # slow down a bit
-        # self.throttle.setSpeedSetting(0.5)
 
         # get a lock on the south link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('South Link Lock')
@@ -49,7 +46,7 @@ class LocoAnyNth2SthTrack1(alex.Alex):
             for r in self.requiredRoutes("FPK P7"):
                 self.setRoute(r, 0)
             # progress to FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", 0.5)
+            self.shortJourney(True, self.loco.block, "FPK P7", 0.4)
             # check we still have the lock
             rc = self.checkLock(lock)
             if rc is False :
