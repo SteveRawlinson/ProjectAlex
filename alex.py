@@ -216,11 +216,37 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.platformMessage()
         self.waitMsec(self.platformWaitTimeMsecs)
 
+    # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
+    # and return the layout block and the sensor (if there is one).
+    def convertToLayoutBlockAndSensor(self, thing):
+        if type(thing) == str:
+            lb = layoutblocks.getLayoutBlock(thing)
+            if lb is None:
+                raise RuntimeError("no such block: " + thing)
+            block = lb
+            sensor = lb.getOccupancySensor()
+        elif type(thing) == jmri.jmrit.display.layoutEditor.LayoutBlock:
+            # startBlock is a LayoutBlock
+            block = thing
+            sensor = thing.getOccupancySensor()
+        elif type(thing) == jmri.Block:
+            # thing is a Block
+            lb = layoutblocks.getLayoutBlock(thing.getUserName())
+            if lb is None:
+                raise RuntimeError("no such layoutBlock: " + thing.getUserName())
+            block = lb
+            sensor = block.getOccupancySensor()
+        else:
+            # thing is the sensor
+            sensor = thing
+            block = layoutblocks.getBlockWithSensorAssigned(startBlockSensor)
+        return block, sensor
+
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=0, throttle=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
 
         self.debug("called shortJourney()")
 
@@ -249,30 +275,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("we are not moving")
             moving = False
 
-        # determine what startBlock is (string name of block, the block itself, or the sensor of the block)
-        # and get the sensor one way or the other
-        # self.debug("startBlock supplied is a " + type(startBlock).__name__)
-        if type(startBlock) == str:
-            sb = layoutblocks.getLayoutBlock(startBlock)
-            if sb is None:
-                raise RuntimeError("no such block: " + startBlock)
-            startBlock = sb
-            startBlockSensor = sb.getOccupancySensor()
-        elif type(startBlock) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            # startBlock is a LayoutBlock
-            startBlockSensor = startBlock.getOccupancySensor()
-        elif type(startBlock) == jmri.Block:
-            # startBlock is a Block
-            sb = layoutblocks.getLayoutBlock(startBlock.getUserName())
-            if sb is None:
-                raise RuntimeError("no such layoutBlock: " + startBlock.getUserName())
-            startBlock = sb
-            startBlockSensor = startBlock.getOccupancySensor()
-        else:
-            # startBlock is the sensor
-            startBlockSensor = startBlock
-            startBlock = layoutblocks.getBlockWithSensorAssigned(startBlockSensor)
-        # self.debug("startblock converted to " + type(startBlock).__name__)
+        startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
 
         # and again with endBlock
         # self.debug("endBlock supplied is a " + type(endBlock).__name__)
@@ -449,6 +452,11 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # we know where we are now
         self.knownLocation = endBlock
 
+        if passBlock is True:
+            # wait until the endblock is empty
+            self.waitSensorInactive(endBlockSensor)
+            if nextBlock:
+                pass
         
         self.debug("shortJourney() returning")
         return True
