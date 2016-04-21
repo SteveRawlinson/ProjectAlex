@@ -21,12 +21,12 @@ class LocoAnySth2NthTrack6(alex.Alex):
         self.loco.status = loco.MOVING
         start = time.time()
 
-        # get a 'lock' on the north link track
+        # get a 'lock' on the south link track
         lock = self.getLock('South Link Lock')
 
         # Out the sth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Sth Fast Inner 1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.4, routes=routes, lock=lock)
+        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
+        self.shortJourney(True, self.loco.block, "South Link", 0.2, routes=routes, lock=lock, passBlock=True)
 
         # slower round the bend
         self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.3)
