@@ -239,7 +239,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         else:
             # thing is the sensor
             sensor = thing
-            block = layoutblocks.getBlockWithSensorAssigned(startBlockSensor)
+            block = layoutblocks.getBlockWithSensorAssigned(thing)
         return block, sensor
 
     # Gets a train from startBlock to endBlock and optionally slows it down
@@ -275,26 +275,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("we are not moving")
             moving = False
 
+        # Get a startBlock and endBlock converted to layoutBlocks and get their
+        # sensors too.
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
-
-        # and again with endBlock
-        # self.debug("endBlock supplied is a " + type(endBlock).__name__)
-        if type(endBlock) == str:
-            eb = layoutblocks.getLayoutBlock(endBlock)
-            if eb is None:
-                raise RuntimeError("no such block: " + endBlock)
-            endBlock = eb
-            endBlockSensor = eb.getOccupancySensor()
-        elif type(endBlock) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            endBlockSensor = endBlock.getOccupancySensor()
-        else:
-            # it's a sensor
-            endBlockSensor = endBlock
-            endBlock = layoutblocks.getBlockWithSensorAssigned(endBlockSensor)
-            if endBlock is None:
-                print "end block sensor provided is not assigned to a layout block"
-                raise RuntimeError("end block sensor provided is not assigned to a layout block")
-        # self.debug("endblock converted to " + type(endBlock).__name__)
+        endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
@@ -455,8 +439,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if passBlock is True:
             # wait until the endblock is empty
             self.waitSensorInactive(endBlockSensor)
+            # set the loco's block to 'nextBlock' which is the block
+            # has now moved into (and which has no sensor)
             if nextBlock:
-                pass
+                self.loco.setBlock(nextBlock)
         
         self.debug("shortJourney() returning")
         return True
