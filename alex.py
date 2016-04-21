@@ -443,7 +443,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # has now moved into (and which has no sensor)
             if nextBlock:
                 self.loco.setBlock(nextBlock)
-        
+                self.knownLocation = nextBlock
+
         self.debug("shortJourney() returning")
         return True
                 
