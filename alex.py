@@ -438,6 +438,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         if passBlock is True:
             # wait until the endblock is empty
+            self.debug("waiting until block " + endBlock.getID() + " in unoccupied")
             self.waitSensorInactive(endBlockSensor)
             # set the loco's block to 'nextBlock' which is the block
             # has now moved into (and which has no sensor)
