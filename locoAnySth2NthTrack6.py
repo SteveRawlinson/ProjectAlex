@@ -26,43 +26,39 @@ class LocoAnySth2NthTrack6(alex.Alex):
 
         # Out the sth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        self.shortJourney(True, self.loco.block, "South Link", 0.2, routes=routes, lock=lock, passBlock=True)
+        self.shortJourney(False, self.loco.block, "South Link", 0.2, routes=routes, lock=lock, passBlock=True)
 
-        # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.3)
-
-        # All the way to FPK P7
-        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 0.5)
+        # All the way to North Fast Outer 1
+        self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", 0.4)
 
         # slow down a bit
         # self.throttle.setSpeedSetting(0.5)
 
-        # get a lock on the south link, but if it's not available immediately we need to know pronto
-        lock = self.getLockNonBlocking('South Link Lock')
+        # get a lock on the north link, but if it's not available immediately we need to know pronto
+        lock = self.getLockNonBlocking('North Link Lock')
         if lock is False:
-            # stop the train at FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", 0.3, 0.1, 1000)
+            # stop the train at North Fast Outer 1
+            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 0.3, 0.1, 1000)
             # wait for a lock
-            lock = self.getLock('South Link Lock')
+            lock = self.getLock('North Link Lock')
         else:
-            # we got the lock - set the turnouts for FPK 7
-            for r in self.requiredRoutes("FPK P7"):
+            # we got the lock - set the turnouts for Nth Fast Outer 1
+            for r in self.requiredRoutes("Nth Fast Outer 1"):
                 self.setRoute(r, 0)
-            # progress to FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", 0.5)
+            # progress to ...
+            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 0.4, passBlock=True)
             # check we still have the lock
             rc = self.checkLock(lock)
             if rc is False :
                 # we lost it, abort!
                 self.throttle.setSpeedSetting(0)
-                print loco, "race conditions on South Link Lock?"
+                print loco, "race conditions on South Link Lock? Exiting"
                 return False
 
         # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        siding = self.loco.selectSiding(NORTH_SIDINGS)
         routes = self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 0.3, 0.1, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
-        self.unlock('South Link Lock')
+        self.shortJourney(False, self.loco.block, siding, 0.2, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
@@ -73,5 +69,5 @@ class LocoAnySth2NthTrack6(alex.Alex):
 
 l = loco.Loco(3213)
 l.initBlock()
-LocoAnyNth2SthTrack1(l).start()
+LocoAnySth2NthTrack6(l).start()
 
