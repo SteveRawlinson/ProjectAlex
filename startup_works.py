@@ -38,7 +38,7 @@ class StartUp :
         r.setRoute()
         time.sleep(2)
 
-        r = routes.getRoute('Nth Sidings 1')
+        r = routes.getRoute('Nth Siding 1')
         r.activateRoute()
         r.setRoute()
 
