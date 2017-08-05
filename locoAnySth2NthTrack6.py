@@ -28,7 +28,7 @@ class LocoAnySth2NthTrack6(alex.Alex):
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
         self.shortJourney(False, self.loco.block, "South Link", 0.2, routes=routes, lock=lock, passBlock=True)
 
-        # All the way to North Fast Outer 1
+        # All the way to North Fast Outer 2
         self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", 0.4)
 
         # slow down a bit

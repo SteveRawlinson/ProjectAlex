@@ -29,7 +29,7 @@ class LocoAnyNth2SthTrack1(alex.Alex):
         self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.4, routes=routes, lock=lock)
 
         # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.3)
+        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.2)
 
         # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 0.5)
@@ -58,7 +58,7 @@ class LocoAnyNth2SthTrack1(alex.Alex):
         # select a siding
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 0.3, 0.1, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
 
         print "route complete."
