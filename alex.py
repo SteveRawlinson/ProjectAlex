@@ -250,6 +250,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         self.debug("called shortJourney()")
 
+        # Get a startBlock and endBlock converted to layoutBlocks and get their
+        # sensors too.
+        startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
+        endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
+
+        self.debug(startBlock.getID() + " -> " + endBlock.getID())
+
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
         # we need to watch
@@ -275,10 +282,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("we are not moving")
             moving = False
 
-        # Get a startBlock and endBlock converted to layoutBlocks and get their
-        # sensors too.
-        startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
-        endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
@@ -397,8 +400,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.loco.setBlock(endBlock)
 
         # if there was a lock specified it means the calling method
-        # wants us to release it now
-        if lock is not None:
+        # wants us to release it now (unless passBlock is set)
+        if lock is not None and passBlock is None:
             self.unlock(lock)
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
@@ -438,8 +441,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         if passBlock is True:
             # wait until the endblock is empty
-            self.debug("waiting until block " + endBlock.getID() + " in unoccupied")
+            self.debug("waiting until block " + endBlock.getID() + " is unoccupied")
             self.waitSensorInactive(endBlockSensor)
+            if lock is not None:
+                self.unlock(lock)
             # set the loco's block to 'nextBlock' which is the block
             # has now moved into (and which has no sensor)
             if nextBlock:
