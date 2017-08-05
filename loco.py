@@ -74,9 +74,9 @@ class Loco:
     # attribute 'length' in the loco roster.
     def willFitInBlock(self, block):
         if block.getBlock().getLengthCm() > self.trainLength():
-            print "train will fit"
+            self.debug("train will fit in block" + block.getID())
             return True
-        print "train won't fit, block is ", block.getBlock().getLengthCm(), "cms long, trains is", self.trainLength()
+        self.debug("train won't fit in block " + block.getID() + ", block is " + block.getBlock().getLengthCm() + " cms long, trains is " + self.trainLength())
         return False
 
     # Takes an array of block names and returns the shortest empty block
