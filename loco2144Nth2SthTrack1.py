@@ -64,7 +64,7 @@ class Loco2144Nth2SthTrack1(alex.Alex):
             self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         else:
             routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes)
+            self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
             routes = self.requiredRoutes(siding)
             self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
 

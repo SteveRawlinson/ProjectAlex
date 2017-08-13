@@ -420,12 +420,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.waitSensorActive(stopIRClear)
             print self.loco.dccAddr, "waiting for IR sensor to be inactive"
             self.waitSensorInactive(stopIRClear)
+            print self.loco.dccAddr, "IR sensor inactive"
         elif slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
             self.waitMsec(slowTime)
 
-        if slowSpeed is not None:
+        if slowSpeed is not None and stopIRClear is not None:
             # stop the train
             print "stopping loco", self.loco.dccAddr
             if stopIRClear is not None:

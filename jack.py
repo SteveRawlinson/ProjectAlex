@@ -39,7 +39,7 @@ class Jack:
 
             # create the Loco object
             newloco = loco.Loco(a)
-            self.debug("initialising blocks for new loco" + newloco.name())
+            self.debug("initialising blocks for new loco " + newloco.name())
             # get the block this loco occupies
             b = newloco.initBlock()
             # if no block, prompt user
@@ -47,8 +47,10 @@ class Jack:
                 # get a list of occupied blocks with no values
                 blist = ['not in use']
                 for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS):
+                    self.debug("checking block " + blockName)
                     blk = blocks.getBlock(blockName)
                     if blk.getState() == OCCUPIED and blk.getValue() is None:
+                        self.debug("adding " + blockName + " to blist")
                         blist.append(blockName)
                 # put up a dropbox for the user to select the block
                 b = JOptionPane.showInputDialog(None, 
