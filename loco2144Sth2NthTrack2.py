@@ -29,8 +29,8 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         self.waitAtPlatform()
 
         # FPK to AAP
-        # self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 2000)
-        # self.waitAtPlatform()
+        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 2000)
+        self.waitAtPlatform()
 
         # AAP to PAL
         self.shortJourney(False, self.loco.block, "PAL P2", 0.4, 0.3, 1000)
@@ -49,6 +49,6 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         self.loco.status = loco.SIDINGS
         return False
 
-l = loco.Loco(2144)
-l.initBlock()
-Loco2144Sth2NthTrack2(l).start()
+# l = loco.Loco(2144)
+# l.initBlock()
+# Loco2144Sth2NthTrack2(l).start()
