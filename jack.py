@@ -9,6 +9,7 @@ from javax.swing import JOptionPane
 from jmri_bindings import *
 from myroutes import *
 from loco2144Nth2SthTrack1 import *
+from loco2144Sth2NthTrack2 import *
 
 # alex.sensors = sensors
 # alex.memories = memories
@@ -47,13 +48,14 @@ class Jack:
                 # get a list of occupied blocks with no values
                 blist = ['not in use']
                 for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS):
-                    self.debug("checking block " + blockName)
+                    #self.debug("checking block " + blockName)
                     blk = blocks.getBlock(blockName)
                     if blk.getState() == OCCUPIED and blk.getValue() is None:
-                        self.debug("adding " + blockName + " to blist")
+                        #self.debug("adding " + blockName + " to blist")
                         blist.append(blockName)
                 # put up a dropbox for the user to select the block
-                b = JOptionPane.showInputDialog(None, 
+                self.debug("getting block from user")
+                b = JOptionPane.showInputDialog(None,
                                                 "Select starting block for " + newloco.name(),
                                                 "Choose block", 
                                                 JOptionPane.QUESTION_MESSAGE,
@@ -96,7 +98,7 @@ class Jack:
         klass(loco).start()
 
     def start(self):
-        self.debug("Starting")
+        self.debug("Jack Starting")
         
         # turn layout power on
         self.powerState = powermanager.getPower()
@@ -108,11 +110,12 @@ class Jack:
         # Initialise locomotives and get their location.
         self.initLocos()
 
-        self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
+        #self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
+        self.startJourney(self.locos[0], Loco2144Sth2NthTrack2)
 
         time.sleep(5)
         print "Jack continues"
         print "loco", self.locos[0].dccAddr, "status is", self.locos[0].status
-
+        print "Jack exits"
 
 Jack().start()
