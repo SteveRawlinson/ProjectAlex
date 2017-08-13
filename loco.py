@@ -76,14 +76,14 @@ class Loco:
         if block.getBlock().getLengthCm() > self.trainLength():
             self.debug("train will fit in block" + block.getID())
             return True
-        self.debug("train won't fit in block " + block.getID() + ", block is " + block.getBlock().getLengthCm() + " cms long, trains is " + self.trainLength())
+        self.debug("train won't fit in block " + block.getID() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
         return False
 
     # Takes an array of block names and returns the shortest empty block
     # that the current loco will fit in.
     def shortestBlockTrainFits(self, blocklist):
         sbtf = None
-        self.debug("looking for shortest block that will fit loco" +  str(self.dccAddr) + "which is" + str(self.trainLength()) + "cms")
+        self.debug("looking for shortest block that will fit loco " +  str(self.dccAddr) + " which is " + str(self.trainLength()) + "cms")
         for b in blocklist:
             block = layoutblocks.getLayoutBlock(b)
             mem = memories.getMemory("Siding " + b)
