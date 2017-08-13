@@ -12,34 +12,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
     def init(self):
-        self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
+        self.throttle = None
+        throttleAttempts = 0
+        while throttleAttempts < 2 and self.throttle is  None:
+            time.sleep(5)
+            self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
+            throttleAttempts += 1
+        if self.throttle is None:
+            raise RuntimeError("failed to get a throttle for " + self.loco.name())
         self.debug("throttle is set, type is " + type(self.throttle).__name__)
         self.sensorStates = None
         self.platformWaitTimeMsecs = 3000
-        # legacy block definitions
-        # self.sthSidings = sensors.provideSensor("34")
-        # self.sthSidingsClearIR = sensors.provideSensor("25")
-        # self.fpkP4 = sensors.provideSensor("22")
-        # self.aapP1 = sensors.provideSensor("4")
-        # self.aapP2 = sensors.provideSensor("2")
-        # self.aapP3 = sensors.provideSensor("3")
-        # self.aapP4 = sensors.provideSensor("1")
-        # self.nsgP2 = sensors.provideSensor("8")
-        # self.nsgP1 = sensors.provideSensor("7")
-        # self.nthSiding1 = sensors.provideSensor("37")
-        # self.nthSiding1ClearIR = sensors.provideSensor("27")
-        # self.nthSiding2ClearIR = sensors.provideSensor("28")
-        # self.fpkP2 = sensors.provideSensor("21")
-        # self.fpkP1 = sensors.provideSensor("24")
-        # self.fpkP3 = sensors.provideSensor("23")
-        # self.fpkP8 = sensors.provideSensor("36")
-        # self.nthReverseLoop = sensors.provideSensor("19")
-        # self.sthReverseLoop = sensors.provideSensor("35")
-        # self.palP1 = sensors.provideSensor("6")
-        # self.palP2 = sensors.provideSensor("5")
-        # self.sthLink = sensors.provideSensor("33")
-        # self.backPassage = sensors.provideSensor("17")
-        # self.routesToSetForNextJourney = []
         return
 
     def debug(self, message):
@@ -418,15 +401,16 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if stopIRClear.knownState != ACTIVE:
                 print self.loco.dccAddr, "waiting for IR sensor to be active"
                 self.waitSensorActive(stopIRClear)
+                print self.loco.dccAddr, "IR sensor active..."
             print self.loco.dccAddr, "waiting for IR sensor to be inactive"
             self.waitSensorInactive(stopIRClear)
-            print self.loco.dccAddr, "IR sensor inactive"
+            print self.loco.dccAddr, "IR sensor inactive..."
         elif slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
             self.waitMsec(slowTime)
 
-        if slowSpeed is not None and stopIRClear is not None:
+        if passBlock is False:
             # stop the train
             print "stopping loco", self.loco.dccAddr
             if stopIRClear is not None:
