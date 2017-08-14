@@ -187,3 +187,19 @@ class Loco:
             # The block we are now in is a siding we reserved. Remove the reservation.
             mem.setValue(None)
         self.debug("new block value: " + blk.getValue())
+
+    # Returns True if self is in the north sidings
+    def northSidings(self):
+        if self.status == loco.SIDINGS:
+            if self.block.getUserName() in NORTH_SIDINGS or self.block.getUserName() == NORTH_REVERSE_LOOP:
+                return True
+        return False
+
+    # returns True if self is in the South Sidings
+    def southSidings(self):
+        if self.status == loco.SIDINGS:
+            if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
+                return True
+        return False
+
+

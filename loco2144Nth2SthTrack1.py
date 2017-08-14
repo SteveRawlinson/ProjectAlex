@@ -25,6 +25,9 @@ class Loco2144Nth2SthTrack1(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
+        if not self.loco.northSidings():
+            raise RuntimeError("I'm not in the north sidings!")
+
         self.loco.status = loco.MOVING
 
         start = time.time()
