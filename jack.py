@@ -28,6 +28,7 @@ class Jack:
     
     def __init__(self):
         self.locos = []
+        self.tracks = [0,0,0,0,0,0]
 
     def debug(self, message):
         if DEBUG:
@@ -111,7 +112,11 @@ class Jack:
         self.initLocos()
 
         #self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
-        self.startJourney(self.locos[0], Loco2144Sth2NthTrack2)
+        klassName = "Loco2144Sth2NthTrack2"
+        constructor = globals()[klassName]
+        # instance = constructor()
+        # instance.start
+        self.startJourney(self.locos[0], constructor)
 
         time.sleep(5)
         print "Jack continues"
