@@ -1,6 +1,7 @@
 import jmri
 import time
 from jmri_bindings import *
+from myroutes import *
 
 DEBUG = True
 
@@ -190,14 +191,14 @@ class Loco:
 
     # Returns True if self is in the north sidings
     def northSidings(self):
-        if self.status == loco.SIDINGS:
+        if self.status == SIDINGS:
             if self.block.getUserName() in NORTH_SIDINGS or self.block.getUserName() == NORTH_REVERSE_LOOP:
                 return True
         return False
 
     # returns True if self is in the South Sidings
     def southSidings(self):
-        if self.status == loco.SIDINGS:
+        if self.status == SIDINGS:
             if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
                 return True
         return False

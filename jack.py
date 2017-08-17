@@ -107,16 +107,20 @@ class Jack:
             self.debug("turning power on")
             powermanager.setPower(jmri.PowerManager.ON)
             time.sleep(5)  # give the sensors time to wake up
+        else:
+            self.debug("power is on")
 
         # Initialise locomotives and get their location.
         self.initLocos()
 
         #self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
-        klassName = "Loco2144Sth2NthTrack2"
+        klassName = "Loco2144Nth2SthTrack1"
+        constructor = None
         constructor = globals()[klassName]
-        # instance = constructor()
-        # instance.start
-        self.startJourney(self.locos[0], constructor)
+        print constructor
+        instance = constructor(self.locos[0])
+        instance.start()
+        #self.startJourney(self.locos[0], constructor)
 
         time.sleep(5)
         print "Jack continues"
