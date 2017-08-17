@@ -74,17 +74,11 @@ class Jack:
 
     # Returns True if the loco supplied is in the north sidings
     def northSidings(self, loc):
-        if loc.status == loco.SIDINGS:
-            if loc.block.getUserName() in NORTH_SIDINGS or loc.block.getUserName() == NORTH_REVERSE_LOOP:
-                return True
-        return False
+        return loc.northSidings
 
     # Returns True is hte loco supplied in south sidings
     def southSidings(self, loc):
-        if loc.status == loco.SIDINGS:
-            if loc.block.getUserName() in SOUTH_SIDINGS or loc.block.getUserName() == SOUTH_REVERSE_LOOP:
-                return True
-        return False
+        return loc.southSidings
 
     def locosSouth(self):
         southList = []
