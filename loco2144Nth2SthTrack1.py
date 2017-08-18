@@ -58,7 +58,7 @@ class Loco2144Nth2SthTrack1(alex.Alex):
         self.waitMsec(platformWaitTimeMsecs)
 
         # FPK to Sth Sidings
-        self.getLock('South Link Lock')
+        lock = self.getLock('South Link Lock')
 
         # select a siding
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
