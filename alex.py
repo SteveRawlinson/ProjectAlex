@@ -35,14 +35,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # if it clears, otherwise we give up.
     def getLock(self, mem, loco=None):
         if loco is None:
-            self.debug("getLock: loco was not set, setting to self.loco which is a " + type(self.loco).__name__)
             loco = self.loco
         lock = False
         tries = 0
-        # print loco
-        # print type(loco).__name__
-        # print loco.dccAddr
-        # print type(loco.dccAddr).__name__
         while lock is not True:
             print loco.dccAddr, "getting lock on", mem
             value = memories.getMemory(mem).getValue()
