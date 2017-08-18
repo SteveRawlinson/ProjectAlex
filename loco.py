@@ -172,7 +172,7 @@ class Loco:
     # Also sets the block's value to the loco's
     # dcc address.
     def setBlock(self, b):
-        self.debug("type: " + type(b).__name__)
+        #self.debug("type: " + type(b).__name__)
         if type(b) == str or type(b) == unicode:
             lblk = layoutblocks.getLayoutBlock(b)
             blk = lblk.getBlock()
@@ -180,14 +180,14 @@ class Loco:
             blk = b.getBlock()
         else:
             blk = b
-        self.debug("setting " + blk.getUserName() + " block to " + self.name())
+        #self.debug("setting " + blk.getUserName() + " block to " + self.name())
         self.block = blk
         blk.setValue(str(self.dccAddr))
         mem = memories.getMemory("Siding " + blk.getUserName())
         if mem is not None and mem.getValue() == str(self.dccAddr):
             # The block we are now in is a siding we reserved. Remove the reservation.
             mem.setValue(None)
-        self.debug("new block value: " + blk.getValue())
+        #self.debug("new block value: " + blk.getValue())
 
     # Returns True if self is in the north sidings
     def northSidings(self):
