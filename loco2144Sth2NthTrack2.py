@@ -19,8 +19,8 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
-        if not self.loco.northSidings():
-            raise RuntimeError("I'm not in the north sidings!")
+        if not self.loco.southSidings():
+            raise RuntimeError("I'm not in the south sidings!")
 
         self.loco.status = loco.MOVING
         start = time.time()
@@ -32,7 +32,7 @@ class Loco2144Sth2NthTrack2(alex.Alex):
         self.waitAtPlatform()
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 2000)
+        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 3000)
         self.waitAtPlatform()
 
         # AAP to PAL

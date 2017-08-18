@@ -11,24 +11,18 @@ from myroutes import *
 from loco2144Nth2SthTrack1 import *
 from loco2144Sth2NthTrack2 import *
 
-# alex.sensors = sensors
-# alex.memories = memories
-# alex.routes = routes
-# alex.layoutblocks = layoutblocks
-# alex.blocks = blocks
-# alex.ACTIVE = ACTIVE
-
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [2144]
+DCC_ADDRESSES = [2144, 5144]
 DEBUG = True
 
 
 class Jack:
     
     def __init__(self):
-        self.locos = []
-        self.tracks = [0,0,0,0,0,0]
+        self.locos = [] # array of Loco
+        self.tracks = [0,0,0,0,0,0] # keeping  track of tracks
+        self.memories = [] # list of names of  active journeys
 
     def debug(self, message):
         if DEBUG:
@@ -87,8 +81,8 @@ class Jack:
                 southList.append(l)
         return southList
 
-    def startJourney(self, loco, klass):
-        mem = memories.provideMemory(klass.__name__)
+    def startJourney(self, loco, klass, mem):
+        mem = memories.provideMemory(mem)
         mem.setValue(1)
         klass(loco).start()
 
@@ -107,14 +101,10 @@ class Jack:
         # Initialise locomotives and get their location.
         self.initLocos()
 
-        #self.startJourney(self.locos[0], Loco2144Nth2SthTrack1)
-        klassName = "Loco2144Nth2SthTrack1"
-        constructor = None
+        klassName = "Loco2144Sth2NthTrack2"
+        #klassName = "Loco2144Nth2SthTrack1"
         constructor = globals()[klassName]
-        print constructor
-        instance = constructor(self.locos[0])
-        instance.start()
-        #self.startJourney(self.locos[0], constructor)
+        self.startJourney(self.locos[0], constructor, mem)
 
         time.sleep(5)
         print "Jack continues"
