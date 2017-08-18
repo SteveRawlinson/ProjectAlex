@@ -5,6 +5,9 @@ from myroutes import ROUTEMAP
 
 DEBUG = True
 
+# The Alex class provides a series of utility methods which can be used
+# to control a locomotive around a layout. It is intended to be used as
+# a parent to a particular journey class
 
 # noinspection PyInterpreter
 class Alex(jmri.jmrit.automat.AbstractAutomaton):
@@ -139,6 +142,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if siding in ROUTEMAP:
             return ROUTEMAP[siding]
         return [siding]
+
+
+    def emergencyStop(self):
+        self.throttle.setSpeedSetting(-1)
+        self.waitMsec(250)
+        self.throttle.setSpeedSetting(-1)
 
     # Brings the locomotive controlled by the supplied throttle
     # to a gradual halt by reducing the speed setting over time seconds

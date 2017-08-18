@@ -16,6 +16,9 @@ from loco2144Sth2NthTrack2 import *
 DCC_ADDRESSES = [2144, 5144]
 DEBUG = True
 
+NORMAL = 0
+STOPPING = 1
+ESTOP = 2
 
 class Jack:
     
@@ -23,6 +26,7 @@ class Jack:
         self.locos = [] # array of Loco
         self.tracks = [0,0,0,0,0,0] # keeping  track of tracks
         self.memories = [] # list of names of  active journeys
+        self.status = NORMAL
 
     def debug(self, message):
         if DEBUG:
@@ -86,6 +90,34 @@ class Jack:
         mem.setValue(1)
         klass(loco).start()
 
+    # checks for the presence and value of a special memory which
+    # can be modified by the user to tell us to stop all activity
+    def checkStatus(self):
+        mem = memories.provideMemory('JackStatus')
+        if mem.getValue() == "":
+            mem.setValue(self.status)
+        else:
+            self.status = mem.getValue()
+
+    # stop all locos immediately
+    def eStop(self):
+        for loc in self.locos:
+            loc.emergencyStop()
+
+    # Checks if any journeys have completed since the last check
+    # and decrement the loco count on the track
+    def checkJourneys(self):
+        for m in self.memories:
+            mem = memories.provideMemory(m)
+            if mem.getValue() != 1:
+                journey, addr, track, dir = m.split('-')
+                track[int(track)]  -= 1
+
+    def startNewJourneys(self):
+        if self.status == STOPPING:
+            return
+
+
     def start(self):
         self.debug("Jack Starting")
         
@@ -100,6 +132,20 @@ class Jack:
 
         # Initialise locomotives and get their location.
         self.initLocos()
+
+        # Main Loop
+        while True:
+            self.checkStatus()
+            if self.status == ESTOP:
+                self.eStop()
+                print "Jack exits"
+                return False
+            self.checkJourneys()
+            if self.status == STOPPING and len(self.memories) == 0:
+                print "All done - exiting"
+                return False
+            self.startNewJourneys()
+            time.sleep(1)
 
         klassName = "Loco2144Sth2NthTrack2"
         #klassName = "Loco2144Nth2SthTrack1"
