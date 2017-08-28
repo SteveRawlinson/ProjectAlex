@@ -22,6 +22,8 @@ class Loco:
         self.status = SIDINGS
         self.longAddr = longAddr
         self._reversible = None
+        self._highSpeed = None
+        self._brclass = None
 
     def debug(self, message):
         if DEBUG:
@@ -38,14 +40,38 @@ class Loco:
             self._trainLength = float(self.rosterEntry().getAttribute('length'))
         return float(self._trainLength)
 
+    # Returns the float 'rarity' which is set in the JMRI roster
+    # entry, or zero (the default). Zero raroty means it's a common
+    # train, seen often. Higher rarity means the loco doesn't get
+    # out much.
     def rarity(self):
         if self._rarity is None:
             r = self.rosterEntry().getAttribute('rarity')
             if type(r) == str:
                 self._rarity = float(r)
             else:
-                self._rarity = 0
+                self._rarity = 0 # default
         return self._rarity
+
+    # Returns the BR Class of locomotive, if set in the
+    # JMRI roster entry
+    def brclass(self):
+        if self._brclass is None:
+            c = self.rosterEntry().getAttribute('class')
+            self._brclass = c
+        return self._brclass
+
+    # A boolean set in the JMRI roster entry, default is False
+    def highSpeed(self):
+        if self._highSpeed is None:
+            r = self.rosterEntry().getAttribute('highspeed')
+            if r is None:
+                self._highSpeed = False  # this is the default
+            if r == 'true':
+                self._highSpeed = True
+            else:
+                self._highSpeed = False
+        return self._highSpeed
 
     # Returns True if this train can move in both directions, False otherwise
     def reversible(self):
@@ -53,7 +79,9 @@ class Loco:
             r = self.rosterEntry().getAttribute('reversible')
             if r is None:
                 self._reversible = True # this is the default
-            if r == 'false':
+            if r == 'true':
+                self._reversible = True
+            else:
                 self._reversible = False
         return self._reversible
     
@@ -203,4 +231,11 @@ class Loco:
                 return True
         return False
 
+    def active(self):
+        return self.status == MOVING
 
+    def moving(self):
+        return self.status == MOVING
+
+    def idle(self):
+        return self.status == SIDINGS

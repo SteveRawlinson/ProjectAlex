@@ -37,3 +37,15 @@ ROUTEMAP = {
             "Nth Fast Outer 1": ["Nth Fast Outer"]
 
             }
+
+# fields are:
+# stops: number of stations
+# fast: true if this is a high speed track
+TRACKS = [
+    [3, False],
+    [3, False],
+    [3, False],
+    [3, False],
+    [1, True],
+    [1, True]
+]
