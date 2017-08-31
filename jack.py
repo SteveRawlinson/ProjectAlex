@@ -139,7 +139,7 @@ class Jack:
 
 
     def northBoundTrack(self, track):
-        return track % 2 == 0
+        return track.nr % 2 == 0
 
     def southBoundTrack(self, track):
         return not self.northBoundTrack(track)
@@ -147,7 +147,16 @@ class Jack:
     # Makes a guess at the class name that should describe the
     # journey for this loco on this track.
     def constructClassName(self, loco, track):
-
+        if loco.brclass() is not None:
+            train = 'class' + str(loco.brclass())
+        else:
+            train = 'loco' + str(loco.dccAddr)
+        dir = track.dir()
+        tracknr = 'Track' + str(track.nr)
+        if loco.passenger():
+            stopping = 'Stopping'
+        else:
+            stopping = 'NonStop'
         return train + dir + tracknr + stopping
 
 
@@ -168,10 +177,14 @@ class Jack:
             # get this loco moving if possible
             track = Track.preferred_track(loco, self.tracks)
             if track is not None:
+                klass = self.constructClassName(loco, track)
+                mem = '-'.join(['journey', str(loco.dccAddr), track.nr, track.dir()])
+                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + track.dir() + " on track " +  track.nr)
+                self.startJourney(looo, klass, mem)
 
 
         # go through each track ...
-        for track in self.tracks:
+        #for track in self.tracks:
 
 
 

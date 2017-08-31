@@ -22,12 +22,17 @@ class Track:
             return None
         picked = []
         for t in list:
-            if t.score(loco) == list[0].score(loco)
-            picked.append(t)
+            if t.score(loco) == list[0].score(loco):
+                picked.append(t)
         picked_s = sorted(picked, key=lambda t: t.last_used)
         return picked_s[0]
 
-
+    # Returns a string descriving the direction of travel for
+    # this track
+    def dir(self):
+        if self.northbound():
+            return 'Sth2Nth'
+        return 'Nth2Sth'
 
     # Returns true if normal traffic on this track goes north
     def northbound(self):
