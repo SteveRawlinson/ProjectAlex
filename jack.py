@@ -13,7 +13,7 @@ from loco2144Sth2NthTrack2 import *
 
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [2144, 5144]
+DCC_ADDRESSES = [2144]
 DEBUG = True
 
 NORMAL = 0
@@ -177,9 +177,10 @@ class Jack:
             # get this loco moving if possible
             track = Track.preferred_track(loco, self.tracks)
             if track is not None:
-                klass = self.constructClassName(loco, track)
+                klassName = self.constructClassName(loco, track)
+                klass = gobals()[klassName]
                 mem = '-'.join(['journey', str(loco.dccAddr), track.nr, track.dir()])
-                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + track.dir() + " on track " +  track.nr)
+                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + track.dir() + " on track " +  track.nr + " classname: " + klassName + " mem: " + mem)
                 self.startJourney(looo, klass, mem)
 
 
@@ -222,14 +223,14 @@ class Jack:
             self.startNewJourneys() # kick off new journeys, if appropriate
             time.sleep(1)
 
-        klassName = "Loco2144Sth2NthTrack2"
-        #klassName = "Loco2144Nth2SthTrack1"
-        constructor = globals()[klassName]
-        self.startJourney(self.locos[0], constructor, mem)
-
-        time.sleep(5)
-        print "Jack continues"
-        print "loco", self.locos[0].dccAddr, "status is", self.locos[0].status
-        print "Jack exits"
+        # klassName = "Loco2144Sth2NthTrack2"
+        # #klassName = "Loco2144Nth2SthTrack1"
+        # constructor = globals()[klassName]
+        # self.startJourney(self.locos[0], constructor, mem)
+        #
+        # time.sleep(5)
+        # print "Jack continues"
+        # print "loco", self.locos[0].dccAddr, "status is", self.locos[0].status
+        # print "Jack exits"
 
 Jack().start()
