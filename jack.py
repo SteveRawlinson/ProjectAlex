@@ -76,7 +76,7 @@ class Jack:
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
-            tr = track.Track(len(self.tracks), t[0], t[1])
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1])
             self.tracks.append(tr)
             print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
@@ -126,12 +126,12 @@ class Jack:
                 self.debug("journey " + mem + " has finished")
                 journey, addr, tracknr, dir = m.split('-')
                 # get the track object
-                track = self.tracks[int(tracknr)]
+                trak = self.tracks[int(tracknr) - 1]
                 # reduce the occupancy
-                track.occupancy -= 1
+                trak.occupancy -= 1
                 # update the last used time
-                track.last_used = time.time()
-                self.debug("track " + track.nr + " occupancy is now " + str(track.occupancy))
+                trak.last_used = time.time()
+                self.debug("track " + trak.nr + " occupancy is now " + str(trak.occupancy))
                 mems_to_delete.append(m)
         # Remove the memories corresponding to the journeys
         # that have no finished

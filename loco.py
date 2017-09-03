@@ -24,6 +24,7 @@ class Loco:
         self._reversible = None
         self._highSpeed = None
         self._brclass = None
+        self._passenger = None
 
     def debug(self, message):
         if DEBUG:
@@ -72,6 +73,18 @@ class Loco:
             else:
                 self._highSpeed = False
         return self._highSpeed
+
+    # Returns True if the roster entry is a passenger loco
+    def passenger(self):
+        if self._passenger in None:
+            r = self.rosterEntry().getAttribute('passenger')
+            if r is None:
+                self._passenger = False  # this is the default
+            if r == 'true':
+                self._passenger = True
+            else:
+                self._passenger = False
+        return self._passenger
 
     # Returns True if this train can move in both directions, False otherwise
     def reversible(self):
