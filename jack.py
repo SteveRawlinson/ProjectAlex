@@ -10,7 +10,8 @@ from jmri_bindings import *
 from myroutes import *
 from loco2144Nth2SthTrack1 import *
 from loco2144Sth2NthTrack2 import *
-
+import track
+import class150Nth2SthTrack1Stopping
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 DCC_ADDRESSES = [2144]
@@ -24,7 +25,7 @@ class Jack:
     
     def __init__(self):
         self.locos = [] # array of Loco
-        self.tracks = [0] # keeping  track of tracks
+        self.tracks = [] # keeping  track of tracks
         self.memories = [] # list of names of  active journeys
         self.status = NORMAL
 
@@ -75,9 +76,9 @@ class Jack:
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
-            track = Track.new(len(self.tracks), t[0], t[1])
-            self.tracks.append(track)
-            print "New track: " + track.nr + " stops: " + track.stops + " fast: " + track.fast
+            tr = track.Track(len(self.tracks), t[0], t[1])
+            self.tracks.append(tr)
+            print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # Returns True if the loco supplied is in the north sidings
     def northSidings(self, loc):
@@ -125,7 +126,7 @@ class Jack:
                 self.debug("journey " + mem + " has finished")
                 journey, addr, tracknr, dir = m.split('-')
                 # get the track object
-                track = tracks[int(tracknr)]
+                track = self.tracks[int(tracknr)]
                 # reduce the occupancy
                 track.occupancy -= 1
                 # update the last used time
@@ -175,13 +176,13 @@ class Jack:
             if loco.active():
                 continue
             # get this loco moving if possible
-            track = Track.preferred_track(loco, self.tracks)
-            if track is not None:
-                klassName = self.constructClassName(loco, track)
-                klass = gobals()[klassName]
-                mem = '-'.join(['journey', str(loco.dccAddr), track.nr, track.dir()])
-                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + track.dir() + " on track " +  track.nr + " classname: " + klassName + " mem: " + mem)
-                self.startJourney(looo, klass, mem)
+            trak = track.Track.preferred_track(loco, self.tracks)
+            if trak is not None:
+                klassName = self.constructClassName(loco, trak)
+                klass = globals()[klassName]
+                mem = '-'.join(['journey', str(loco.dccAddr), trak.nr, trak.dir()])
+                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + trak.dir() + " on track " +  trak.nr + " classname: " + klassName + " mem: " + mem)
+                self.startJourney(loco, klass, mem)
 
 
         # go through each track ...
