@@ -76,7 +76,7 @@ class Loco:
 
     # Returns True if the roster entry is a passenger loco
     def passenger(self):
-        if self._passenger in None:
+        if self._passenger is None:
             r = self.rosterEntry().getAttribute('passenger')
             if r is None:
                 self._passenger = False  # this is the default

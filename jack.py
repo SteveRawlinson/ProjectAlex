@@ -11,7 +11,7 @@ from myroutes import *
 from loco2144Nth2SthTrack1 import *
 from loco2144Sth2NthTrack2 import *
 import track
-import class150Nth2SthTrack1Stopping
+from class150Nth2SthTrack1Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 DCC_ADDRESSES = [2144]
@@ -52,7 +52,7 @@ class Jack:
                 for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS):
                     #self.debug("checking block " + blockName)
                     blk = blocks.getBlock(blockName)
-                    if blk.getState() == OCCUPIED and blk.getValue() is None:
+                    if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
                         #self.debug("adding " + blockName + " to blist")
                         blist.append(blockName)
                 # put up a dropbox for the user to select the block
@@ -95,10 +95,15 @@ class Jack:
                 southList.append(l)
         return southList
 
-    def startJourney(self, loco, klass, mem):
+    def startJourney(self, loc, klass, mem):
+        self.debug("startJourney: " + str(loc.dccAddr) + " klass: " + str(klass) + " mem: " + mem)
+        self.debug("param 1: loc: " + str(loc) + ' ' + type(loc).__name__)
+        self.debug("param 2: klass: " + str(klass) + ' ' + type(klass).__name__)
+        self.debug("param 2: mem: " + str(mem) + ' ' + type(mem).__name__)
         mem = memories.provideMemory(mem)
         mem.setValue(1)
-        klass(loco).start()
+        #lkdjhbv
+        klass(loc, mem).start()
 
     # checks for the presence and value of a special memory which
     # can be modified by the user to tell us to stop all activity
@@ -149,7 +154,7 @@ class Jack:
     # journey for this loco on this track.
     def constructClassName(self, loco, track):
         if loco.brclass() is not None:
-            train = 'class' + str(loco.brclass())
+            train = 'Class' + str(loco.brclass())
         else:
             train = 'loco' + str(loco.dccAddr)
         dir = track.dir()
@@ -170,19 +175,20 @@ class Jack:
             # TODO: turn trains round?
             return
         # Find idle locos with 0 rarity and get them moving if possible
-        for loco in self.locos:
-            if loco.rarity() > 0:
+        for loc in self.locos:
+            if loc.rarity() > 0:
                 continue
-            if loco.active():
+            if loc.active():
                 continue
             # get this loco moving if possible
-            trak = track.Track.preferred_track(loco, self.tracks)
+            trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
-                klassName = self.constructClassName(loco, trak)
+                klassName = self.constructClassName(loc, trak)
+                self.debug("classname: " + klassName)
                 klass = globals()[klassName]
-                mem = '-'.join(['journey', str(loco.dccAddr), trak.nr, trak.dir()])
-                self.debug("starting new journey: " + str(loco.dccAddr) +  " heading " + trak.dir() + " on track " +  trak.nr + " classname: " + klassName + " mem: " + mem)
-                self.startJourney(loco, klass, mem)
+                mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+                self.debug("starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track " + str(trak.nr) + " classname: " + klassName + " mem: " + mem)
+                self.startJourney(loc, klass, mem)
 
 
         # go through each track ...
@@ -207,6 +213,18 @@ class Jack:
 
         # Initialise locomotives and get their location.
         self.initLocos()
+
+
+        loc = self.locos[0]
+        #Loco2144Nth2SthTrack1(loc).start()
+        #Class150Nth2SthTrack1Stopping(loc, mem).start()
+        trak = self.tracks[0]
+        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        klass = globals()['Class150Nth2SthTrack1Stopping']
+        self.startJourney(loc, klass, mem)
+
+        return
+
 
         # Main Loop
         while True:
