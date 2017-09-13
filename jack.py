@@ -21,9 +21,9 @@ NORMAL = 0
 STOPPING = 1
 ESTOP = 2
 
-class Jack:
+class Jack(jmri.jmrit.automat.AbstractAutomaton):
     
-    def __init__(self):
+    def init(self):
         self.locos = [] # array of Loco
         self.tracks = [] # keeping  track of tracks
         self.memories = [] # list of names of  active journeys
@@ -100,6 +100,10 @@ class Jack:
         self.debug("param 1: loc: " + str(loc) + ' ' + type(loc).__name__)
         self.debug("param 2: klass: " + str(klass) + ' ' + type(klass).__name__)
         self.debug("param 2: mem: " + str(mem) + ' ' + type(mem).__name__)
+        loc = self.locos[0]
+        trak = self.tracks[0]
+        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        klass = globals()['Class150Nth2SthTrack1Stopping']
         mem = memories.provideMemory(mem)
         mem.setValue(1)
         #lkdjhbv
@@ -196,7 +200,7 @@ class Jack:
 
 
 
-    def start(self):
+    def handle(self):
         self.debug("Jack Starting")
         
         # turn layout power on
@@ -215,19 +219,10 @@ class Jack:
         self.initLocos()
 
 
-        loc = self.locos[0]
-        #Loco2144Nth2SthTrack1(loc).start()
-        #Class150Nth2SthTrack1Stopping(loc, mem).start()
-        trak = self.tracks[0]
-        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-        klass = globals()['Class150Nth2SthTrack1Stopping']
-        self.startJourney(loc, klass, mem)
-
-        return
-
-
         # Main Loop
+        loopcount = 0
         while True:
+            loopcount += 1
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
                 # Stop everything immediately
@@ -240,6 +235,7 @@ class Jack:
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
+            return false # stop the loop for the moment
             time.sleep(1)
 
         # klassName = "Loco2144Sth2NthTrack2"
