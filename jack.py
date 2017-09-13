@@ -96,18 +96,16 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         return southList
 
     def startJourney(self, loc, klass, mem):
-        self.debug("startJourney: " + str(loc.dccAddr) + " klass: " + str(klass) + " mem: " + mem)
-        self.debug("param 1: loc: " + str(loc) + ' ' + type(loc).__name__)
-        self.debug("param 2: klass: " + str(klass) + ' ' + type(klass).__name__)
-        self.debug("param 2: mem: " + str(mem) + ' ' + type(mem).__name__)
         loc = self.locos[0]
         trak = self.tracks[0]
         mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
         klass = globals()['Class150Nth2SthTrack1Stopping']
-        mem = memories.provideMemory(mem)
-        mem.setValue(1)
-        #lkdjhbv
+        memory = memories.provideMemory(mem)
+        memory.setValue(1)
+        self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
         klass(loc, mem).start()
+        loc.status = loco.MOVING
+        trak.occupancy += 1
 
     # checks for the presence and value of a special memory which
     # can be modified by the user to tell us to stop all activity
@@ -129,6 +127,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     def checkJourneys(self):
         mems_to_delete = []
         for m in self.memories:
+            self.debug("checkJourneys: checking memory " + m)
             mem = memories.provideMemory(m)
             if mem.getValue() != 1:
                 # Journey has finished
@@ -184,6 +183,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.active():
                 continue
+            self.debug("found idle loco with rarity 0: " + loc.name)
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
@@ -218,7 +218,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # Initialise locomotives and get their location.
         self.initLocos()
 
-
         # Main Loop
         loopcount = 0
         while True:
@@ -235,7 +234,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
-            return false # stop the loop for the moment
+            if loopcount > 1
+                self.debug('exiting')
+                return False # stop the loop for the moment
             time.sleep(1)
 
         # klassName = "Loco2144Sth2NthTrack2"
