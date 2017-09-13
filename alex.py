@@ -242,7 +242,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
         endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
-        self.debug(startBlock.getID() + " -> " + endBlock.getID())
+        self.debug(startBlock.getUserName() + " -> " + endBlock.getUserName())
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
