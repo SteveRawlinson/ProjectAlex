@@ -30,7 +30,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def debug(self, message):
         if DEBUG:
-            print str(self.loco.dccAddr) + ': ' + message
+            print 'alex: ' + str(self.loco.dccAddr) + ': ' + message
 
     # Get's a 'lock' on a memory variable. It sets the variable
     # to the loco number but only if the value is blank. If 
