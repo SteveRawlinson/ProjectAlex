@@ -27,7 +27,8 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
             raise RuntimeError("I don't have a block!")
 
         if not self.loco.northSidings():
-            raise RuntimeError("I'm not in the north sidings!")
+            print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
+            raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
 
         self.loco.status = loco.MOVING
 
@@ -63,14 +64,14 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         # select a siding
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        if siding.getID() == "FP sidings":
+        if siding.getId() == "FP sidings":
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
             routes = self.requiredRoutes(self.loco.block)
             self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
             routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
