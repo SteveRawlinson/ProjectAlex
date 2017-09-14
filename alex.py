@@ -138,7 +138,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if type(siding) == jmri.Block:
             siding = siding.getUserName()
         elif type(siding) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            siding = siding.getID()
+            siding = siding.getId()
         if siding in ROUTEMAP:
             return ROUTEMAP[siding]
         return [siding]
@@ -430,7 +430,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         if passBlock is True:
             # wait until the endblock is empty
-            self.debug("waiting until block " + endBlock.getID() + " is unoccupied")
+            self.debug("waiting until block " + endBlock.getId() + " is unoccupied")
             self.waitSensorInactive(endBlockSensor)
             if lock is not None:
                 self.unlock(lock)

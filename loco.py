@@ -116,9 +116,9 @@ class Loco:
     # attribute 'length' in the loco roster.
     def willFitInBlock(self, block):
         if block.getBlock().getLengthCm() > self.trainLength():
-            self.debug("train will fit in block" + block.getID())
+            self.debug("train will fit in block" + block.getId())
             return True
-        self.debug("train won't fit in block " + block.getID() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
+        self.debug("train won't fit in block " + block.getId() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
         return False
 
     # Takes an array of block names and returns the shortest empty block
@@ -138,7 +138,7 @@ class Loco:
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 if self.willFitInBlock(block):
                     sbtf = block
-        self.debug("selected block " + sbtf.getID())
+        self.debug("selected block " + sbtf.getId())
         return sbtf
 
     # Takes an array of block names and returns the shortest empty block
@@ -158,9 +158,9 @@ class Loco:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
-        mem = memories.provideMemory("Siding " + siding.getID())
+        mem = memories.provideMemory("Siding " + siding.getId())
         mem.setValue("selected")
-        self.debug("selected siding " + siding.getID())
+        self.debug("selected siding " + siding.getId())
         return siding
 
     # Removes the memory which reserves the siding.
@@ -170,7 +170,7 @@ class Loco:
         elif type(siding) == jmri.Block:
             mem = memories.provideMemory("Siding " + siding.getUserName())
         else:
-            mem = memories.provideMemory("Siding " + siding.getID())
+            mem = memories.provideMemory("Siding " + siding.getId())
         mem.setValue(None)
 
     # Returns the list of layout block(s) I'm in
@@ -232,16 +232,16 @@ class Loco:
 
     # Returns True if self is in the north sidings
     def northSidings(self):
-        if self.status == SIDINGS:
-            if self.block.getUserName() in NORTH_SIDINGS or self.block.getUserName() == NORTH_REVERSE_LOOP:
-                return True
+        blockname = self.block.getUserName()
+        #self.debug("northSidings: my status is SIDINGS, my blockname is " + blockname + " type " + type(blockname).__name__)
+        if blockname in NORTH_SIDINGS or blockname == NORTH_REVERSE_LOOP:
+            return True
         return False
 
     # returns True if self is in the South Sidings
     def southSidings(self):
-        if self.status == SIDINGS:
-            if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
-                return True
+        if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
+            return True
         return False
 
     def active(self):

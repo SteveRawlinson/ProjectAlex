@@ -186,7 +186,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.active():
                 continue
-            self.debug("found idle loco with rarity 0: " + loc.name)
+            self.debug("found idle loco with rarity 0: " + loc.name())
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
