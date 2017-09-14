@@ -170,6 +170,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         return train + dir + tracknr + stopping
 
 
+    # This is the method that starts new journeys. It is called as part
+    # of the main loop, once every second.
     def startNewJourneys(self):
         if self.status == STOPPING:
             # no new journeys
@@ -235,7 +237,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
-            if loopcount > 1
+            if loopcount > 1:
                 self.debug('exiting')
                 return False # stop the loop for the moment
             time.sleep(1)
