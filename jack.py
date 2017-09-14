@@ -183,7 +183,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.active():
                 continue
-            self.debug("found idle loco with rarity 0: " + loc.name)
+            self.debug("found idle loco with rarity 0: " + loc.name())
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
@@ -234,7 +234,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
-            if loopcount > 1
+            if loopcount > 1:
                 self.debug('exiting')
                 return False # stop the loop for the moment
             time.sleep(1)
