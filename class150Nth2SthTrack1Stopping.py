@@ -20,7 +20,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.loco = loc
         self.knownLocation = None
         self.memory = memory
-        print "init end"
 
 
     def handle(self):
