@@ -8,7 +8,7 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class Loco2144Sth2NthTrack2(alex.Alex):
+class Class150Sth2NthTrack2Stopping(alex.Alex):
 
     def __init__(self, loco):
         self.loco = loco
