@@ -49,5 +49,11 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
+
+        # remove the memory - this is how the calling process knows we are done
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
+
         self.loco.status = loco.SIDINGS
         return False

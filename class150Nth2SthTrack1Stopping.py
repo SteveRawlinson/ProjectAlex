@@ -73,9 +73,11 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
             routes = self.requiredRoutes(siding)
             self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
-        print "route complete."
-        stop = time.time()
-        print "route took", stop - start, 'seconds'
+        # remove the memory - this is how the calling process knows we are done
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
+
         self.loco.status = loco.SIDINGS
 
 

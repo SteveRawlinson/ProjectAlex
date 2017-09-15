@@ -18,6 +18,9 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
+        fullSpeed = 0.5
+        bendSpeed = 0.2
+
         self.loco.status = loco.MOVING
         start = time.time()
 
@@ -29,10 +32,10 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.4, routes=routes, lock=lock)
 
         # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 0.2)
+        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed)
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 0.5)
+        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed)
 
         # get a lock on the south link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('South Link Lock')
@@ -61,9 +64,9 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
 
-        print "route complete."
-        stop = time.time()
-        print "route took", stop - start, 'seconds'
         self.loco.status = loco.SIDINGS
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
 
         return False
