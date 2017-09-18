@@ -25,6 +25,7 @@ class Loco:
         self._highSpeed = None
         self._brclass = None
         self._passenger = None
+        self._fast = None
 
     def debug(self, message):
         if DEBUG:
@@ -97,6 +98,16 @@ class Loco:
             else:
                 self._reversible = False
         return self._reversible
+
+    def fast(self):
+        if self._fast is None:
+            r = self.rosterEntry().getAttribute('fast')
+            if r is None:
+                self._fast = False  # this is the default
+            if r == 'true':
+                self._fast = True
+            else:
+                self._fast = False
     
     # Returns the roster entry for the current loco
     def rosterEntry(self):

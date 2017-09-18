@@ -15,7 +15,7 @@ from class150Nth2SthTrack1Stopping import *
 from class150Sth2NthTrack2Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [2144]
+DCC_ADDRESSES = [5144]
 DEBUG = True
 
 NORMAL = 0
@@ -97,10 +97,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         return southList
 
     def startJourney(self, loc, klass, mem):
-        loc = self.locos[0]
-        trak = self.tracks[0]
-        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-        klass = globals()['Class150Nth2SthTrack1Stopping']
+        # loc = self.locos[0]
+        # trak = self.tracks[0]
+        # mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        # klass = globals()['Class150Nth2SthTrack1Stopping']
         memory = memories.provideMemory(mem)
         memory.setValue(1)
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
@@ -194,8 +194,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("classname: " + klassName)
                 klass = globals()[klassName]
                 mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-                self.debug("starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track " + str(trak.nr) + " classname: " + klassName + " mem: " + mem)
+                self.debug("startNewJourneys: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track " + str(trak.nr) + " classname: " + klassName + " mem: " + mem)
                 self.startJourney(loc, klass, mem)
+            else:
+                self.debug("no available tracks to run loco " + loc.name())
 
 
         # go through each track ...
