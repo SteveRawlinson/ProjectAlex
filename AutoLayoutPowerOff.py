@@ -53,7 +53,7 @@ class AutoLayoutPowerOff(jmri.jmrit.automat.AbstractAutomaton):
 
         while True:  # we break out after the timeout
             if debug:
-                print "AutoLayoutPowerOff: monitoring activity on", len(self.blockOccupancySensors), "sensors"
+                print "AutoLayoutPowerOff: monitoring activity on", len(self.blockOccupancySensors), "sensors; timeout: ", str(timeOutInMinutes), "minutes"
             startTime = time.time()
             self.waitChange(self.blockOccupancySensors, self.timeout * 60 * 1000)
             stopTime = time.time()
