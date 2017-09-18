@@ -229,7 +229,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if self.status == ESTOP:
                 # Stop everything immediately
                 self.eStop()
-                print "Jack exits"
+                print "Jack exits on ESTOP"
                 return False
             self.checkJourneys()
             if self.status == STOPPING and len(self.memories) == 0:
@@ -237,10 +237,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
-            if loopcount > 1:
-                self.debug('exiting')
+            if loopcount > 5:
+                self.debug('exiting after x loops')
                 return False # stop the loop for the moment
-            time.sleep(1)
+            time.sleep(10)
 
         # klassName = "Loco2144Sth2NthTrack2"
         # #klassName = "Loco2144Nth2SthTrack1"
