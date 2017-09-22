@@ -13,7 +13,9 @@ IRSENSORS = {
     "FP sidings": "LS25",
     "Nth Siding 1": "LS27",
     "Nth Sidings 2": "LS28",
-    "Nth Sidings 3": "LS29"
+    "Nth Sidings 3": "LS29",
+    "Nth Sidings 4": "LS57",
+    "Nth Sidings 5": "LS57",
 }
 
 ROUTEMAP = {
@@ -41,11 +43,12 @@ ROUTEMAP = {
 # fields are:
 # stops: number of stations
 # fast: true if this is a high speed track
+# u/s: true if the track is undergoing maintenance
 TRACKS = [
-    [3, False],
-    [3, False],
-    [3, False],
-    [3, False],
-    [1, True],
-    [1, True]
+    [3, False, False],
+    [3, False, False],
+    [3, False, True],
+    [3, False, True],
+    [1, True, False],
+    [1, True, False]
 ]

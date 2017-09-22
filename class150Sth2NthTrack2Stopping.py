@@ -10,9 +10,10 @@ from myroutes import *
 
 class Class150Sth2NthTrack2Stopping(alex.Alex):
 
-    def __init__(self, loco):
-        self.loco = loco
+    def __init__(self, loc, memory):
+        self.loco = loc
         self.knownLocation = None
+        self.memory = memory
 
     def handle(self):
 
@@ -43,9 +44,9 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         lock = self.getLock('North Link Lock')
         siding = self.loco.selectSiding(NORTH_SIDINGS)
         routes = self.requiredRoutes(self.loco.block)
-        self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes)
+        self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
         routes = self.requiredRoutes(siding)
-        self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
@@ -57,3 +58,4 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
 
         self.loco.status = loco.SIDINGS
         return False
+

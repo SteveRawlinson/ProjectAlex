@@ -15,7 +15,7 @@ from class150Nth2SthTrack1Stopping import *
 from class150Sth2NthTrack2Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144]
+DCC_ADDRESSES = [5144, 2144]
 DEBUG = True
 
 NORMAL = 0
@@ -77,7 +77,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
-            tr = track.Track(len(self.tracks) + 1, t[0], t[1])
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2])
             self.tracks.append(tr)
             print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
@@ -96,11 +96,14 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 southList.append(l)
         return southList
 
-    def startJourney(self, loc, klass, mem):
-        # loc = self.locos[0]
-        # trak = self.tracks[0]
-        # mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-        # klass = globals()['Class150Nth2SthTrack1Stopping']
+    def startJourney(self, loc, trak):
+        klassName = self.constructClassName(loc, trak)
+        self.debug("classname: " + klassName)
+        klass = globals()[klassName]
+        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        self.debug("startJourney: starting new journey: " + str(
+            loc.dccAddr) + " heading " + trak.dir() + " on track " + str(
+            trak.nr) + " classname: " + klassName + " mem: " + mem)
         memory = memories.provideMemory(mem)
         memory.setValue(1)
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
@@ -190,12 +193,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
-                klassName = self.constructClassName(loc, trak)
-                self.debug("classname: " + klassName)
-                klass = globals()[klassName]
-                mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-                self.debug("startNewJourneys: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track " + str(trak.nr) + " classname: " + klassName + " mem: " + mem)
-                self.startJourney(loc, klass, mem)
+                self.startJourney(loc, trak)
             else:
                 self.debug("no available tracks to run loco " + loc.name())
 
@@ -223,7 +221,13 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # Initialise locomotives and get their location.
         self.initLocos()
 
+        # clear locks
+        for lock in ['North Link Lock', 'South Link Lock']:
+            self.debug('unlocking ' + lock)
+            memories.getMemory(lock).setValue(None)
+
         # Main Loop
+        maxloops = 5
         loopcount = 0
         while True:
             loopcount += 1
@@ -239,8 +243,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 print "All done - exiting"
                 return False
             self.startNewJourneys() # kick off new journeys, if appropriate
-            if loopcount > 5:
-                self.debug('exiting after x loops')
+            if loopcount > maxloops:
+                self.debug('exiting after ' + str(maxloops) + ' loops')
                 return False # stop the loop for the moment
             time.sleep(10)
 

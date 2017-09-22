@@ -125,7 +125,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             return
         if loco is None:
             loco = self.loco
-        print loco.dccAddr, "unlocking", mem
+        self.debug('unlocking ' + mem)
         if memories.getMemory(mem).getValue() != str(loco.dccAddr):
             raise RuntimeError("loco " + str(loco.dccAddr) + " attempted to remove lock it does not own on mem " + mem)
         memories.getMemory(mem).setValue(None)
@@ -235,14 +235,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                      normalSpeed, slowSpeed=None, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
 
-        self.debug("called shortJourney()")
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
         endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
-        self.debug(startBlock.getUserName() + " -> " + endBlock.getUserName())
+        self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName())
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
@@ -283,10 +282,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         tries = 0
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
-                print self.loco.dccAddr, "endblock is occupied"
+                self.debug("my destination block is occupied")
                 if lock:
                     # let another loco have the lock
-                    print self.loco.dccAddr, "relinquishing lock"
+                    self.debug("relinquishing lock on " + lock)
                     if self.checkLock(lock, self.loco):
                         self.unlock(lock, self.loco)
                 if moving:
@@ -304,8 +303,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             else:
                 # check if we need to get the lock back
                 if lock:
-                    self.debug("checking if we need to re-establish a lock")
                     if not self.checkLock(lock):
+                        self.debug("we relinquished a lock on " + lock + ", getting it back")
                         self.getLock(lock)
                 ok_to_go = True
 
@@ -320,8 +319,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             
         # If we have a lock specified, check we've got it
         if lock:
-            self.debug("checking lock " + lock)
             if not self.checkLock(lock, self.loco):
+                self.debug("lock is supplied but we don't have lock, getting it")
                 lock = self.getLock(lock, self.loco)
                 if lock is False:
                     raise RuntimeError("lock specified but not held and attempt to get lock failed")
@@ -339,7 +338,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 dir = 'forward'
             else:
                 dir = 'reverse'
-            print self.loco.dccAddr, "setting direction to", dir
+            self.debug("setting direction to" +  dir)
             throttle.setIsForward(direction) 
             self.waitMsec(250)
             throttle.setIsForward(direction) 
@@ -363,7 +362,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.setRoute(r)
 
         # wait for a sensor to change
-        print self.loco.dccAddr, "waiting for block", endBlock.userName, "to become active"
+        self.debug("waiting for destination block" + endBlock.userName + "to become active")
         sensorList = [endBlockSensor]
         if unlockSensor:
             sensorList.append(unlockSensor)
@@ -381,15 +380,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor in changedList:
                 arrived = True
 
-        print self.loco.dccAddr, "destination block", endBlock.userName, "is active"
+        self.debug("destination block " +  endBlock.userName +  " is active, we have arrived")
 
         # set the value in the new occupied block
         self.loco.setBlock(endBlock)
 
         # if there was a lock specified it means the calling method
         # wants us to release it now (unless passBlock is set)
-        if lock is not None and passBlock is None:
+        if lock is not None and passBlock == False:
             self.unlock(lock)
+        else:
+            self.debug('no lock needs to be released: lock: ' + str(lock) + " passBlock: " + str(passBlock))
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:

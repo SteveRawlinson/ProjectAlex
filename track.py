@@ -6,11 +6,12 @@ DEBUG = True
 
 class Track:
 
-    def __init__(self, nr, stops, fast):
+    def __init__(self, nr, stops, fast, unserviceable):
         self.nr = nr
         self.stops = stops
         self.fast = fast
         self.occupancy = 0
+        self.us = unserviceable
         self.last_used = time.time()
 
     def debug(self, message):
@@ -24,18 +25,18 @@ class Track:
     @classmethod
     def preferred_track(cls, loco, tracks):
         list = sorted(tracks, key=lambda t: t.score(loco), reverse=True)
-        if DEBUG:
-            print "track in order of preference: "
-            for t in list:
-                print("track " + str(t.nr) + ": " + str(t.score(loco)))
+        # if DEBUG:
+        #     print "track in order of preference: "
+        #     for t in list:
+        #         print("track " + str(t.nr) + ": " + str(t.score(loco)))
         if len(list) == 0:
             return None
         picked = []
         for t in list:
             if t.score(loco) == list[0].score(loco):
                 picked.append(t)
-        if DEBUG:
-            print(str(len(picked)) + " tracks picked")
+        #if DEBUG:
+        #    print(str(len(picked)) + " tracks picked")
         picked_s = sorted(picked, key=lambda t: t.last_used)
         if picked_s[0].score == 0:
             return None
@@ -69,6 +70,8 @@ class Track:
         if self.southbound() and loco.southSidings():
             return 0
         if self.busy():
+            return 0
+        if self.us:
             return 0
         score = 0
         if self.fast and loco.fast():
