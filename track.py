@@ -31,6 +31,8 @@ class Track:
         #         print("track " + str(t.nr) + ": " + str(t.score(loco)))
         if len(list) == 0:
             return None
+        if list[0].score(loco) == 0:
+            return None
         picked = []
         for t in list:
             if t.score(loco) == list[0].score(loco):
@@ -38,8 +40,10 @@ class Track:
         #if DEBUG:
         #    print(str(len(picked)) + " tracks picked")
         picked_s = sorted(picked, key=lambda t: t.last_used)
-        if picked_s[0].score == 0:
+        if picked_s[0].score(loco) == 0:
             return None
+        if DEBUG:
+            print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
         return picked_s[0]
 
     # Returns a string descriving the direction of travel for
