@@ -271,9 +271,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
-            print self.loco.dccAddr, "start block is not occupied"
+            print self.loco.dccAddr, "start block", startBlock.getUserName(), "is not occupied"
             if self.knownLocation is None:
-                raise RuntimeError("start block is not occupied and no known location")
+                errstr = str(self.loco.dccAddr) +  "start block " + startBlock.getUserName() + "is not occupied and no known location"
+                raise RuntimeError(errstr)
             if self.knownLocation != startBlock:
                 raise RuntimeError("start block is not occupied and known location does not match start block")
 
@@ -362,7 +363,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.setRoute(r)
 
         # wait for a sensor to change
-        self.debug("waiting for destination block" + endBlock.userName + "to become active")
+        self.debug("waiting for destination block " + endBlock.userName + " to become active")
         sensorList = [endBlockSensor]
         if unlockSensor:
             sensorList.append(unlockSensor)
