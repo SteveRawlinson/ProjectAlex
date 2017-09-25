@@ -65,6 +65,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                                                 None,
                                                 blist,
                                                 'not in use')
+                if b is None:
+                    # User cancelled
+                    return False
                 if b != "not in use":
                     # set the block and add the new loco to the list
                     newloco.setBlock(b)
@@ -95,21 +98,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if self.southSidings(l):
                 southList.append(l)
         return southList
-
-    def startJourney(self, loc, trak):
-        klassName = self.constructClassName(loc, trak)
-        self.debug("classname: " + klassName)
-        klass = globals()[klassName]
-        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
-        self.debug("startJourney: starting new journey: " + str(
-            loc.dccAddr) + " heading " + trak.dir() + " on track " + str(
-            trak.nr) + " classname: " + klassName + " mem: " + mem)
-        memory = memories.provideMemory(mem)
-        memory.setValue(1)
-        self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
-        klass(loc, mem).start()
-        loc.status = loco.MOVING
-        trak.occupancy += 1
 
     # checks for the presence and value of a special memory which
     # can be modified by the user to tell us to stop all activity
@@ -193,14 +181,25 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
+                self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
                 self.startJourney(loc, trak)
+                return
             else:
                 self.debug("no available tracks to run loco " + loc.name())
 
-
-        # go through each track ...
-        #for track in self.tracks:
-
+    def startJourney(self, loc, trak):
+        klassName = self.constructClassName(loc, trak)
+        self.debug("classname: " + klassName)
+        klass = globals()[klassName]
+        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
+                   + str(trak.nr) + "(occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + "score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
+        memory = memories.provideMemory(mem)
+        memory.setValue(1)
+        self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
+        klass(loc, mem).start()
+        loc.status = loco.MOVING
+        trak.occupancy += 1
 
 
     def handle(self):
@@ -219,7 +218,11 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         self.initTracks()
 
         # Initialise locomotives and get their location.
-        self.initLocos()
+        cont = self.initLocos()
+        if cont is False:
+            # User cancelled
+            print "Jack exiting on user cancel"
+            return False
 
         # clear locks
         for lock in ['North Link Lock', 'South Link Lock']:
