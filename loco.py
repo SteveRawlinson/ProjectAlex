@@ -127,7 +127,7 @@ class Loco:
     # attribute 'length' in the loco roster.
     def willFitInBlock(self, block):
         if block.getBlock().getLengthCm() > self.trainLength():
-            self.debug("train will fit in block" + block.getId())
+            self.debug("train will fit in block " + block.getId())
             return True
         self.debug("train won't fit in block " + block.getId() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
         return False
@@ -148,6 +148,9 @@ class Loco:
                 self.debug("block " + b + " is selected")
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 if self.willFitInBlock(block):
+                    if DEBUG:
+                        if sbtf is not None:
+                            print block.getId(), "length", str(block.getBlock().getLengthCm()), "cm is shorter than previously selected blcck", sbtf.getId(), "length,", str(sbtf.getBlock().getLengthCm())
                     sbtf = block
         self.debug("selected block " + sbtf.getId())
         return sbtf
