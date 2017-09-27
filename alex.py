@@ -1,9 +1,15 @@
 import jmri
 import time
+import os
 from jmri_bindings import *
 from myroutes import ROUTEMAP
 
 DEBUG = True
+
+# statuses
+NORMAL = 0
+STOPPING = 1
+ESTOP = 2
 
 # The Alex class provides a series of utility methods which can be used
 # to control a locomotive around a layout. It is intended to be used as
@@ -229,12 +235,23 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             block = layoutblocks.getBlockWithSensorAssigned(thing)
         return block, sensor
 
+    # checks the JackStatus memory to see if an ESTOP status
+    # has been set by the user, and exits immediately if so
+    def checkStatus(self):
+        mem = memories.provideMemory('IMJACKSTATUS')
+        if mem.getValue() == ESTOP:
+            print "Alex: exiting process due to ESTOP status"
+            os._exit(0)
+
+
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=0, throttle=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
 
+        # check we're not in ESTOP status
+        self.checkStatus()
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
@@ -339,7 +356,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 dir = 'forward'
             else:
                 dir = 'reverse'
-            self.debug("setting direction to" +  dir)
+            self.debug("setting direction to " +  dir)
             throttle.setIsForward(direction) 
             self.waitMsec(250)
             throttle.setIsForward(direction) 
@@ -372,7 +389,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         while not arrived:
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
-                self.waitChange(sensorList)
+                self.waitChange(sensorList, 5000)
+                self.checkStatus()
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
