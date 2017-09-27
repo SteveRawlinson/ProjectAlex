@@ -21,15 +21,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
     def init(self):
-        self.throttle = None
-        throttleAttempts = 0
-        while throttleAttempts < 2 and self.throttle is  None:
-            time.sleep(5)
-            self.throttle = self.getThrottle(self.loco.dccAddr, self.loco.longAddr)
-            throttleAttempts += 1
-        if self.throttle is None:
-            raise RuntimeError("failed to get a throttle for " + self.loco.name())
-        self.debug("throttle is set, type is " + type(self.throttle).__name__)
         self.sensorStates = None
         self.platformWaitTimeMsecs = 3000
         return
@@ -247,7 +238,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
     def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed=None, slowTime=0, throttle=None, unlockOnBlock=False,
+                     normalSpeed, slowSpeed=None, slowTime=0, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
 
         # check we're not in ESTOP status
@@ -269,9 +260,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             unlockSensor = None
 
         # set the throttle
-        if throttle is None:
-            # self.debug("throttle was not passed, using self.throttle")
-            throttle = self.throttle
+        throttle = self.loco.throttle
 
         # self.debug("throttle is type " + type(throttle).__name__)
         # if type(throttle) == str:
@@ -279,10 +268,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
-            self.debug("we are moving")
+            self.debug("we are already moving")
             moving = True
         else:
-            self.debug("we are not moving")
             moving = False
 
 
@@ -330,11 +318,9 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # before we set routes or we might get to the next turnout
         # too soon, too fast
         if moving:
-            print self.loco.dccAddr, "we are already moving, setting normal speed:", normalSpeed
-            throttle.setSpeedSetting(normalSpeed)
-            self.waitMsec(250)
-            throttle.setSpeedSetting(normalSpeed)
-            
+            self.debug("we are already moving, setting normal speed: " +  normalSpeed)
+            self.loco.setSpeedSetting(normalSpeed)
+
         # If we have a lock specified, check we've got it
         if lock:
             if not self.checkLock(lock, self.loco):
@@ -354,22 +340,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if not moving and throttle.getIsForward() != direction:
             if direction is True:
                 dir = 'forward'
+                self.loco.forward()
             else:
+                self.loco.reverse()
                 dir = 'reverse'
-            self.debug("setting direction to " +  dir)
-            throttle.setIsForward(direction) 
-            self.waitMsec(250)
-            throttle.setIsForward(direction) 
-            self.waitMsec(250)
-        
+            self.debug("set direction to " +  dir)
+
         # set throttle position if we're not already moving (if we
         # are moving we set the throttle earlier)
         if not moving:
             print self.loco.dccAddr, "Setting normal Speed", normalSpeed
-            throttle.setSpeedSetting(normalSpeed)
-            # sometimes the first instruction gets lost
-            self.waitMsec(250)
-            throttle.setSpeedSetting(normalSpeed)
+            self.loco.setSpeedSetting(normalSpeed)
 
         # Set remaining routes
         if routes is not None and len(routes) > 1:

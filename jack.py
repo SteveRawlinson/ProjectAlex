@@ -40,9 +40,24 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # go through each dcc address
         for a in DCC_ADDRESSES:
             self.debug("setting up loco addr " + str(a))
-
             # create the Loco object
             newloco = loco.Loco(a)
+            self.locos.append(newloco)
+            # we get a throttle for the loco here because Loco does
+            # not have4 access to getThrottle
+            throttleAttempts = 0
+            while throttleAttempts < 2 and newloco.throttle is None:
+                time.sleep(5)
+                newloco.throttle = self.getThrottle(newloco.dccAddr, newloco.longAddr)
+                throttleAttempts += 1
+            if newloco.throttle is None:
+                raise RuntimeError("failed to get a throttle for " + newloco.name())
+            self.debug("throttle is set, type is " + type(newloco.throttle).__name__)
+            newloco.emergencyStop()
+
+        # get the block for each loco
+        noBlocks = []
+        for newloco in self.locos:
             self.debug("initialising blocks for new loco " + newloco.name())
             # get the block this loco occupies
             b = newloco.initBlock()
@@ -74,8 +89,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
 
             elif b == 'multi':
                 raise RuntimeError("loco", a, "is in more than one block")
-            if newloco.block is not None:
-                self.locos.append(newloco)
+            if newloco.block is None:
+                noBlocks.append(newloco)
+
+        # remove locos that have no block
+        for l in noBlocks:
+            self.locos.remove(l)
 
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):

@@ -26,6 +26,26 @@ class Loco:
         self._brclass = None
         self._passenger = None
         self._fast = None
+        self.throttle = None
+
+    def emergencyStop(self):
+        self.throttle.setSpeedSetting(-1)
+
+    def setSpeedSetting(self, speed):
+        self.throttle.setSpeedSetting(speed)
+        time.sleep(0.2)
+        self.throttle.setSpeedSetting(speed)
+
+    def forward(self):
+        self.throttle.setIsForward(True)
+        time.sleep(0.2)
+        self.throttle.setIsForward(True)
+
+    def reverse(self):
+        self.throttle.setIsForward(False)
+        time.sleep(0.2)
+        self.throttle.setIsForward(False)
+
 
     def debug(self, message):
         if DEBUG:
