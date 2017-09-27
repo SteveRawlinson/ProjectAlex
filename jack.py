@@ -128,7 +128,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("setting memory status to " + str(self.status))
             mem.setValue(self.status)
         else:
-            self.status = mem.getValue()
+            self.status = int(mem.getValue())
             self.debug("reading new status from status memory: " + str(self.status))
 
 

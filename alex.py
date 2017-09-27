@@ -230,9 +230,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # has been set by the user, and exits immediately if so
     def checkStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
-        if mem.getValue() == ESTOP:
-            print "Alex: exiting process due to ESTOP status"
-            os._exit(0)
+        if int(mem.getValue()) == ESTOP:
+            print "Alex: detected ESTOP status"
+            return False
+        return True
 
 
     # Gets a train from startBlock to endBlock and optionally slows it down
@@ -242,7 +243,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
 
         # check we're not in ESTOP status
-        self.checkStatus()
+        if self.checkStatus() is False:
+            return False
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
@@ -371,7 +373,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
                 self.waitChange(sensorList, 5000)
-                self.checkStatus()
+                if self.checkStatus() is False:
+                    return False
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
@@ -441,7 +444,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.loco.setBlock(nextBlock)
                 self.knownLocation = nextBlock
 
-        self.debug("shortJourney() returning")
         return True
                 
     def handle(self):
