@@ -102,11 +102,16 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     # checks for the presence and value of a special memory which
     # can be modified by the user to tell us to stop all activity
     def checkStatus(self):
-        mem = memories.provideMemory('JackStatus')
-        if mem.getValue() == "":
+        mem = memories.provideMemory('IMJACKSTATUS')
+        v = mem.getValue()
+        self.debug("status memory value: " + str(v) + "type: " + type(v).__name__)
+        if v is None or v == "":
+            self.debug("setting memory status to " + str(self.status))
             mem.setValue(self.status)
         else:
             self.status = mem.getValue()
+            self.debug("reading new status from status memory: " + str(self.status))
+
 
     # stop all locos immediately
     def eStop(self):
@@ -234,6 +239,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         loopcount = 0
         while True:
             loopcount += 1
+            self.debug("loop " + str(loopcount))
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
                 # Stop everything immediately
