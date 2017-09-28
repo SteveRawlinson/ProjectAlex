@@ -123,7 +123,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     def checkStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
         v = mem.getValue()
-        self.debug("status memory value: " + str(v) + "type: " + type(v).__name__)
+        self.debug("status memory value: " + str(v) + " type: " + type(v).__name__)
         if v is None or v == "":
             self.debug("setting memory status to " + str(self.status))
             mem.setValue(self.status)
@@ -131,6 +131,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             self.status = int(mem.getValue())
             self.debug("reading new status from status memory: " + str(self.status))
 
+    def setStatus(self):
+        mem = memories.provideMemory('IMJACKSTATUS')
+        mem.setValue(self.status)
 
     # stop all locos immediately
     def eStop(self):
@@ -141,13 +144,14 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     # and decrement the loco count on the track. Also remove the
     # memory from our list of memories
     def checkJourneys(self):
+        if len(self.memories) == 0:
+            return
         mems_to_delete = []
         for m in self.memories:
-            self.debug("checkJourneys: checking memory " + m)
             mem = memories.provideMemory(m)
-            if mem.getValue() != 1:
+            if int(mem.getValue()) != 1:
                 # Journey has finished
-                self.debug("journey " + mem + " has finished")
+                self.debug("journey " + mem.getDisplayName() + " has finished")
                 journey, addr, tracknr, dir = m.split('-')
                 # get the track object
                 trak = self.tracks[int(tracknr) - 1]
@@ -155,7 +159,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 trak.occupancy -= 1
                 # update the last used time
                 trak.last_used = time.time()
-                self.debug("track " + trak.nr + " occupancy is now " + str(trak.occupancy))
+                self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
                 mems_to_delete.append(m)
         # Remove the memories corresponding to the journeys
         # that have no finished
@@ -215,11 +219,13 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         klassName = self.constructClassName(loc, trak)
         self.debug("classname: " + klassName)
         klass = globals()[klassName]
-        mem = '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()])
+        mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
         self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
-                   + str(trak.nr) + "(occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + "score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
+                   + str(trak.nr) + " (occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + " score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
         memory = memories.provideMemory(mem)
         memory.setValue(1)
+        memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
+        self.memories.append(memory.getSystemName())
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
         klass(loc, mem).start()
         loc.status = loco.MOVING
@@ -228,7 +234,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
 
     def handle(self):
         self.debug("Jack Starting")
-        
+
+        # set status memory variable
+        self.setStatus()
+
         # turn layout power on
         self.powerState = powermanager.getPower()
         if self.powerState != jmri.PowerManager.ON:
@@ -254,7 +263,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             memories.getMemory(lock).setValue(None)
 
         # Main Loop
-        maxloops = 5
+        maxloops = 50
         loopcount = 0
         while True:
             loopcount += 1

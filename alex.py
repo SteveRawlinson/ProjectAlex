@@ -22,7 +22,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # any necessary configuration.
     def init(self):
         self.sensorStates = None
-        self.platformWaitTimeMsecs = 3000
+        self.platformWaitTimeMsecs = 10000
         return
 
     def debug(self, message):
@@ -198,6 +198,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def waitAtPlatform(self):
         self.platformMessage()
+        waitTimeMsecs = self.platformWaitTimeMsecs +
         self.waitMsec(self.platformWaitTimeMsecs)
 
     # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
@@ -392,8 +393,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # wants us to release it now (unless passBlock is set)
         if lock is not None and passBlock == False:
             self.unlock(lock)
-        else:
-            self.debug('no lock needs to be released: lock: ' + str(lock) + " passBlock: " + str(passBlock))
+
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
