@@ -57,5 +57,6 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
             m.setValue(0)
 
         self.loco.status = loco.SIDINGS
+        self.debug(type(self).__name__ + ' finished')
         return False
 
