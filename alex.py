@@ -398,7 +398,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
             # slow train to 'slowspeed'
-            print self.loco.dccAddr, "endBlock occupied, setting slowspeed", slowSpeed
             throttle.setSpeedSetting(slowSpeed)
 
         if stopIRClear:
@@ -415,12 +414,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             print self.loco.dccAddr, "IR sensor inactive..."
         elif slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
-            print self.loco.dccAddr, "no IR sensor, waiting for specified delay:", slowTime / 1000, 'secs'
             self.waitMsec(slowTime)
 
         if passBlock is False:
             # stop the train
-            print "stopping loco", self.loco.dccAddr
             if stopIRClear is not None:
                 spd = -1  # emergency stop
             else:
