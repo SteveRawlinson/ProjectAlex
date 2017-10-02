@@ -201,6 +201,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         waitTimeMsecs = self.platformWaitTimeMsecs +
         self.waitMsec(self.platformWaitTimeMsecs)
 
+    # Gets a DCC throttle for the loco supplied
+    def getLocoThrottle(self, loc):
+        throttleAttempts = 0
+        while throttleAttempts < 2 and newloco.throttle is None:
+            time.sleep(5)
+            loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr)
+            throttleAttempts += 1
+        if newloco.throttle is None:
+            raise RuntimeError("failed to get a throttle for " + loc.name())
+        self.debug("throttle is set, type is " + type(loc.throttle).__name__)
+
     # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
     # and return the layout block and the sensor (if there is one).
     def convertToLayoutBlockAndSensor(self, thing):
