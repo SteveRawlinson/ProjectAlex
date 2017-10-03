@@ -6,13 +6,14 @@ DEBUG = True
 
 class Track:
 
-    def __init__(self, nr, stops, fast, unserviceable):
+    def __init__(self, nr, stops, fast, unserviceable, blocks):
         self.nr = nr
         self.stops = stops
         self.fast = fast
         self.occupancy = 0
         self.us = unserviceable
         self.last_used = time.time()
+        self.blocks = blocks
 
     def debug(self, message):
         if DEBUG:
@@ -83,5 +84,20 @@ class Track:
         if self.stops > 1 and loco.passenger:
             score += 1
         return score
+
+    # Returns the track object in the list of tracks
+    # supplied that contains the block supplied. The
+    # block can be a string, a block, or a layoutBlock
+    @classmethod
+    def findTrackByBlock(cls, tracks, block):
+        if type(block) == jmri.jmrit.display.layoutEditor.LayoutBlock:
+            block = block.getBlock().getId()
+        elif type(block) == jmri.Block:
+            block = block.getId()
+        for t in tracks:
+            if block in t.blocks:
+                return t
+        return None
+
 
 

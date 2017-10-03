@@ -66,10 +66,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 # get a list of occupied blocks with no values
                 blist = ['not in use']
                 for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS):
-                    #self.debug("checking block " + blockName)
                     blk = blocks.getBlock(blockName)
                     if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
-                        #self.debug("adding " + blockName + " to blist")
                         blist.append(blockName)
                 # put up a dropbox for the user to select the block
                 self.debug("getting block from user")
@@ -99,7 +97,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
-            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2])
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
             self.tracks.append(tr)
             print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
@@ -241,10 +239,11 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # turn layout power on
         self.powerState = powermanager.getPower()
         if self.powerState != jmri.PowerManager.ON:
+            poweredOn = True
             self.debug("turning power on")
             powermanager.setPower(jmri.PowerManager.ON)
-            time.sleep(5)  # give the sensors time to wake up
         else:
+            poweredOn = False
             self.debug("power is on")
 
         # Initialise tracks
@@ -261,6 +260,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         for lock in ['North Link Lock', 'South Link Lock']:
             self.debug('unlocking ' + lock)
             memories.getMemory(lock).setValue(None)
+
+        # give the sensors time to wake up if we just turned power on
+        if poweredOn:
+            time.sleep(5)
 
         # Main Loop
         maxloops = 50

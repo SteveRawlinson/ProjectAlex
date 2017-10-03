@@ -16,15 +16,50 @@ from myroutes import *
 
 class Cleaner(alex.Alex):
 
-    def __init__(self, loc, memory):
+    def __init__(self, loc):
         self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
+
+
 
 
     def handle(self):
+
+        # turn layout power on
+        self.powerState = powermanager.getPower()
+        if self.powerState != jmri.PowerManager.ON:
+            poweredOn = True
+            self.debug("turning power on")
+            powermanager.setPower(jmri.PowerManager.ON)
+        else:
+            poweredOn = False
+            self.debug("power is on")
+
+        # get a throttle
         self.getLocoThrottle(self.loco)
+
+        # stop the loco in case we've just turned power on and it started up
         self.loco.emergencyStop()
+
+        if poweredOn:
+            time.sleep(5)
+
+        if self.loco.block is None:
+            # put up a dropbox for the user to select the block
+            self.debug("getting block from user")
+            b = JOptionPane.showInputDialog(None,
+                                            "Select starting block for " + self.loco.name(),
+                                            "Choose block",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            None,
+                                            blist,
+                                            'not in use')
+            if b is None:
+                # User cancelled
+                return False
+            if b != "not in use":
+                # set the block and add the new loco to the list
+                self.loco.setBlock(b)
+
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
@@ -34,9 +69,7 @@ class Cleaner(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        start = time.time()
-        platformWaitTimeMsecs = self.platformWaitTimeMsecs
-        addr = self.loco.dccAddr
+
 
 
 
