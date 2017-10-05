@@ -1,5 +1,6 @@
 import jmri
 import time
+import random
 import os
 from jmri_bindings import *
 from myroutes import ROUTEMAP
@@ -198,17 +199,17 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def waitAtPlatform(self):
         self.platformMessage()
-        waitTimeMsecs = self.platformWaitTimeMsecs +
-        self.waitMsec(self.platformWaitTimeMsecs)
+        waitTimeMsecs = self.platformWaitTimeMsecs + random(0, self.platformWaitTimeMsecs / 2)
+        self.waitMsec(waitTimeMsecs)
 
     # Gets a DCC throttle for the loco supplied
     def getLocoThrottle(self, loc):
         throttleAttempts = 0
-        while throttleAttempts < 2 and newloco.throttle is None:
+        while throttleAttempts < 2 and loc.throttle is None:
             time.sleep(5)
             loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr)
             throttleAttempts += 1
-        if newloco.throttle is None:
+        if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
         self.debug("throttle is set, type is " + type(loc.throttle).__name__)
 

@@ -1,19 +1,21 @@
 # A class to encapsulate a track route that goes
 # north/south
+import jmri
 import time
+from jmri_bindings import *
 
 DEBUG = True
 
 class Track:
 
-    def __init__(self, nr, stops, fast, unserviceable, blocks):
+    def __init__(self, nr, stops, fast, unserviceable, blks):
         self.nr = nr
         self.stops = stops
         self.fast = fast
         self.occupancy = 0
         self.us = unserviceable
         self.last_used = time.time()
-        self.blocks = blocks
+        self.blocks = blks
 
     def debug(self, message):
         if DEBUG:
@@ -90,12 +92,16 @@ class Track:
     # block can be a string, a block, or a layoutBlock
     @classmethod
     def findTrackByBlock(cls, tracks, block):
+        print "findTrackByBlock: block type is: " + type(block).__name__
+        blockName = None
         if type(block) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            block = block.getBlock().getId()
+            blockName = block.getBlock().getUserName()
         elif type(block) == jmri.Block:
-            block = block.getId()
+            blockName = block.getUserName()
+        if blockName is None:
+            raise RuntimeError("Can't find block name")
         for t in tracks:
-            if block in t.blocks:
+            if blockName in t.blocks:
                 return t
         return None
 
@@ -105,7 +111,7 @@ class Track:
     # on this track.
     def nextBlockNorth(self, block):
         for b in self.blocks:
-            if b == block.getSystemName(): # this is the block we're in
+            if b == block.getUserName(): # this is the block we're in
                 nb = self.blocks[self.blocks.index(b) + 1]
                 if nb is None:
                     nb = 'North Link'

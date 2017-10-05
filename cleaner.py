@@ -4,25 +4,36 @@ import sys
 sys.path.append('C:\\Users\\steve\\JMRI\\jython')
 import alex
 import loco
+import track
 from jmri_bindings import *
+from javax.swing import JOptionPane
 from myroutes import *
 
-# alex.sensors = sensors  # explicitly add to auto namespace
-# alex.memories = memories
-# alex.routes = routes
-# alex.layoutblocks = layoutblocks
-# alex.ACTIVE = ACTIVE
+DEBUG = True
 
 
 class Cleaner(alex.Alex):
 
     def __init__(self, loc):
         self.loco = loc
+        self.tracks = []
 
 
+    def debug(self, message):
+        if DEBUG:
+            print 'cleaner: ' + message
 
+    # Initialises the tracks[] array, according to information in the myroutes.py file
+    def initTracks(self):
+        for t in TRACKS:
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
+            self.tracks.append(tr)
+            print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     def handle(self):
+
+        # get track info
+        self.initTracks()
 
         # turn layout power on
         self.powerState = powermanager.getPower()
@@ -46,20 +57,33 @@ class Cleaner(alex.Alex):
         # get a block if we don't have one
         if self.loco.block is None:
             # put up a dropbox for the user to select the block
-            self.debug("getting block from user")
-            b = JOptionPane.showInputDialog(None,
+            blist = ['not in use']
+            blockNameList = []
+            for t in self.tracks:
+                blockNameList += t.blocks
+            for blockName in blockNameList:
+                blk = blocks.getBlock(blockName)
+                if blk.getState () == OCCUPIED:
+                    if str(blk.getValue()) == str(self.loco.dccAddr):
+                        self.debug("found loco in block " + blockName)
+                        self.loco.setBlock(blk)
+                    elif blk.getValue() is None or blk.getValue() == "":
+                        blist.append(blockName)
+            if self.loco.block is None:
+                self.debug("getting block from user")
+                b = JOptionPane.showInputDialog(None,
                                             "Select starting block for " + self.loco.name(),
                                             "Choose block",
                                             JOptionPane.QUESTION_MESSAGE,
                                             None,
                                             blist,
                                             'not in use')
-            if b is None:
-                # User cancelled
-                return False
-            if b != "not in use":
-                # set the block and add the new loco to the list
-                self.loco.setBlock(b)
+                if b is None:
+                    # User cancelled
+                    return False
+                if b != "not in use":
+                    # set the block and add the new loco to the list
+                    self.loco.setBlock(b)
 
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
@@ -69,7 +93,7 @@ class Cleaner(alex.Alex):
         # we will shortly start moving but we don't know which
         # direction we're facing. Get the next sensor in
         # each direction
-        trak = track.Track.findTrackByBlock(self.loco.block)
+        trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
         nextSensorNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
         nextSensorSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
 
@@ -93,20 +117,20 @@ class Cleaner(alex.Alex):
         self.waitChange(sensorList, 30 * 1000)
         changedList = self.changedSensors(sensorList)
         if len(changedList) == 0:
-            puts "Timed out waiting for a sensor to come active - quitting"
+            print "Timed out waiting for a sensor to come active - quitting"
             self.loco.emergencyStop()
             return False
         if len(changedList) < 1:
-            puts "both north and south sensors changed, this is surely unpossible - quitting"
+            print "both north and south sensors changed, this is surely unpossible - quitting"
             self.loco.emergencyStop()
             return False
         changedSensor = changedList[0]
         if trak.northbound() and changedSensor == nextSensorSouth:
             self.loco.idle()
-            self.
+            self.debug("going the wrong way")
 
 
 
 
 loc = loco.Loco(7405)
-Cleaner(loc, mem).start()
+Cleaner(loc).start()
