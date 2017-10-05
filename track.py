@@ -99,5 +99,32 @@ class Track:
                 return t
         return None
 
+    # Returns the next monitored block on this track northbound
+    # from the block supplied (which must be a jmri.Block),
+    # or North Link if the supplied block is the northernmost
+    # on this track.
+    def nextBlockNorth(self, block):
+        for b in self.blocks:
+            if b == block.getSystemName(): # this is the block we're in
+                nb = self.blocks[self.blocks.index(b) + 1]
+                if nb is None:
+                    nb = 'North Link'
+                return blocks.getBlock(nb)
+        # the block supplied is on on this track
+        return None
+
+    # See comment for nextBlockNorth() above
+    def nextBlockSouth(self, block):
+        myblocks = self.blocks.reverse()
+        for b in myblocks:
+            if b == block.getSystemName():  # this is the block we're in
+                nb = self.blocks[myblocks.index(b) + 1]
+                if nb is None:
+                    nb = 'South Link'
+                return blocks.getBlock(nb)
+        # the block supplied is on on this track
+        return None
+
+
 
 

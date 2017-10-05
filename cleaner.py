@@ -43,6 +43,7 @@ class Cleaner(alex.Alex):
         if poweredOn:
             time.sleep(5)
 
+        # get a block if we don't have one
         if self.loco.block is None:
             # put up a dropbox for the user to select the block
             self.debug("getting block from user")
@@ -63,12 +64,46 @@ class Cleaner(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
-        if not self.loco.northSidings():
-            print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
-            raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
-
         self.loco.status = loco.MOVING
 
+        # we will shortly start moving but we don't know which
+        # direction we're facing. Get the next sensor in
+        # each direction
+        trak = track.Track.findTrackByBlock(self.loco.block)
+        nextSensorNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
+        nextSensorSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
+
+        # check those sensors are not active
+        if nextSensorNorth.knownState == ACTIVE:
+            print "Next block north is occupied - quitting"
+            return False
+        if nextSensorSouth.knownState == ACTIVE:
+            print "Next block south is occupied - quitting"
+            return False
+
+        # set the direction to forward
+        self.loco.forward()
+
+        # set the speed
+        self.loco.setSpeedSetting(0.4)
+
+        # check which sensor comes up
+        sensorList = [nextSensorNorth, nextSensorSouth]
+        self.changedSensors(sensorList) # set the initial states
+        self.waitChange(sensorList, 30 * 1000)
+        changedList = self.changedSensors(sensorList)
+        if len(changedList) == 0:
+            puts "Timed out waiting for a sensor to come active - quitting"
+            self.loco.emergencyStop()
+            return False
+        if len(changedList) < 1:
+            puts "both north and south sensors changed, this is surely unpossible - quitting"
+            self.loco.emergencyStop()
+            return False
+        changedSensor = changedList[0]
+        if trak.northbound() and changedSensor == nextSensorSouth:
+            self.loco.idle()
+            self.
 
 
 
