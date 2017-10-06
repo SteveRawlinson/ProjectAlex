@@ -112,23 +112,32 @@ class Track:
     def nextBlockNorth(self, block):
         for b in self.blocks:
             if b == block.getUserName(): # this is the block we're in
-                nb = self.blocks[self.blocks.index(b) + 1]
-                if nb is None:
-                    nb = 'North Link'
+                i = self.blocks.index(b) + 1
+                if len(self.blocks) <= i:
+                    nb = 'South Link'
+                else:
+                    nb = self.blocks[i]
+                self.debug("nextBlockNorth on block " + block.getUserName() + " is " + nb)
                 return blocks.getBlock(nb)
         # the block supplied is on on this track
+        self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
     # See comment for nextBlockNorth() above
     def nextBlockSouth(self, block):
-        myblocks = self.blocks.reverse()
+        myblocks = self.blocks
+        myblocks.reverse()
         for b in myblocks:
-            if b == block.getSystemName():  # this is the block we're in
-                nb = self.blocks[myblocks.index(b) + 1]
-                if nb is None:
+            if b == block.getUserName():  # this is the block we're in
+                i = myblocks.index(b) + 1
+                if len(myblocks) <= i:
                     nb = 'South Link'
+                else:
+                    nb = self.blocks[i]
+                self.debug("nextBlockSouth on block " + block.getUserName() + " is " + nb)
                 return blocks.getBlock(nb)
         # the block supplied is on on this track
+        self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
 

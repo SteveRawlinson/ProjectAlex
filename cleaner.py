@@ -52,6 +52,7 @@ class Cleaner(alex.Alex):
         self.loco.emergencyStop()
 
         if poweredOn:
+            self.debug("sleeping for 5 ...")
             time.sleep(5)
 
         # get a block if we don't have one
@@ -94,8 +95,10 @@ class Cleaner(alex.Alex):
         # direction we're facing. Get the next sensor in
         # each direction
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
-        nextSensorNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
-        nextSensorSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
+        nextLayoutBlockNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
+        nextSensorNorth = nextLayoutBlockNorth.getOccupancySensor()
+        nextLayoutBlockSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
+        nextSensorSouth = nextLayoutBlockSouth.getOccupancySensor()
 
         # check those sensors are not active
         if nextSensorNorth.knownState == ACTIVE:
@@ -126,8 +129,14 @@ class Cleaner(alex.Alex):
             return False
         changedSensor = changedList[0]
         if trak.northbound() and changedSensor == nextSensorSouth:
-            self.loco.idle()
+            self.loco.setSpeedSetting(0)
             self.debug("going the wrong way")
+            self.loco.reverse()
+            self.loco.setSpeedSetting(0.4)
+
+        # we are now moving in thr right direction, keep going until
+        # we get to the north/south link
+
 
 
 
