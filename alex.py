@@ -3,7 +3,7 @@ import time
 import random
 import os
 from jmri_bindings import *
-from myroutes import ROUTEMAP
+from myroutes import *
 
 DEBUG = True
 
@@ -247,6 +247,31 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             print "Alex: detected ESTOP status"
             return False
         return True
+
+    # The loco should be moving towards the loop already. This
+    # method puts the loco into the loop and either stops it (if
+    # stop is True) or gets it out again
+    def reverseLoop(self, loop, stop = True):
+        inroute, outroute = ROUTEMAP[loop]
+        self.setRoute(inroute)
+        oSensor = layoutblocks.getLayoutBlock(loop).getOccupancySensor()
+        irSensor = sensors.getSensor(IRSENSORS[loop])
+        if oSensor.knownstate != ACTIVE:
+            self.debug("reverseLoop: waiting for occupancy sensor to go active")
+            self.waitChange([oSensor])
+        if irSensor.knownstate != ACTIVE:
+            self.debug('reverseLoop: waiting for IR sensor to go active')
+            self.waitChange([irSensor])
+        self.debug('reverseLoop: waiting for IR sensor to go inactive')
+        self.waitChange([irSensor])
+        if stop:
+            self.debug('reverseLoop: stopping loco and returning')
+            self.loco.setSpeedSetting(-1)
+            return
+        self.debug('reverseLoop: setting exit route and returning')
+        self.setRoute(outroute)
+        return
+
 
 
     # Gets a train from startBlock to endBlock and optionally slows it down
