@@ -111,6 +111,12 @@ class Cleaner(alex.Alex):
         # set the direction to forward
         self.loco.forward()
 
+        # set exit routes in both directions in case we're facing the wrong way
+        route = trak.exitRoute()
+        self.setRoute(route)
+        route = trak.exitRoute(reverse = True)
+        self.setRoute(route)
+
         # set the speed
         self.loco.setSpeedSetting(0.4)
 
@@ -153,7 +159,7 @@ class Cleaner(alex.Alex):
             self.waitChange([ls], 60 * 1000)
 
         # we are at the link
-
+        self.debug("link reached")
 
 
 
