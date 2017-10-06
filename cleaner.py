@@ -123,12 +123,17 @@ class Cleaner(alex.Alex):
             print "Timed out waiting for a sensor to come active - quitting"
             self.loco.emergencyStop()
             return False
-        if len(changedList) < 1:
+        if len(changedList) > 1:
             print "both north and south sensors changed, this is surely unpossible - quitting"
             self.loco.emergencyStop()
             return False
         changedSensor = changedList[0]
+        wrongWay = False
         if trak.northbound() and changedSensor == nextSensorSouth:
+            wrongWay = True
+        if trak.southbound() and changedSensor == nextSensorNorth:
+            wrongWay = True
+        if wrongWay is True:
             self.loco.setSpeedSetting(0)
             self.debug("going the wrong way")
             self.loco.reverse()
@@ -137,6 +142,17 @@ class Cleaner(alex.Alex):
         # we are now moving in thr right direction, keep going until
         # we get to the north/south link
 
+        if trak.northbound():
+            lb = layoutblocks.getLayoutBlock('North Link')
+            ls = lb.getOccupanySensor
+        else:
+            lb = layoutblocks.getLayoutBlock('South Link')
+            ls = lb.getOccupanySensor
+
+        if ls.knownState == INACTIVE:
+            self.waitChange([ls], 60 * 1000)
+
+        # we are at the link
 
 
 
