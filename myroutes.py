@@ -16,6 +16,8 @@ IRSENSORS = {
     "Nth Sidings 3": "LS29",
     "Nth Sidings 4": "LS57",
     "Nth Sidings 5": "LS57",
+    NORTH_REVERSE_LOOP: "LS58",
+    SOUTH_REVERSE_LOOP: "LS26"
 }
 
 ROUTEMAP = {
@@ -36,7 +38,9 @@ ROUTEMAP = {
             "NSG P1": ["Welwyn Inner"],
             "NSG P2": ["Welwyn Outer"],
             "Nth Fast Inner 1": ["Nth Fast Inner"],
-            "Nth Fast Outer 1": ["Nth Fast Outer"]
+            "Nth Fast Outer 1": ["Nth Fast Outer"],
+            NORTH_REVERSE_LOOP: ["Nth Reverse Loop Entry", "Nth Reverse Loop Exit"],
+            SOUTH_REVERSE_LOOP: ["Sth Reverse Loop Entry", "Sth Reverse Loop Exit"]
 
             }
 
