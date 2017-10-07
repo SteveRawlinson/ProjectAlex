@@ -47,15 +47,16 @@ class Cleaner(alex.Alex):
 
         # get a throttle
         self.getLocoThrottle(self.loco)
-
-        # stop the loco in case we've just turned power on and it started up
-        self.loco.emergencyStop()
+        self.debug("got throttle")
 
         if poweredOn:
+            # stop the loco in case it started up
+            self.loco.emergencyStop()
             self.debug("sleeping for 5 ...")
             time.sleep(5)
 
         # get a block if we don't have one
+        self.debug("sorting out blocks")
         if self.loco.block is None:
             # put up a dropbox for the user to select the block
             blist = ['not in use']
@@ -95,6 +96,12 @@ class Cleaner(alex.Alex):
         # direction we're facing. Get the next sensor in
         # each direction
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
+        self.debug("track: " + str(trak.nr))
+        if trak.northbound():
+            direction = 'Northbound'
+        else:
+            direction = 'Southbound'
+        self.debug("direction: " + direction)
         nextLayoutBlockNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
         nextSensorNorth = nextLayoutBlockNorth.getOccupancySensor()
         nextLayoutBlockSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
@@ -136,8 +143,10 @@ class Cleaner(alex.Alex):
         changedSensor = changedList[0]
         wrongWay = False
         if trak.northbound() and changedSensor == nextSensorSouth:
+            self.debug("track " + str(trak.nr) + " is northbound but changedSensor is nextSensorSouth: " + nextSensorSouth.getDisplayName())
             wrongWay = True
         if trak.southbound() and changedSensor == nextSensorNorth:
+            self.debug("track " + str(trak.nr) + " is southbound but changedSensor is nextSensorNorth: " + nextSensorNorth.getDisplayName())
             wrongWay = True
         if wrongWay is True:
             self.loco.setSpeedSetting(0)
@@ -150,16 +159,24 @@ class Cleaner(alex.Alex):
 
         if trak.northbound():
             lb = layoutblocks.getLayoutBlock('North Link')
-            ls = lb.getOccupanySensor
+            ls = lb.getOccupancySensor()
         else:
             lb = layoutblocks.getLayoutBlock('South Link')
-            ls = lb.getOccupanySensor
+            ls = lb.getOccupancySensor()
 
         if ls.knownState == INACTIVE:
             self.waitChange([ls], 60 * 1000)
 
         # we are at the link
         self.debug("link reached")
+        self.loco.setBlock(lb)
+
+        if trak.northbound():
+            loop = NORTH_REVERSE_LOOP
+        else:
+            loop = SOUTH_REVERSE_LOOP
+        self.reverseLoop(loop, stop=False)
+
 
 
 

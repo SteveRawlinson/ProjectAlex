@@ -3,6 +3,7 @@
 import jmri
 import time
 from jmri_bindings import *
+from myroutes import ROUTEMAP
 
 DEBUG = True
 
@@ -113,6 +114,7 @@ class Track:
         for b in self.blocks:
             if b == block.getUserName(): # this is the block we're in
                 i = self.blocks.index(b) + 1
+                self.debug('index is ' + str(i) + ' len is ' + str(len(self.blocks)))
                 if len(self.blocks) <= i:
                     nb = 'South Link'
                 else:
@@ -139,6 +141,24 @@ class Track:
         # the block supplied is on on this track
         self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
+
+    def northernmostBlock(self):
+        return self.blocks[-1]
+
+    def southernmostBlock(self):
+        return self.blocks[0]
+
+    # returns the name of the route to set for exiting this track to sidings
+    def exitRoute(self, reverse = False):
+        if (self.northbound() and reverse is False) or (self.southbound() and reverse is True):
+            farBlock = self.northernmostBlock()
+        else:
+            farBlock = self.southernmostBlock()
+        self.debug("farblock: " + farBlock)
+        routes = ROUTEMAP[farBlock]
+        return routes[0] # there's only one
+
+
 
 
 

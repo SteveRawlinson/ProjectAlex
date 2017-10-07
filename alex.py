@@ -111,6 +111,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
+        self.debug('route type is ' + type(r).__name__)
         r.activateRoute()
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:
@@ -256,10 +257,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         self.setRoute(inroute)
         oSensor = layoutblocks.getLayoutBlock(loop).getOccupancySensor()
         irSensor = sensors.getSensor(IRSENSORS[loop])
-        if oSensor.knownstate != ACTIVE:
+        if oSensor.knownState != ACTIVE:
             self.debug("reverseLoop: waiting for occupancy sensor to go active")
             self.waitChange([oSensor])
-        if irSensor.knownstate != ACTIVE:
+        if irSensor.knownState != ACTIVE:
             self.debug('reverseLoop: waiting for IR sensor to go active')
             self.waitChange([irSensor])
         self.debug('reverseLoop: waiting for IR sensor to go inactive')
