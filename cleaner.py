@@ -28,7 +28,7 @@ class Cleaner(alex.Alex):
         for t in TRACKS:
             tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
             self.tracks.append(tr)
-            print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
+            print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     def handle(self):
 
@@ -90,6 +90,8 @@ class Cleaner(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
+        startBlock = self.loco.block
+
         self.loco.status = loco.MOVING
 
         # we will shortly start moving but we don't know which
@@ -149,10 +151,9 @@ class Cleaner(alex.Alex):
             self.debug("track " + str(trak.nr) + " is southbound but changedSensor is nextSensorNorth: " + nextSensorNorth.getDisplayName())
             wrongWay = True
         if wrongWay is True:
-            self.loco.setSpeedSetting(0)
             self.debug("going the wrong way")
             self.loco.reverse()
-            self.loco.setSpeedSetting(0.4)
+
 
         # we are now moving in thr right direction, keep going until
         # we get to the north/south link
@@ -171,13 +172,65 @@ class Cleaner(alex.Alex):
         self.debug("link reached")
         self.loco.setBlock(lb)
 
+        # go through the reversing loop
         if trak.northbound():
             loop = NORTH_REVERSE_LOOP
         else:
             loop = SOUTH_REVERSE_LOOP
         self.reverseLoop(loop, stop=False)
 
+        # work out which trak we are going down now
+        if trak.southbound():
+            trak = self.tracks[trak.nr ] # move up one (eg. track 1 -> 2)
+        else:
+            trak = self.tracks[trak.nr - 2] # move up one (eg. 2 -> 1)
 
+        # set routes for entry and exit
+        rt = trak.entryRoute()
+        self.setRoute(rt)
+        rt = trak.exitRoute()
+        self.setRoute(rt)
+
+        # wait till we get to the link
+        if trak.northbound():
+            lb = layoutblocks.getLayoutBlock('North Link')
+            ls = lb.getOccupancySensor()
+        else:
+            lb = layoutblocks.getLayoutBlock('South Link')
+            ls = lb.getOccupancySensor()
+
+        if ls.knownState == INACTIVE:
+            self.waitChange([ls], 60 * 1000)
+
+        # we are at the link
+        self.loco.setBlock(lb)
+
+        # go through the reversing loop
+        if trak.northbound():
+            loop = NORTH_REVERSE_LOOP
+        else:
+            loop = SOUTH_REVERSE_LOOP
+        self.reverseLoop(loop, stop=False)
+
+        # work out which track we are going (back) down now
+        if trak.southbound():
+            trak = self.tracks[trak.nr] # move up one (eg. track 1 -> 2)
+        else:
+            trak = self.tracks[trak.nr - 2] # move up one (eg. 2 -> 1)
+
+        # set route for entry
+        rt = trak.entryRoute()
+        self.setRoute(rt)
+
+        # wait for the original block to go active
+        s = startBlock.getSensor()
+        if s.knownState != ACTIVE:
+            self.waitChange([s])
+        self.waitChange([s])
+        self.loco.setSpeedSetting(-1)
+
+        self.debug("exiting")
+        return False
 
 
 loc = loco.Loco(7405)

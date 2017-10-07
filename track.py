@@ -111,8 +111,11 @@ class Track:
     # or North Link if the supplied block is the northernmost
     # on this track.
     def nextBlockNorth(self, block):
+        self.debug('nextBlockNorth: getting next block north for block' + block.getUserName())
         for b in self.blocks:
+            self.debug('nextBlockNorth: checking block ' + b)
             if b == block.getUserName(): # this is the block we're in
+                self.debug('nextBlockNorth: found a match')
                 i = self.blocks.index(b) + 1
                 self.debug('index is ' + str(i) + ' len is ' + str(len(self.blocks)))
                 if len(self.blocks) <= i:
@@ -158,6 +161,14 @@ class Track:
         routes = ROUTEMAP[farBlock]
         return routes[0] # there's only one
 
+    # returns the name of the route to set for entering this track from the sidings
+    def entryRoute(self, reverse = False):
+        if (self.northbound() and reverse is False) or (self.southbound() and reverse is True):
+            farBlock = self.southernmostBlock()
+        else:
+            farBlock = self.northernmostBlock()
+        routes = ROUTEMAP[farBlock]
+        return routes[0] # only one
 
 
 

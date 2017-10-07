@@ -19,6 +19,7 @@ class Loco:
         self._rarity = None
         self.roster = jmri.jmrit.roster.Roster.instance()
         self.block = None
+        self.layoutBlock = None
         self.status = SIDINGS
         self.longAddr = longAddr
         self._reversible = None
@@ -248,21 +249,30 @@ class Loco:
     # dcc address.
     def setBlock(self, b):
         #self.debug("type: " + type(b).__name__)
+        lblk = None
         if type(b) == str or type(b) == unicode:
             lblk = layoutblocks.getLayoutBlock(b)
             blk = lblk.getBlock()
         elif type(b) == jmri.jmrit.display.layoutEditor.LayoutBlock:
+            lblk = b
             blk = b.getBlock()
         else:
             blk = b
         #self.debug("setting " + blk.getUserName() + " block to " + self.name())
         self.block = blk
+        if lblk is not None:
+            self.layoutBlock = lblk
+        else:
+            self.layoutBlock = layoutblocks.getLayoutBlock(blk.getUserName())
         blk.setValue(str(self.dccAddr))
         mem = memories.getMemory("Siding " + blk.getUserName())
         if mem is not None and mem.getValue() == str(self.dccAddr):
             # The block we are now in is a siding we reserved. Remove the reservation.
             mem.setValue(None)
         #self.debug("new block value: " + blk.getValue())
+
+    def setLayoutBlock(self, b):
+        self.setBlock(b)
 
     # Returns True if self is in the north sidings
     def northSidings(self):
