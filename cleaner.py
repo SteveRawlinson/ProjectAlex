@@ -117,6 +117,12 @@ class Cleaner(alex.Alex):
             print "Next block south is occupied - quitting"
             return False
 
+        # check the reverse loops are empty
+        if track.Track.findTrackByBlock(self.blocks, 'NORTH_REVERSE_LOOP').getState() == OCCUPIED:
+            print "block", NORTH_REVERSE_LOOP, "occupied, quitting"
+        if track.Track.findTrackByBlock(self.blocks, 'SOUTH_REVERSE_LOOP').getState() == OCCUPIED:
+            print "block", SOUTH_REVERSE_LOOP, "occupied, quitting"
+
         # set the direction to forward
         self.loco.forward()
 
