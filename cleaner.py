@@ -118,9 +118,9 @@ class Cleaner(alex.Alex):
             return False
 
         # check the reverse loops are empty
-        if track.Track.findTrackByBlock(self.blocks, 'NORTH_REVERSE_LOOP').getState() == OCCUPIED:
+        if blocks.getBlock(NORTH_REVERSE_LOOP).getState() == OCCUPIED:
             print "block", NORTH_REVERSE_LOOP, "occupied, quitting"
-        if track.Track.findTrackByBlock(self.blocks, 'SOUTH_REVERSE_LOOP').getState() == OCCUPIED:
+        if blocks.getBlock(SOUTH_REVERSE_LOOP).getState() == OCCUPIED:
             print "block", SOUTH_REVERSE_LOOP, "occupied, quitting"
 
         # set the direction to forward
@@ -138,7 +138,7 @@ class Cleaner(alex.Alex):
         # check which sensor comes up
         sensorList = [nextSensorNorth, nextSensorSouth]
         self.changedSensors(sensorList) # set the initial states
-        self.waitChange(sensorList, 30 * 1000)
+        self.waitChange(sensorList, 60 * 1000)
         changedList = self.changedSensors(sensorList)
         if len(changedList) == 0:
             print "Timed out waiting for a sensor to come active - quitting"
