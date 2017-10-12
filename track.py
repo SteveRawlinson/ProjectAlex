@@ -111,9 +111,7 @@ class Track:
     # or North Link if the supplied block is the northernmost
     # on this track.
     def nextBlockNorth(self, block):
-        self.debug('nextBlockNorth: getting next block north for block' + block.getUserName())
         for b in self.blocks:
-            self.debug('nextBlockNorth: checking block ' + b)
             if b == block.getUserName(): # this is the block we're in
                 i = self.blocks.index(b) + 1
                 if len(self.blocks) <= i:
