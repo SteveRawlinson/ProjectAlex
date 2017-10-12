@@ -22,21 +22,25 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         if not self.loco.southSidings():
             raise RuntimeError("I'm not in the south sidings!")
 
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
+
         self.loco.status = loco.MOVING
         start = time.time()
 
         # out of sth sidings to FPK
         lock = self.getLock('South Link Lock')
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('Sth Hertford Outer')
-        self.shortJourney(False, self.loco.block, "FPK P4", 0.4, 0.3, 3000, routes=routes, lock=lock)
+        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
+        self.shortJourney(False, self.loco.block, "FPK P4", 0.4, 0.3, 3500, routes=routes, lock=lock)
         self.waitAtPlatform()
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P1", 0.4, 0.2, 3000)
+        self.shortJourney(False, self.loco.block, "AAP P1", 0.4, 0.2, 3200)
         self.waitAtPlatform()
 
         # AAP to PAL
-        self.shortJourney(False, self.loco.block, "NSG P2", 0.4, 0.3, 1000)
+        self.shortJourney(False, self.loco.block, "NSG P2", 0.4, 0.3, 3000)
         self.waitAtPlatform()
 
         # PAL to North sidings
@@ -59,3 +63,6 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.debug(type(self).__name__ + ' finished')
         return False
 
+loc = loco.Loco(2144)
+loc.setBlock('FP sidings')
+Class150Sth2NthTrack4Stopping(loc, None).start()
