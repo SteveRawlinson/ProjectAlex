@@ -252,6 +252,8 @@ class Loco:
         lblk = None
         if type(b) == str or type(b) == unicode:
             lblk = layoutblocks.getLayoutBlock(b)
+            if lblk is None:
+                raise RuntimeError("no such layoutblock: " + b)
             blk = lblk.getBlock()
         elif type(b) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             lblk = b
