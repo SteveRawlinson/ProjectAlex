@@ -22,6 +22,10 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         if not self.loco.southSidings():
             raise RuntimeError("I'm not in the south sidings!")
 
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
+
         self.loco.status = loco.MOVING
         start = time.time()
 
