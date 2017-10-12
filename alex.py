@@ -199,7 +199,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def waitAtPlatform(self):
         self.platformMessage()
-        waitTimeMsecs = self.platformWaitTimeMsecs + random(0, self.platformWaitTimeMsecs / 2)
+        waitTimeMsecs = int(self.platformWaitTimeMsecs + (random.random() * (self.platformWaitTimeMsecs / 2)))
         self.waitMsec(waitTimeMsecs)
 
     # Gets a DCC throttle for the loco supplied
