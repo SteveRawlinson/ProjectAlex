@@ -19,9 +19,14 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
+        # check we're in the right place for this journey
         if not self.loco.northSidings():
             print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
             raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
+
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
 
@@ -34,11 +39,11 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, lock=lock)
         self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
-        # on to PAL P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000)
+        # on to NSG P1
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=8000)
         print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
@@ -78,3 +83,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         return False
 
 
+loc = loco.Loco(2144)
+loc.setBlock('Nth Sidings 3')
+Class150Nth2SthTrack1Stopping(loc, None).start()
