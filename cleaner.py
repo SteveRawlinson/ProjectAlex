@@ -111,10 +111,10 @@ class Cleaner(alex.Alex):
 
         # check those sensors are not active
         if nextSensorNorth.knownState == ACTIVE:
-            print "Next block north is occupied - quitting"
+            print "Next block north (" + nextLayoutBlockNorth.getUserName() + ") is occupied - quitting"
             return False
         if nextSensorSouth.knownState == ACTIVE:
-            print "Next block south is occupied - quitting"
+            print "Next block south (" + nextLayoutBlockSouth.getUserName() + ") is occupied - quitting"
             return False
 
         # check the reverse loops are empty
