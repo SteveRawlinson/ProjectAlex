@@ -62,7 +62,3 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
         return False
-
-loc = loco.Loco(2144)
-loc.setBlock('FP sidings')
-Class150Sth2NthTrack4Stopping(loc, None).start()
