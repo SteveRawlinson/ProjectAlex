@@ -136,6 +136,7 @@ class Cleaner(alex.Alex):
         self.loco.setSpeedSetting(0.4)
 
         # check which sensor comes up
+        self.debug("waiting for either " + nextLayoutBlockNorth.getUserName() + " or " + nextLayoutBlockSouth.getUserName() +" to go active")
         sensorList = [nextSensorNorth, nextSensorSouth]
         self.changedSensors(sensorList) # set the initial states
         self.waitChange(sensorList, 60 * 1000)
@@ -226,6 +227,9 @@ class Cleaner(alex.Alex):
 
         # set route for entry
         rt = trak.entryRoute()
+        self.setRoute(rt)
+        # set route for exit in case coming off the last block overruns the track
+        rt = trak.exitRoute()
         self.setRoute(rt)
 
         # wait for the original block to go active
