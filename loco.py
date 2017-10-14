@@ -157,21 +157,21 @@ class Loco:
     # that the current loco will fit in.
     def shortestBlockTrainFits(self, blocklist):
         sbtf = None
-        self.debug("looking for shortest block that will fit loco " +  str(self.dccAddr) + " which is " + str(self.trainLength()) + "cms")
+        # self.debug("looking for shortest block that will fit loco " +  str(self.dccAddr) + " which is " + str(self.trainLength()) + "cms")
         for b in blocklist:
             block = layoutblocks.getLayoutBlock(b)
             mem = memories.getMemory("Siding " + b)
             if block is None:
                 self.debug("no such block: " + b)
             elif block.getState() == OCCUPIED:
-                self.debug("block " + b + " is occupied")
+                # self.debug("block " + b + " is occupied")
             elif mem is not None and mem.getValue() == 1:
-                self.debug("block " + b + " is selected")
+                # self.debug("block " + b + " is selected")
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 if self.willFitInBlock(block):
                     if DEBUG:
                         if sbtf is not None:
-                            print block.getId(), "length", str(block.getBlock().getLengthCm()), "cm is shorter than previously selected blcck", sbtf.getId(), "length,", str(sbtf.getBlock().getLengthCm())
+                            # print block.getId(), "length", str(block.getBlock().getLengthCm()), "cm is shorter than previously selected blcck", sbtf.getId(), "length,", str(sbtf.getBlock().getLengthCm())
                     sbtf = block
         self.debug("selected block " + sbtf.getId())
         return sbtf
