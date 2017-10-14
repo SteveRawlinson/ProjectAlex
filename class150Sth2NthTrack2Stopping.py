@@ -36,11 +36,11 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         self.waitAtPlatform()
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 3000)
+        self.shortJourney(False, self.loco.block, "AAP P3", 0.4, 0.2, 4000)
         self.waitAtPlatform()
 
         # AAP to PAL
-        self.shortJourney(False, self.loco.block, "PAL P2", 0.4, 0.3, 1000)
+        self.shortJourney(False, self.loco.block, "PAL P2", 0.4, 0.3, 2000)
         self.waitAtPlatform()
 
         # PAL to North sidings

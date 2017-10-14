@@ -8,7 +8,7 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class Class150Nth2SthTrack1Stopping(alex.Alex):
+class Class150Nth2SthTrack3Stopping(alex.Alex):
 
     def __init__(self, loc, memory):
         self.loco = loc
@@ -43,7 +43,7 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=8000)
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000)
         print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
@@ -82,7 +82,3 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         return False
 
-
-loc = loco.Loco(2144)
-loc.setBlock('Nth Sidings 3')
-Class150Nth2SthTrack1Stopping(loc, None).start()
