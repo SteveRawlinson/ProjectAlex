@@ -13,6 +13,8 @@ import track
 # import journey classes
 from class150Nth2SthTrack1Stopping import *
 from class150Sth2NthTrack2Stopping import *
+from class150Sth2NthTrack4Stopping import *
+from class150Nth2SthTrack3Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 DCC_ADDRESSES = [5144, 2144]
@@ -217,6 +219,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         klassName = self.constructClassName(loc, trak)
         self.debug("classname: " + klassName)
         klass = globals()[klassName]
+        self.debug("klass: " + type(klass).__name__)
         mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
         self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
                    + str(trak.nr) + " (occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + " score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
@@ -225,6 +228,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
         self.memories.append(memory.getSystemName())
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
+        self.debug("klass: " + type(klass).__name__)
         klass(loc, mem).start()
         loc.status = loco.MOVING
         trak.occupancy += 1
