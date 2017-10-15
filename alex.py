@@ -207,7 +207,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         throttleAttempts = 0
         while throttleAttempts < 2 and loc.throttle is None:
             time.sleep(5)
-            loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr)
+            loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr())
             throttleAttempts += 1
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
@@ -372,7 +372,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # before we set routes or we might get to the next turnout
         # too soon, too fast
         if moving:
-            self.debug("we are already moving, setting normal speed: " +  normalSpeed)
+            self.debug("we are already moving, setting normal speed: " +  str(normalSpeed))
             self.loco.setSpeedSetting(normalSpeed)
 
         # If we have a lock specified, check we've got it
@@ -473,9 +473,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 spd = -1  # emergency stop
             else:
                 spd = 0   # normal stop
+                self.debug("being loco to a halt")
             throttle.setSpeedSetting(spd)
             self.waitMsec(250)
             throttle.setSpeedSetting(spd)
+        else:
+            self.debug("not stopping loco")
 
         # we know where we are now
         self.knownLocation = endBlock
