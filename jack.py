@@ -50,7 +50,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             throttleAttempts = 0
             while throttleAttempts < 2 and newloco.throttle is None:
                 time.sleep(5)
-                newloco.throttle = self.getThrottle(newloco.dccAddr, newloco.longAddr)
+                newloco.throttle = self.getThrottle(newloco.dccAddr, newloco.longAddr())
                 throttleAttempts += 1
             if newloco.throttle is None:
                 raise RuntimeError("failed to get a throttle for " + newloco.name())
