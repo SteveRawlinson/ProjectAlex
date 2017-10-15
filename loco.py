@@ -12,7 +12,7 @@ MOVING = 2
 
 class Loco:
     
-    def __init__(self, dccAddr, longAddr=True):
+    def __init__(self, dccAddr):
         self.dccAddr = dccAddr
         self._trainLength = None
         self._rosterEntry = None
@@ -21,7 +21,7 @@ class Loco:
         self.block = None
         self.layoutBlock = None
         self.status = SIDINGS
-        self.longAddr = longAddr
+        self._longAddr = None
         self._reversible = None
         self._highSpeed = None
         self._brclass = None
@@ -143,6 +143,12 @@ class Loco:
 
         return self._rosterEntry
 
+    def longAddr(self):
+        if self._longAddr is None:
+            re = self.rosterEntry()
+            self._longAddr = re.isLongAddress()
+        return self._longAddr
+
     # Returns True if the block is longer than the current train.
     # The length of the train is determined by checking the 
     # attribute 'length' in the loco roster.
@@ -164,16 +170,19 @@ class Loco:
             if block is None:
                 self.debug("no such block: " + b)
             elif block.getState() == OCCUPIED:
+                pass
                 # self.debug("block " + b + " is occupied")
-            elif mem is not None and mem.getValue() == 1:
+            elif mem is not None and mem.getValue() == "selected":
+                pass
                 # self.debug("block " + b + " is selected")
-                self.debug("block " + b + " is occupied")
+
             elif mem is not None and mem.getValue() == "selected":
                 self.debug("block " + b + " is already selected")
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 if self.willFitInBlock(block):
                     if DEBUG:
                         if sbtf is not None:
+                            pass
                             # print block.getId(), "length", str(block.getBlock().getLengthCm()), "cm is shorter than previously selected blcck", sbtf.getId(), "length,", str(sbtf.getBlock().getLengthCm())
                     sbtf = block
         self.debug("selected block " + sbtf.getId())
@@ -196,7 +205,7 @@ class Loco:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
-        mem = memories.provideMemory("Siding " + siding.getId())
+        mem = memories.provideMemory("IMSIDING" + siding.getId().upper)
         mem.setValue("selected")
         self.debug("selected siding " + siding.getId())
         return siding
@@ -204,12 +213,39 @@ class Loco:
     # Removes the memory which reserves the siding.
     def unselectSiding(self, siding):
         if  type(siding) == str:
-            mem = memories.provideMemory("Siding " + siding)
+            mem = memories.provideMemory("IMSIDING" + siding.upper())
         elif type(siding) == jmri.Block:
-            mem = memories.provideMemory("Siding " + siding.getUserName())
+            mem = memories.provideMemory("IMSIDING" + siding.getUserName().upper())
         else:
-            mem = memories.provideMemory("Siding " + siding.getId())
+            mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
         mem.setValue(None)
+
+    # Checks if the reverse loop (name) supplied is occupied
+    # or already selected, returns None if so, or the block
+    # if it's available
+    def selectReverseLoop(self, loop):
+        b = blocks.getBlock(loop)
+        if b is None:
+            raise RuntimeError("no such block: " + loop)
+        if b.getState() == OCCUPIED:
+            return None
+        mem = memories.provideMemory("IMLOOP" + loop.upper())
+        if mem.getValue() == "selected":
+            return None
+        mem.setValue("selected")
+        return b
+
+    def unselectReverseLoop(self, loop):
+        mem = memories.provideMemory("IMLOOP" + loop.upper())
+        mem.setValue(None)
+
+    # returns True if the loco is in a reverse loop
+    def inReverseLoop(self):
+        if self.block is None:
+            return None
+        if self.block.getUserName() == NORTH_REVERSE_LOOP or self.block.getUserName() == SOUTH_REVERSE_LOOP:
+            return True
+        return False
 
     # Returns the list of layout block(s) I'm in
     def myLayoutBlocks(self):
