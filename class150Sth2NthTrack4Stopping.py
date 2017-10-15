@@ -50,6 +50,7 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
         routes = self.requiredRoutes(siding)
         self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        self.loco.unselectSiding(siding)
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
