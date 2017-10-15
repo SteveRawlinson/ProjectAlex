@@ -276,6 +276,20 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
+    #
+    # params:
+    # direction: True for forwards, False for reverse
+    # startBlock: the block the loco is in (can be a name, a Block or s LayoutBlock)
+    # endBlock: the destination block
+    # normalSpeed: the speed (0 = stop, 1 = full speed) to spend most of the journey
+    # slowSpeed: the speed to reduce to once we enter the endBlock
+    # slowTime: the time (in msec) to spend at SlowSpeed before stopping
+    # unlockOnBlock: (boolean) unlock the supplied lock when the block that is locked goes inactive if True
+    # stopIRClear: (Sensor or String) the sensor (or name of the sensor) which will go inactive when it's safe to stop
+    # routes: list of Route objects to set (ie. activate)
+    # lock: (String) name of a lock we need to unlock when we're done
+    # passBlock: (boolean) wait until the endBlock is empty before returning (and don't stop the loco)
+    # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=0, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):

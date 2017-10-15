@@ -8,8 +8,7 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class Class150Nth2SthTrack3Stopping(alex.Alex):
-
+class classA4Nth2SthTrack3Stopping(alex.Alex):
     def __init__(self, loc, memory):
         self.loco = loc
         self.memory = memory
@@ -43,14 +42,10 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, passBlock=True)
 
         # PAL to AAP
-        self.shortJourney(True, "NSG P1", "AAP P2", 0.4, 0.2, 5000)
-        print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, "NSG P1", "AAP P2", passBlock=True)
 
         # AAP to FPK
         self.shortJourney(True, "AAP P2", "FPK P3", 0.4, 0.25, 11000)
@@ -70,7 +65,6 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
             self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
             routes = self.requiredRoutes(siding)
             self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        self.loco.unselectSiding(siding)
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
@@ -82,4 +76,3 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         self.debug(type(self).__name__ + ' finished')
 
         return False
-

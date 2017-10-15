@@ -167,6 +167,9 @@ class Loco:
                 # self.debug("block " + b + " is occupied")
             elif mem is not None and mem.getValue() == 1:
                 # self.debug("block " + b + " is selected")
+                self.debug("block " + b + " is occupied")
+            elif mem is not None and mem.getValue() == "selected":
+                self.debug("block " + b + " is already selected")
             elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                 if self.willFitInBlock(block):
                     if DEBUG:

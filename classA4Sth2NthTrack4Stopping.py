@@ -7,8 +7,7 @@ import loco
 from jmri_bindings import *
 from myroutes import *
 
-
-class Class150Sth2NthTrack4Stopping(alex.Alex):
+class ClassA4Sth2NthTrack4Stopping(alex.Alex):
 
     def __init__(self, loc, memory):
         self.loco = loc
@@ -32,16 +31,13 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         # out of sth sidings to FPK
         lock = self.getLock('South Link Lock')
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
-        self.shortJourney(False, self.loco.block, "FPK P4", 0.4, 0.3, 3500, routes=routes, lock=lock)
-        self.waitAtPlatform()
+        self.shortJourney(False, self.loco.block, "FPK P4", passBlock=True, routes=routes, lock=lock)
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P1", 0.4, 0.2, 3200)
-        self.waitAtPlatform()
+        self.shortJourney(False, self.loco.block, "AAP P1", passBlock=True)
 
         # AAP to PAL
-        self.shortJourney(False, self.loco.block, "NSG P2", 0.4, 0.3, 3000)
-        self.waitAtPlatform()
+        self.shortJourney(False, self.loco.block, "NSG P2", passBlock=True)
 
         # PAL to North sidings
         lock = self.getLock('North Link Lock')
