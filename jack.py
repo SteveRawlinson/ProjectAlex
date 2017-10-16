@@ -245,13 +245,26 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("randomly deciding not to start a new journey")
             return
         # pick a loco
+        self.debug("picking a loco")
         candidates = []
         for loc in self.locos:
             if loc.active():
                 continue
             if loc.wrongway is True:
                 continue
+            if loc.northSidings() and track.Track.southboundTracksFree() == 0:
+                continue
             candidates.append(loc)
+        tot = 0.0
+        for c in candidates:
+            tot += (1 - c.rarity())
+        n = tot * random.random()
+        for c in candidates:
+            tot -= (1 - c.rarity())
+            if tot < 0.0:
+                loc = c
+                break
+        self.debug("picked loco " + loc.name())
 
 
 
