@@ -8,10 +8,11 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class classA4Nth2SthTrack3Stopping(alex.Alex):
+class ClassA4Nth2SthTrack3Stopping(alex.Alex):
     def __init__(self, loc, memory):
         self.loco = loc
         self.memory = memory
+        self.knownLocation = None
 
 
     def handle(self):
@@ -28,43 +29,51 @@ class classA4Nth2SthTrack3Stopping(alex.Alex):
             self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
-
-        start = time.time()
         platformWaitTimeMsecs = self.platformWaitTimeMsecs
-        addr = self.loco.dccAddr
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
 
         # Out the nth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
+        if self.loco.inReverseLoop():
+            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
+        else:
+            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
         self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, lock=lock)
         self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, passBlock=True)
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.5, passBlock=True)
 
-        # PAL to AAP
-        self.shortJourney(True, "NSG P1", "AAP P2", passBlock=True)
+        # NSG to AAP
+        self.shortJourney(True, "NSG P1", "AAP P2", 0.5, passBlock=True)
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P2", "FPK P3", 0.4, 0.25, 11000)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
+        self.shortJourney(True, "AAP P2", "FPK P3", 0.5, 0.4, 14000)
         self.waitMsec(platformWaitTimeMsecs)
 
         # FPK to Sth Sidings
         lock = self.getLock('South Link Lock')
 
-        # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        if siding.getId() == "FP sidings":
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        # see if the reverse loop is free
+        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
+        if b is not None:
+            self.setRoute("Sth Welwyn Inner")
+            self.loco.setSpeedSetting(0.5)
+            self.reverseLoop(SOUTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            # select a siding
+            siding = self.loco.selectSiding(SOUTH_SIDINGS)
+            if siding.getId() == "FP sidings":
+                routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+                self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            else:
+                routes = self.requiredRoutes(self.loco.block)
+                self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.loco.unselectSiding(siding)
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
@@ -76,3 +85,7 @@ class classA4Nth2SthTrack3Stopping(alex.Alex):
         self.debug(type(self).__name__ + ' finished')
 
         return False
+
+loc = loco.Loco(68)
+loc.setBlock("Nth Reverse Loop")
+ClassA4Nth2SthTrack3Stopping(loc, None).start()
