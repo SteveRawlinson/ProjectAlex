@@ -74,6 +74,7 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
                 routes = self.requiredRoutes(siding)
                 self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             self.loco.unselectSiding(siding)
+            self.loco.wrongway = True
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:

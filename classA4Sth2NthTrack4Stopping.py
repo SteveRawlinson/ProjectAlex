@@ -69,6 +69,7 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
             routes = self.requiredRoutes(siding)
             self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             self.loco.unselectSiding(siding)
+            self.loco.wrongway = True
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
