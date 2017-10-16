@@ -28,6 +28,7 @@ class Loco:
         self._passenger = None
         self._fast = None
         self.throttle = None
+        self.wrongway = False
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
