@@ -31,6 +31,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         self.tracks = [] # keeping  track of tracks
         self.memories = [] # list of names of  active journeys
         self.status = NORMAL
+        self.lastJourneyStartTime = time.time() - 300 # 5 minutes ago
 
     def debug(self, message):
         if DEBUG:
@@ -199,6 +200,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # enough activity for now, return
             # TODO: turn trains round?
             return
+        if time.time() - self.lastJourneyStartTime < 10.0:
+            return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
@@ -232,6 +235,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         klass(loc, mem).start()
         loc.status = loco.MOVING
         trak.occupancy += 1
+        self.lastJourneyStartTime = time.time()
 
 
     def handle(self):
