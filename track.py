@@ -164,7 +164,22 @@ class Track:
         routes = ROUTEMAP[farBlock]
         return routes[0] # only one
 
+    # Returns a count of the southbound tracks not in use
+    @classmethod
+    def southboundTracksFree(cls, tracks):
+        count = 0
+        for t in tracks:
+            if t.southbound() and t.busy() is False:
+                count += 1
+        return count
 
-
+    # Returns a count of the southbound tracks not in use
+    @classmethod
+    def northboundTracksFree(cls, tracks):
+        count = 0
+        for t in tracks:
+            if t.northbound() and t.busy() is False:
+                count += 1
+        return count
 
 
