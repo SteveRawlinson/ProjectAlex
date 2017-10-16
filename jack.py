@@ -58,7 +58,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("throttle is set, type is " + type(newloco.throttle).__name__)
             newloco.emergencyStop()
 
-        # get the block for each loco
+        # get the block & facing direction for each loco
         noBlocks = []
         for newloco in self.locos:
             self.debug("initialising blocks for new loco " + newloco.name())
@@ -85,13 +85,26 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                     # User cancelled
                     return False
                 if b != "not in use":
-                    # set the block and add the new loco to the list
+                    # set the block
                     newloco.setBlock(b)
 
             elif b == 'multi':
                 raise RuntimeError("loco", a, "is in more than one block")
             if newloco.block is None:
+                # add to a list to be removed from this operating session
                 noBlocks.append(newloco)
+            elif newloco.reversible() is False:
+                # check it's pointing the right way
+                self.debug("getting direction from user")
+                b = JOptionPane.showConfirmDialog(None, "Confirm Loco direction", "Loco is facing the right way?", JOptionPane.YES_NO_OPTION)
+                if b == JOptionPane.YES_OPTION:
+                    newloco.wrongway = False
+                else:
+                    newloco.wrongway = True
+            else:
+                # can't be facing the wrong way, since reversible is true
+                newloco.wrongway = False
+
 
         # remove locos that have no block
         for l in noBlocks:
@@ -193,14 +206,17 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     # This is the method that starts new journeys. It is called as part
     # of the main loop, once every second.
     def startNewJourneys(self):
+        runningCount = len(self.memories)
         if self.status == STOPPING:
             # no new journeys
             return
-        if len(self.memories) > 5:
+        if runningCount > 4:
             # enough activity for now, return
             # TODO: turn trains round?
             return
         if time.time() - self.lastJourneyStartTime < 10.0:
+            # too soon since last journey started
+            # TODO: turn trains around?
             return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
@@ -217,6 +233,29 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 return
             else:
                 self.debug("no available tracks to run loco " + loc.name())
+        # decide whether to start another journey at all
+        if runningCount < 3:
+            prob = 1.0
+        elif runningCount == 3:
+            prob = 0.3
+        else:
+            prob = 0.1
+        end
+        if random.random() > prob:
+            self.debug("randomly deciding not to start a new journey")
+            return
+        # pick a loco
+        candidates = []
+        for loc in self.locos:
+            if loc.active():
+                continue
+            if loc.wrongway is True:
+                continue
+            candidates.append(loc)
+
+
+
+
 
     def startJourney(self, loc, trak):
         klassName = self.constructClassName(loc, trak)
