@@ -8,7 +8,7 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class ClassA4Nth2SthTrack3Stopping(alex.Alex):
+class ClassA4Nth2SthTrack1Stopping(alex.Alex):
     def __init__(self, loc, memory):
         self.loco = loc
         self.memory = memory
@@ -48,7 +48,7 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
         self.shortJourney(True, "PAL P1", "AAP P4", 0.5, dontStop=True)
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P4", "FPK P1", 0.5, 0.4, 14000)
+        self.shortJourney(True, "AAP P4", "FPK P1", 0.5, 0.4, 16000)
         self.waitAtPlatform()
 
         # FPK to Sth Sidings
@@ -57,7 +57,7 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
         # see if the reverse loop is free
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if b is not None:
-            self.setRoute("Sth Welwyn Inner")
+            self.setRoute("Sth Hertford Inner")
             self.loco.setSpeedSetting(0.5)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
@@ -88,4 +88,4 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
 
 loc = loco.Loco(68)
 loc.setBlock("Nth Reverse Loop")
-ClassA4Nth2SthTrack3Stopping(loc, None).start()
+ClassA4Nth2SthTrack1Stopping(loc, None).start()
