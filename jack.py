@@ -244,7 +244,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if random.random() > prob:
             self.debug("randomly deciding not to start a new journey")
             return
-        # pick a loco
+        # Pick a loco to start up. This is done on the basis of the
+        # available loco's rarity value - prefer non rare locos
         self.debug("picking a loco")
         candidates = []
         for loc in self.locos:
@@ -260,16 +261,23 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             tot += (1 - c.rarity())
         n = tot * random.random()
         for c in candidates:
-            tot -= (1 - c.rarity())
-            if tot < 0.0:
+            n -= (1 - c.rarity())
+            if n < 0.0:
                 loc = c
                 break
         self.debug("picked loco " + loc.name())
+        trak = track.Track.preferred_track(loc, self.tracks)
+        if trak is not None:
+            self.debug(
+                "selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+            self.startJourney(loc, trak)
+            return
+        else:
+            self.debug("no available tracks to run loco " + loc.name())
 
 
 
-
-
+    # Actually kick off a new journey using the loco and track supplied
     def startJourney(self, loc, trak):
         klassName = self.constructClassName(loc, trak)
         self.debug("classname: " + klassName)
@@ -348,14 +356,5 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 return False # stop the loop for the moment
             time.sleep(10)
 
-        # klassName = "Loco2144Sth2NthTrack2"
-        # #klassName = "Loco2144Nth2SthTrack1"
-        # constructor = globals()[klassName]
-        # self.startJourney(self.locos[0], constructor, mem)
-        #
-        # time.sleep(5)
-        # print "Jack continues"
-        # print "loco", self.locos[0].dccAddr, "status is", self.locos[0].status
-        # print "Jack exits"
 
 Jack().start()
