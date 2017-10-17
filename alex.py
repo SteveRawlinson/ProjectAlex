@@ -290,9 +290,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # lock: (String) name of a lock we need to unlock when we're done
     # passBlock: (boolean) wait until the endBlock is empty before returning (and don't stop the loco)
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
+    # dontSrop: (boolean) if true, don't stop the loco
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=0, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=False):
 
         # check we're not in ESTOP status
         if self.checkStatus() is False:
@@ -467,7 +468,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # there is no IR sensor to wait for, wait the specified time
             self.waitMsec(slowTime)
 
-        if passBlock is False:
+        if passBlock is False or dontStop is True:
             # stop the train
             if stopIRClear is not None:
                 spd = -1  # emergency stop
