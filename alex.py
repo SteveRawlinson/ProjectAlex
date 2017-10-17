@@ -303,7 +303,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if dontStop is None:
             if passBlock is True:
                 dontStop = True
-            else
+            else:
                 dontStop = False
         if dontStop is False and passBlock is True:
             raise RuntimeError("dontStop can't be false if passBlock is true")
