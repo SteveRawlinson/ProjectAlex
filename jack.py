@@ -105,7 +105,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 # can't be facing the wrong way, since reversible is true
                 newloco.wrongway = False
 
-
         # remove locos that have no block
         for l in noBlocks:
             self.locos.remove(l)
@@ -247,6 +246,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # Pick a loco to start up. This is done on the basis of the
         # available loco's rarity value - prefer non rare locos
         self.debug("picking a loco")
+        # get a list of candidate locos
         candidates = []
         for loc in self.locos:
             if loc.active():
@@ -256,6 +256,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if loc.northSidings() and track.Track.southboundTracksFree() == 0:
                 continue
             candidates.append(loc)
+        # pick one according to rarity
         tot = 0.0
         for c in candidates:
             tot += (1 - c.rarity())
@@ -266,10 +267,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 loc = c
                 break
         self.debug("picked loco " + loc.name())
+        # pick a track
         trak = track.Track.preferred_track(loc, self.tracks)
         if trak is not None:
-            self.debug(
-                "selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+            self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
             self.startJourney(loc, trak)
             return
         else:
