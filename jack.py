@@ -16,6 +16,10 @@ from class150Nth2SthTrack1Stopping import *
 from class150Sth2NthTrack2Stopping import *
 from class150Sth2NthTrack4Stopping import *
 from class150Nth2SthTrack3Stopping import *
+from classA4Nth2SthTrack1Stopping import *
+from classA4Sth2NthTrack2Stopping import *
+from classA4Nth2SthTrack3Stopping import *
+from classA4Sth2NthTrack4Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 DCC_ADDRESSES = [5144, 2144, 68]
