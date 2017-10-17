@@ -32,10 +32,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        start = time.time()
-        platformWaitTimeMsecs = self.platformWaitTimeMsecs
-        addr = self.loco.dccAddr
-
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
 
@@ -46,18 +42,15 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         # on to PAL P1
         self.shortJourney(True, self.loco.block, "PAL P1", 0.4, slowSpeed=0.2, slowTime=6000)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.waitAtPlatform()
 
         # PAL to AAP
         self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
-        print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.waitAtPlatform()
 
         # AAP to FPK
         self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.waitAtPlatform()
 
         # FPK to Sth Sidings
         lock = self.getLock('South Link Lock')
