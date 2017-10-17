@@ -259,6 +259,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if oSensor.knownState != ACTIVE:
             self.debug("reverseLoop: waiting for occupancy sensor to go active")
             self.waitChange([oSensor])
+            self.loco.setBlock(loop)
         if irSensor.knownState != ACTIVE:
             self.debug('reverseLoop: waiting for IR sensor to go active')
             self.waitChange([irSensor])
