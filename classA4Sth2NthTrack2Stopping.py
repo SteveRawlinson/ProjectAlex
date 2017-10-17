@@ -82,7 +82,3 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
         return False
-
-loc = loco.Loco(68)
-loc.setBlock("Sth Reverse Loop")
-ClassA4Sth2NthTrack2Stopping(loc, None).start()
