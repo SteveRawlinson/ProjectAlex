@@ -293,11 +293,20 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # dontSrop: (boolean) if true, don't stop the loco
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=0, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=False):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
 
         # check we're not in ESTOP status
         if self.checkStatus() is False:
             return False
+
+        # passBlock implies dontStop
+        if dontStop is None:
+            if passBlock is True:
+                dontStop = True
+            else
+                dontStop = False
+        if dontStop is False and passBlock is True:
+            raise RuntimeError("dontStop can't be false if passBlock is true")
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
@@ -468,7 +477,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # there is no IR sensor to wait for, wait the specified time
             self.waitMsec(slowTime)
 
-        if passBlock is False or dontStop is True:
+        if dontStop is False:
             # stop the train
             if stopIRClear is not None:
                 spd = -1  # emergency stop
