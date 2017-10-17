@@ -9,6 +9,7 @@ from javax.swing import JOptionPane
 from jmri_bindings import *
 from myroutes import *
 import track
+import random
 
 # import journey classes
 from class150Nth2SthTrack1Stopping import *
@@ -17,7 +18,7 @@ from class150Sth2NthTrack4Stopping import *
 from class150Nth2SthTrack3Stopping import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144, 2144]
+DCC_ADDRESSES = [5144, 2144, 68]
 DEBUG = True
 
 NORMAL = 0
@@ -68,7 +69,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if b is None:
                 # get a list of occupied blocks with no values
                 blist = ['not in use']
-                for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS):
+                for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]):
                     blk = blocks.getBlock(blockName)
                     if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
                         blist.append(blockName)
@@ -96,7 +97,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             elif newloco.reversible() is False:
                 # check it's pointing the right way
                 self.debug("getting direction from user")
-                b = JOptionPane.showConfirmDialog(None, "Confirm Loco direction", "Loco is facing the right way?", JOptionPane.YES_NO_OPTION)
+                b = JOptionPane.showConfirmDialog(None, "Loco is facing the right way?", "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
                 if b == JOptionPane.YES_OPTION:
                     newloco.wrongway = False
                 else:
@@ -239,7 +240,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             prob = 0.3
         else:
             prob = 0.1
-        end
         if random.random() > prob:
             self.debug("randomly deciding not to start a new journey")
             return
@@ -253,7 +253,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.wrongway is True:
                 continue
-            if loc.northSidings() and track.Track.southboundTracksFree() == 0:
+            if loc.northSidings() and track.Track.southboundTracksFree(self.tracks) == 0:
+                continue
+            if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
             candidates.append(loc)
         # pick one according to rarity
@@ -280,19 +282,25 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
 
     # Actually kick off a new journey using the loco and track supplied
     def startJourney(self, loc, trak):
+        # get the appropriate classname
         klassName = self.constructClassName(loc, trak)
         self.debug("classname: " + klassName)
+        # get the class
         klass = globals()[klassName]
         self.debug("klass: " + type(klass).__name__)
+        # set the memory name
         mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
         self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
                    + str(trak.nr) + " (occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + " score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
+        # set the memory value
         memory = memories.provideMemory(mem)
         memory.setValue(1)
         memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
+        # add memory to lisr
         self.memories.append(memory.getSystemName())
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
         self.debug("klass: " + type(klass).__name__)
+        # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
         trak.occupancy += 1
