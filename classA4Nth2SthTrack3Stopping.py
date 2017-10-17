@@ -39,14 +39,14 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
             routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
         else:
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, lock=lock, dontStop=True)
         self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.5, passBlock=True)
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.5, dontStop=True)
 
         # NSG to AAP
-        self.shortJourney(True, "NSG P1", "AAP P2", 0.5, passBlock=True)
+        self.shortJourney(True, "NSG P1", "AAP P2", 0.5, dontStop=True)
 
         # AAP to FPK
         self.shortJourney(True, "AAP P2", "FPK P3", 0.5, 0.4, 14000)
