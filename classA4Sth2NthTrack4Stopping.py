@@ -39,7 +39,7 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
         self.waitAtPlatform()
 
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P1", 0.5, passBlock=True)
+        self.shortJourney(True, self.loco.block, "AAP P1", 0.5, dontStop=True)
 
         # see if we can get a lock but don't wait for one
         lock = self.getLockNonBlocking('North Link Lock')
@@ -51,7 +51,7 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
         else:
             # we got the lock - AAP to NSG
             routes = self.requiredRoutes("NSG P2")
-            self.shortJourney(True, self.loco.block, "NSG P2", 0.5, routes=routes, passBlock=True)
+            self.shortJourney(True, self.loco.block, "NSG P2", 0.5, routes=routes, dontStop=True)
 
         # NSG to North sidings
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
