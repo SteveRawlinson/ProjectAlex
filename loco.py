@@ -71,7 +71,7 @@ class Loco:
     def rarity(self):
         if self._rarity is None:
             r = self.rosterEntry().getAttribute('rarity')
-            if type(r) == str:
+            if type(r) == str or type(r) == unicode:
                 self._rarity = float(r)
             else:
                 self._rarity = 0 # default
@@ -112,13 +112,17 @@ class Loco:
     # Returns True if this train can move in both directions, False otherwise
     def reversible(self):
         if self._reversible is None:
+            self.debug("setting reversible attribute for the first time for loco " + self.name())
             r = self.rosterEntry().getAttribute('reversible')
+            self.debug("re reversible attribute: " + str(r))
             if r is None:
+                self.debug("re attribute is none")
                 self._reversible = True # this is the default
             if r == 'true':
                 self._reversible = True
             else:
                 self._reversible = False
+        self.debug("loco " + self.name() + "reversible() returning " + str(self._reversible))
         return self._reversible
 
     def fast(self):
@@ -206,7 +210,7 @@ class Loco:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
-        mem = memories.provideMemory("IMSIDING" + siding.getId().upper)
+        mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
         mem.setValue("selected")
         self.debug("selected siding " + siding.getId())
         return siding
