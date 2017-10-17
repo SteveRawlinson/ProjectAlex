@@ -62,7 +62,7 @@ class Loco:
     def trainLength(self):
         if self._trainLength is None:
             self._trainLength = float(self.rosterEntry().getAttribute('length'))
-        return float(self._trainLength)
+        return self._trainLength
 
     # Returns the float 'rarity' which is set in the JMRI roster
     # entry, or zero (the default). Zero raroty means it's a common
@@ -118,7 +118,7 @@ class Loco:
             if r is None:
                 self.debug("re attribute is none")
                 self._reversible = True # this is the default
-            if r == 'true':
+            elif r == 'true':
                 self._reversible = True
             else:
                 self._reversible = False
