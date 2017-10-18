@@ -138,7 +138,6 @@ class Loco:
     # Returns the roster entry for the current loco
     def rosterEntry(self):
         if self._rosterEntry is None:
-            self.debug("getting roster entry for " + str(self.dccAddr))
             # # roster_entries = self.roster.getEntriesByDccAddress(str(self.dccAddr))
             roster_entries = self.roster.getEntriesMatchingCriteria(None, None, str(self.dccAddr),
                                                                     None, None, None, None, None)
