@@ -253,9 +253,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # get a list of candidate locos
         candidates = []
         for loc in self.locos:
-            self.debug("loco " + str(loc.dccAddr) + " has status " + str(loc.status))
             if loc.active():
-                self.debug("loco " + str(loc.dccAddr) + " is active")
                 continue
             if loc.wrongway is True:
                 continue
@@ -263,7 +261,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
-            self.debug("adding loco " + str(loc.dccAddr) + " to candidate list active: " + str(loc.active()) + " status: " + str(loc.status))
             candidates.append(loc)
         # pick one according to rarity
         if len(candidates) == 0:
@@ -297,7 +294,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         self.debug("classname: " + klassName)
         # get the class
         klass = globals()[klassName]
-        self.debug("klass: " + type(klass).__name__)
         # set the memory name
         mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
         self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
