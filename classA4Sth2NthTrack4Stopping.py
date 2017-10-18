@@ -78,6 +78,9 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+            self.debug("setting memory " + self.memory + "to zero")
+        else:
+            self.debug("no memory supplied for journey " + type(self).__name__)
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
