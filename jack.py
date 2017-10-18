@@ -60,7 +60,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 throttleAttempts += 1
             if newloco.throttle is None:
                 raise RuntimeError("failed to get a throttle for " + newloco.name())
-            self.debug("throttle is set, type is " + type(newloco.throttle).__name__)
             newloco.emergencyStop()
 
         # get the block & facing direction for each loco
@@ -101,7 +100,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             elif newloco.reversible() is False:
                 # check it's pointing the right way
                 self.debug("getting direction from user")
-                b = JOptionPane.showConfirmDialog(None, "Loco is facing the right way?", "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
+                b = JOptionPane.showConfirmDialog(None, "Loco " + str(newloco.dccAddr) + " is facing the right way?", "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
                 if b == JOptionPane.YES_OPTION:
                     newloco.wrongway = False
                 else:
@@ -175,7 +174,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 trak = self.tracks[int(tracknr) - 1]
                 # reduce the occupancy
                 trak.occupancy -= 1
-                self.debug("track " + str(track.nr) + " occupancy reduced to " + str(track.occupancy))
+                self.debug("track " + str(trak.nr) + " occupancy reduced to " + str(trak.occupancy))
                 # update the last used time
                 trak.last_used = time.time()
                 self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
@@ -246,7 +245,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         else:
             prob = 0.1
         if random.random() > prob:
-            self.debug("randomly deciding not to start a new journey")
+            self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
             return
         # Pick a loco to start up. This is done on the basis of the
         # available loco's rarity value - prefer non rare locos
@@ -254,7 +253,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # get a list of candidate locos
         candidates = []
         for loc in self.locos:
+            self.debug("loco " + str(loc.dccAddr) + " has status " + str(loc.status))
             if loc.active():
+                self.debug("loco " + str(loc.dccAddr) + " is active")
                 continue
             if loc.wrongway is True:
                 continue
@@ -262,8 +263,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
+            self.debug("adding loco " + str(loc.dccAddr) + " to candidate list active: " + str(loc.active()) + " status: " + str(loc.status))
             candidates.append(loc)
         # pick one according to rarity
+        if len(candidates) == 0:
+            self.debug("no locos available to start a new journey")
+            return
         tot = 0.0
         for c in candidates:
             tot += (1 - c.rarity())
@@ -273,7 +278,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if n < 0.0:
                 loc = c
                 break
-        self.debug("picked loco " + loc.name())
+        self.debug("picked loco " + str(loc.dccAddr) + " status: " + str(loc.status))
         # pick a track
         trak = track.Track.preferred_track(loc, self.tracks)
         if trak is not None:
@@ -308,6 +313,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
+        self.debug("loco " + str(loc.dccAddr) + " status: " + str(loc.status))
         trak.occupancy += 1
         self.lastJourneyStartTime = time.time()
 
