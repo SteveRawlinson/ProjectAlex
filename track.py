@@ -32,7 +32,7 @@ class Track:
         # if DEBUG:
         #     print "track in order of preference: "
         #     for t in list:
-        #         print("track " + str(t.nr) + ": " + str(t.score(loco)))
+        #         print("track " + str(t.nr) + ": " + str(t.score(loco)) + " occupancy: " + str(t.occupancy))
         if len(list) == 0:
             return None
         if list[0].score(loco) == 0:
