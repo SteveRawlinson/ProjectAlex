@@ -141,13 +141,13 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     def checkStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
         v = mem.getValue()
-        self.debug("status memory value: " + str(v) + " type: " + type(v).__name__)
+        # self.debug("status memory value: " + str(v) + " type: " + type(v).__name__)
         if v is None or v == "":
             self.debug("setting memory status to " + str(self.status))
             mem.setValue(self.status)
         else:
             self.status = int(mem.getValue())
-            self.debug("reading new status from status memory: " + str(self.status))
+            #self.debug("reading new status from status memory: " + str(self.status))
 
     def setStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
@@ -175,6 +175,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 trak = self.tracks[int(tracknr) - 1]
                 # reduce the occupancy
                 trak.occupancy -= 1
+                self.debug("track " + str(track.nr) + " occupancy reduced to " + str(track.occupancy))
                 # update the last used time
                 trak.last_used = time.time()
                 self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
