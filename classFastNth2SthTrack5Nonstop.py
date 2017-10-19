@@ -14,12 +14,20 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.knownLocation = None
         self.memory = memory
 
+
+    # This method should be overridden by the child classes
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
+
     def handle(self):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
-        fullSpeed = 0.5
-        bendSpeed = 0.2
+        fullSpeed, bendSpeed, slowSpeed = self.getSpeeds()
+
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
         start = time.time()
@@ -29,7 +37,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.4, routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, routes=routes, lock=lock)
 
         # slower round the bend
         self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed)
@@ -41,7 +49,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         lock = self.getLockNonBlocking('South Link Lock')
         if lock is False:
             # stop the train at FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", 0.3, 0.1, 1000)
+            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, slowSpeed, 1000)
             # wait for a lock
             lock = self.getLock('South Link Lock')
         else:
@@ -49,7 +57,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             for r in self.requiredRoutes("FPK P7"):
                 self.setRoute(r, 0)
             # progress to FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", 0.4)
+            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
             # check we still have the lock
             rc = self.checkLock(lock)
             if rc is False :
@@ -61,7 +69,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         # select a siding
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         self.unlock('South Link Lock')
 
         self.loco.status = loco.SIDINGS
@@ -70,3 +78,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             m.setValue(0)
 
         return False
+
+loc = loco.Loco(3213)
+loc.setBlock("Nth Sidings 2")
+ClassFastNth2SthTrack5Nonstop(loc, None).start()
