@@ -7,16 +7,27 @@ import loco
 from jmri_bindings import *
 from myroutes import *
 
-class LocoAnySth2NthTrack6(alex.Alex):
+class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         
-    def __init__(self, loco):
-        self.loco = loco
+    def __init__(self, loc, memory):
+        self.loco = loc
         self.knownLocation = None
+        self.memory = memory
+
+    # This method should be overridden by the child classes
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
 
     def handle(self):
 
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
+
+        fullSpeed, bendSpeed, slowSpeed = self.getSpeeds()
+
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
         start = time.time()
@@ -26,19 +37,16 @@ class LocoAnySth2NthTrack6(alex.Alex):
 
         # Out the sth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        self.shortJourney(False, self.loco.block, "South Link", 0.2, routes=routes, lock=lock, passBlock=True)
+        self.shortJourney(False, self.loco.block, "South Link", bendSpeed, routes=routes, lock=lock, dontStop=True)
 
         # All the way to North Fast Outer 2
-        self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", 0.4)
-
-        # slow down a bit
-        # self.throttle.setSpeedSetting(0.5)
+        self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed)
 
         # get a lock on the north link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('North Link Lock')
         if lock is False:
             # stop the train at North Fast Outer 1
-            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 0.3, 0.1, 1000)
+            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, slowSpeed, 1000)
             # wait for a lock
             lock = self.getLock('North Link Lock')
         else:
@@ -46,7 +54,7 @@ class LocoAnySth2NthTrack6(alex.Alex):
             for r in self.requiredRoutes("Nth Fast Outer 1"):
                 self.setRoute(r, 0)
             # progress to ...
-            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 0.4, passBlock=True)
+            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, dontStop=True)
             # check we still have the lock
             rc = self.checkLock(lock)
             if rc is False :
@@ -58,16 +66,20 @@ class LocoAnySth2NthTrack6(alex.Alex):
         # select a siding
         siding = self.loco.selectSiding(NORTH_SIDINGS)
         routes = self.requiredRoutes(siding)
-        self.shortJourney(False, self.loco.block, siding, 0.2, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
+        self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
         print "route took", stop - start, 'seconds'
         self.loco.status = loco.SIDINGS
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
 
         return False
 
-l = loco.Loco(3213)
-l.initBlock()
-LocoAnySth2NthTrack6(l).start()
+loc = loco.Loco(3904)
+loc.setBlock("Sth Sidings 2")
+ClassFastSth2NthTrack6Nonstop(loc, None).start()
+
 
