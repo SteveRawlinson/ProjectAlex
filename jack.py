@@ -197,7 +197,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if loco.brclass() is not None:
             train = 'Class' + str(loco.brclass())
         else:
-            train = 'loco' + str(loco.dccAddr)
+            train = 'Loco' + str(loco.dccAddr)
         dir = track.dir()
         tracknr = 'Track' + str(track.nr)
         if loco.passenger():
