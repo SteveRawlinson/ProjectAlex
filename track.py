@@ -28,7 +28,7 @@ class Track:
     # used. If no tracks are available, returns None
     @classmethod
     def preferred_track(cls, loco, tracks):
-        list = sorted(tracks, key=lambda t: t.score(loco), reverse=True)
+        list = sorted(tracks, key=lambda t: t.score(loco, verbose=True), reverse=True)
         # if DEBUG:
         #     print "track in order of preference: "
         #     for t in list:
@@ -72,20 +72,37 @@ class Track:
     # Returns a number which is an indication of the suitability
     # of this track for this locomotive. Zero means it can't be
     # used, higher scores indicate more suitability
-    def score(self, loco):
+    def score(self, loco, verbose=False):
+        if verbose:
+            print "getting score for track", self.nr
         if self.northbound() and loco.northSidings():
             return 0
         if self.southbound() and loco.southSidings():
             return 0
+        if verbose:
+            print "direction is fine"
         if self.busy():
             return 0
+        if verbose:
+            print "not busy"
         if self.us:
             return 0
+        if verbose:
+            print "not u/s"
         score = 0
         if self.fast and loco.fast():
             score += 1
-        if self.stops > 1 and loco.passenger:
+            if verbose:
+                print "fast status matched"
+        else:
+            if verbose:
+                print "fast status not matched. self.fast:", self.fast, "loco.fast():", loco.fast()
+        if self.stops > 1 and loco.passenger():
             score += 1
+            if verbose:
+                print "passenger status matched"
+        if verbose:
+            print "returning score", str(score)
         return score
 
     # Returns the track object in the list of tracks
