@@ -79,6 +79,6 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         return False
 
 
-class Loco5004Sth2NthNonstop(ClassFastSth2NthTrack6Nonstop):
+class Loco5004Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
     def getSpeeds(self):
         return [0.3, 0.2, 0.1]
