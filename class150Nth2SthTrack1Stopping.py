@@ -37,11 +37,10 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes, lock=lock)
-        self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
+        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes)
 
         # on to PAL P1
-        self.shortJourney(True, self.loco.block, "PAL P1", 0.4, slowSpeed=0.2, slowTime=6000)
+        self.shortJourney(True, self.loco.block, "PAL P1", 0.4, slowSpeed=0.2, slowTime=6000, lock=lock)
         self.waitAtPlatform()
 
         # PAL to AAP
