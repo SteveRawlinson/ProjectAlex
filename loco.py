@@ -134,6 +134,7 @@ class Loco:
                 self._fast = True
             else:
                 self._fast = False
+        return self._fast
     
     # Returns the roster entry for the current loco
     def rosterEntry(self):
