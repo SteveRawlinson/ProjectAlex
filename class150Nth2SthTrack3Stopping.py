@@ -39,11 +39,10 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, lock=lock)
-        self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes)
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000)
+        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000, lock=lock)
         print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
         self.waitMsec(platformWaitTimeMsecs)
 
