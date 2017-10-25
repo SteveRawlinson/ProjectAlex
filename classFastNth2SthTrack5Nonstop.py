@@ -80,6 +80,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         return False
 
-loc = loco.Loco(5004)
-loc.setBlock("Nth Sidings 3")
-ClassFastNth2SthTrack5Nonstop(loc, None).start()
+class Loco5004Nth2SthNonstop(ClassFastNth2SthTrack5Nonstop):
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
