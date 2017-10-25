@@ -38,10 +38,10 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
         self.shortJourney(True, self.loco.block, "North Link", slowSpeed, routes=routes)
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed)
 
         # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed)
+        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock)
 
         # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed)
@@ -80,6 +80,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         return False
 
-class Loco5004Nth2SthNonstop(ClassFastNth2SthTrack5Nonstop):
+class Loco5004Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     def getSpeeds(self):
         return [0.3, 0.2, 0.1]
