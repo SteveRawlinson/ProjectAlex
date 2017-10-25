@@ -20,9 +20,12 @@ from classA4Nth2SthTrack1Stopping import *
 from classA4Sth2NthTrack2Stopping import *
 from classA4Nth2SthTrack3Stopping import *
 from classA4Sth2NthTrack4Stopping import *
+from classFastSth2NthTrack6Nonstop import *
+from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144, 2144, 68]
+#DCC_ADDRESSES = [5144, 2144, 68]
+DCC_ADDRESSES = [5004]
 DEBUG = True
 
 NORMAL = 0
@@ -203,7 +206,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if loco.passenger():
             stopping = 'Stopping'
         else:
-            stopping = 'NonStop'
+            stopping = 'Nonstop'
         return train + dir + tracknr + stopping
 
 
@@ -241,9 +244,9 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if runningCount < 3:
             prob = 1.0
         elif runningCount == 3:
-            prob = 0.3
+            prob = 0.5
         else:
-            prob = 0.1
+            prob = 0.3
         if random.random() > prob:
             self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
             return
