@@ -112,17 +112,13 @@ class Loco:
     # Returns True if this train can move in both directions, False otherwise
     def reversible(self):
         if self._reversible is None:
-            self.debug("setting reversible attribute for the first time for loco " + self.name())
             r = self.rosterEntry().getAttribute('reversible')
-            self.debug("re reversible attribute: " + str(r))
             if r is None:
-                self.debug("re attribute is none")
                 self._reversible = True # this is the default
             elif r == 'true':
                 self._reversible = True
             else:
                 self._reversible = False
-        self.debug("loco " + self.name() + "reversible() returning " + str(self._reversible))
         return self._reversible
 
     def fast(self):
