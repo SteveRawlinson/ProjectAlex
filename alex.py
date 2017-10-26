@@ -106,7 +106,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         return False
 
     # sets (triggers) a route
-    def setRoute(self, route, sleeptime=2):
+    def setRoute(self, route, sleeptime=1):
         print self.loco.dccAddr, 'setting route', route
         r = routes.getRoute(route)
         if r is None:
