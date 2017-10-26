@@ -28,7 +28,7 @@ class Track:
     # used. If no tracks are available, returns None
     @classmethod
     def preferred_track(cls, loco, tracks):
-        list = sorted(tracks, key=lambda t: t.score(loco, verbose=True), reverse=True)
+        list = sorted(tracks, key=lambda t: t.score(loco), reverse=True)
         # if DEBUG:
         #     print "track in order of preference: "
         #     for t in list:
