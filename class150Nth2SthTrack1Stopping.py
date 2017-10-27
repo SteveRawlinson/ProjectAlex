@@ -55,23 +55,16 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         # FPK to Sth Sidings
         lock = self.getLock('South Link Lock')
 
-        if self.getJackStatus() == NORMAL and self.loco.rarity() == 0:
-            # If this loco has a rarity of zero and we're not shutting down operations
-            # there's no point in going all the way to the sidings because we'll just get
-            # started up again. Stop on the North Link
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", 0.4, 0.3, 3000, routes=routes)
+        # select a siding
+        siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        if siding.getId() == "FP sidings":
+            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
-            # select a siding
-            siding = self.loco.selectSiding(SOUTH_SIDINGS)
-            if siding.getId() == "FP sidings":
-                routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            else:
-                routes = self.requiredRoutes(self.loco.block)
-                self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
-                routes = self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            routes = self.requiredRoutes(self.loco.block)
+            self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
+            routes = self.requiredRoutes(siding)
+            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
