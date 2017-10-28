@@ -320,7 +320,7 @@ class Loco:
     def northSidings(self):
         blockname = self.block.getUserName()
         #self.debug("northSidings: my status is SIDINGS, my blockname is " + blockname + " type " + type(blockname).__name__)
-        if blockname in NORTH_SIDINGS or blockname == NORTH_REVERSE_LOOP:
+        if blockname in NORTH_SIDINGS or blockname == NORTH_REVERSE_LOOP or blockname == "North Link":
             return True
         return False
 
