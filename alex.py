@@ -436,14 +436,14 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             sensorList.append(unlockSensor)
         changedList = []
         arrived = False
-        slowJourneyStart = time.time()
+        shortJourneyStart = time.time()
         while not arrived:
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
                 self.waitChange(sensorList, 5000)
                 if self.checkStatus() is False:
                     return False
-                if time.time() - slowJourneyStart > 30 * 60.0: # 30 minute timeout
+                if time.time() - shortJourneyStart > 30 * 60.0: # 30 minute timeout
                     raise RuntimeError("shortJourney took too long")
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
@@ -452,6 +452,16 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             # check if we have reached the endBlock
             if endBlockSensor in changedList:
                 arrived = True
+
+        # see if this journey is longer than the longest one previously
+        duration = int(time.time() - shortJourneyStart)
+        mem = memories.provideMemory("IMLONGESTSHORTJOURNEY")
+        if mem.getValue() == None:
+            mem.setValue(str(duration))
+        else:
+            longest = int(mem.getValue())
+            if duration > longest:
+                mem.setValue(duration)
 
         self.debug("destination block " +  endBlock.userName +  " is active, we have arrived")
 
