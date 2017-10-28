@@ -3,6 +3,11 @@ NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 
 NORTH_REVERSE_LOOP = 'Nth Reverse Loop'
 SOUTH_REVERSE_LOOP = 'Sth Reverse Loop'
 
+# Jack status codes
+NORMAL = 0
+STOPPING = 1
+ESTOP = 2
+
 
 IRSENSORS = {
     "Sth Sidings 1": "LS61",
@@ -53,8 +58,8 @@ ROUTEMAP = {
 TRACKS = [
     [3, False, False, ['FPK P1', 'AAP P4', 'PAL P1']],
     [3, False, False, ['FPK P2', 'AAP P3', 'PAL P2']],
-    [3, False, False, ['FPK P3', 'AAP P2', 'NSG P1']],
-    [3, False, False, ['FPK P4', 'AAP P1', 'NSG P2']],
+    [3, False, True, ['FPK P3', 'AAP P2', 'NSG P1']],
+    [3, False, True, ['FPK P4', 'AAP P1', 'NSG P2']],
     [1, True, False, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1']],
     [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1']]
 ]

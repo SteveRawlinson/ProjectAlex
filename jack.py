@@ -24,13 +24,10 @@ from classFastSth2NthTrack6Nonstop import *
 from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-#DCC_ADDRESSES = [5144, 2144, 68]
-DCC_ADDRESSES = [5004]
+#DCC_ADDRESSES = [5144, 2144, 68, 5004]
+DCC_ADDRESSES = [3144]
 DEBUG = True
 
-NORMAL = 0
-STOPPING = 1
-ESTOP = 2
 
 class Jack(jmri.jmrit.automat.AbstractAutomaton):
     
@@ -287,6 +284,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             return
         else:
             self.debug("no available tracks to run loco " + loc.name())
+            if DEBUG:
+                track.Track.trackReport(self.tracks)
 
 
 
