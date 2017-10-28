@@ -40,8 +40,9 @@ ROUTEMAP = {
             "Nth Fast Inner 1": ["Nth Fast Inner"],
             "Nth Fast Outer 1": ["Nth Fast Outer"],
             NORTH_REVERSE_LOOP: ["Nth Reverse Loop Entry", "Nth Reverse Loop Exit"],
-            SOUTH_REVERSE_LOOP: ["Sth Reverse Loop Entry", "Sth Reverse Loop Exit"]
-
+            SOUTH_REVERSE_LOOP: ["Sth Reverse Loop Entry", "Sth Reverse Loop Exit"],
+            "North Link": [],
+            "South Link": []
             }
 
 # fields are:

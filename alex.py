@@ -242,11 +242,15 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # checks the JackStatus memory to see if an ESTOP status
     # has been set by the user, and exits immediately if so
     def checkStatus(self):
-        mem = memories.provideMemory('IMJACKSTATUS')
-        if int(mem.getValue()) == ESTOP:
+        if self.getJackStatus() == ESTOP:
             print "Alex: detected ESTOP status"
             return False
         return True
+
+    # Returns the value of the JACKSTATUS memory
+    def getJackStatus(self):
+        mem = memories.provideMemory('IMJACKSTATUS')
+        return mem.getValue()
 
     # The loco should be moving towards the loop already. This
     # method puts the loco into the loop and either stops it (if

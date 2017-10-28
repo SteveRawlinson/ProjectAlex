@@ -43,13 +43,20 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         self.shortJourney(False, self.loco.block, "PAL P2", 0.4, 0.3, 2000)
         self.waitAtPlatform()
 
-        # PAL to North sidings
-        lock = self.getLock('North Link Lock')
-        siding = self.loco.selectSiding(NORTH_SIDINGS)
-        routes = self.requiredRoutes(self.loco.block)
-        self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
-        routes = self.requiredRoutes(siding)
-        self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        if self.getJackStatus() == NORMAL and self.loco.rarity() == 0:
+            # If this loco has a rarity of zero and we're not shutting down operations
+            # there's no point in going all the way to the sidings because we'll just get
+            # started up again. Stop on the North Link
+            routes = self.requiredRoutes(self.loco.block)
+            self.shortJourney(True, self.loco.block, "North Link", 0.4, 0.3, 3000, routes=routes)
+        else:
+            # PAL to North sidings
+            lock = self.getLock('North Link Lock')
+            siding = self.loco.selectSiding(NORTH_SIDINGS)
+            routes = self.requiredRoutes(self.loco.block)
+            self.shortJourney(False, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
+            routes = self.requiredRoutes(siding)
+            self.shortJourney(False, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
