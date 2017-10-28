@@ -96,7 +96,7 @@ class Track:
                 print "fast status matched"
         else:
             if verbose:
-                print "fast status not matched. self.fast:", self.fast, "loco.fast():", loco.fast()
+                print "fast status not matched. self.fast:", self.fast, type(self.fast).__name__, "loco.fast():", loco.fast(), type(loco.fast()).__name__
         if self.stops > 1 and loco.passenger():
             score += 1
             if verbose:
@@ -202,4 +202,4 @@ class Track:
     @classmethod
     def trackReport(self, tracks):
         for t in tracks:
-            print "track nr:", t.nr, "occupancy:", t.occupancy(), "u/s:", t.us(), "northBound:", t.northbound()
+            print "track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound()
