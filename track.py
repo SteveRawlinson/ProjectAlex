@@ -199,4 +199,7 @@ class Track:
                 count += 1
         return count
 
-
+    @classmethod
+    def trackReport(self, tracks):
+        for t in tracks:
+            print "track nr:", t.nr, "occupancy:", t.occupancy(), "u/s:", t.us(), "northBound:", t.northbound()
