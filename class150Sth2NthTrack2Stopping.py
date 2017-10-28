@@ -49,7 +49,7 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
             # started up again. Stop on the North Link
             self.debug("stopping early")
             routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(False, self.loco.block, "North Link", 0.4, 0.3, 3000, routes=routes)
+            self.shortJourney(False, self.loco.block, "North Link", 0.4, 0.3, 1000, routes=routes)
         else:
             # PAL to North sidings
             lock = self.getLock('North Link Lock')
