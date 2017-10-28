@@ -436,12 +436,15 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             sensorList.append(unlockSensor)
         changedList = []
         arrived = False
+        slowJourneyStart = time.time()
         while not arrived:
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
                 self.waitChange(sensorList, 5000)
                 if self.checkStatus() is False:
                     return False
+                if time.time() - slowJourneyStart > 30 * 60.0: # 30 minute timeout
+                    raise RuntimeError("shortJourney took too long")
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
