@@ -53,6 +53,9 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, slowSpeed, 1000)
             # wait for a lock
             lock = self.getLock('South Link Lock')
+            # now we got the lock, set the exit route
+            for r in self.requiredRoutes("FPK P7"):
+                self.setRoute(r, 0)
         else:
             # we got the lock - set the turnouts for FPK 7
             for r in self.requiredRoutes("FPK P7"):
