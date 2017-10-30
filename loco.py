@@ -57,6 +57,9 @@ class Loco:
     def name(self):
         return self.rosterEntry().getId()
 
+    def nameAndAddress(self):
+        return self.name() + "(" + str(self.dccAddr) + ")"
+
     # Returns the length of the train, as recorded in the attribute
     # 'length' in the loco roster.
     def trainLength(self):
