@@ -3,6 +3,7 @@ sys.path.append('C:\\Users\\steve\\Documents\\Github\\JMRI')
 import jmri as jmri
 import time
 sys.path.append('C:\\Users\\steve\\JMRI\\jython')
+sys.path.append('/Users/steve/src/ProjectAlex')
 import loco
 import java
 from javax.swing import JOptionPane
@@ -25,7 +26,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [5144, 3144]
+DCC_ADDRESSES = []
 DEBUG = True
 
 
@@ -42,26 +43,71 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if DEBUG:
             print "Jack:", message
 
+    # Gets a DCC throttle for the loco supplied
+    def getLocoThrottle(self, loc):
+        throttleAttempts = 0
+        while throttleAttempts < 2 and loc.throttle is None:
+            time.sleep(5)
+            loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr())
+            throttleAttempts += 1
+        if loc.throttle is None:
+            raise RuntimeError("failed to get a throttle for " + loc.name())
+
+    # gets a new loco and appends it to self.locos
+    def getNewLoco(self, addr):
+        self.debug("setting up loco addr " + str(addr))
+        # create the Loco object
+        newloco = loco.Loco(addr)
+        self.locos.append(newloco)
+        return newloco
+
+    def getBlockOccupiedByLocoFromUser(self, loc):
+        # get a list of occupied blocks with no values
+        blist = ['not in use']
+        for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]):
+            blk = blocks.getBlock(blockName)
+            if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
+                blist.append(blockName)
+        # put up a dropbox for the user to select the block
+        self.debug("getting block from user")
+        b = JOptionPane.showInputDialog(None,
+                                        "Select starting block for " + loc.nameAndAddress(),
+                                        "Choose block",
+                                        JOptionPane.QUESTION_MESSAGE,
+                                        None,
+                                        blist,
+                                        'not in use')
+        if b is None:
+            # User cancelled
+            return False
+        if b != "not in use":
+            # set the block
+            newloco.setBlock(b)
+        elif b == 'multi':
+            raise RuntimeError("loco", a, "is in more than one block")
+
+    def confirmLocoDirection(self, loc):
+        if loc.reversible() is False:
+            # check it's pointing the right way
+            self.debug("getting direction from user")
+            b = JOptionPane.showConfirmDialog(None, "Loco " + str(newloco.dccAddr) + " is facing the right way?",
+                                              "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
+            if b == JOptionPane.YES_OPTION:
+                newloco.wrongway = False
+            else:
+                newloco.wrongway = True
+        else:
+            # can't be facing the wrong way, since reversible is true
+            newloco.wrongway = False
+
     # Creates a Loco object for each DDC address listed above, and
     # gets a location for it.
     def initLocos(self):
         # go through each dcc address
         for a in DCC_ADDRESSES:
-            self.debug("setting up loco addr " + str(a))
-            # create the Loco object
-            newloco = loco.Loco(a)
-            self.locos.append(newloco)
-            # we get a throttle for the loco here because Loco does
-            # not have4 access to getThrottle
-            throttleAttempts = 0
-            while throttleAttempts < 2 and newloco.throttle is None:
-                time.sleep(5)
-                newloco.throttle = self.getThrottle(newloco.dccAddr, newloco.longAddr())
-                throttleAttempts += 1
-            if newloco.throttle is None:
-                raise RuntimeError("failed to get a throttle for " + newloco.name())
+            newloco = self.getNewLoco(a)
+            self.getLocoThrottle(newloco)
             newloco.emergencyStop()
-
         # get the block & facing direction for each loco
         noBlocks = []
         for newloco in self.locos:
@@ -70,45 +116,14 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             b = newloco.initBlock()
             # if no block, prompt user
             if b is None:
-                # get a list of occupied blocks with no values
-                blist = ['not in use']
-                for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]):
-                    blk = blocks.getBlock(blockName)
-                    if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
-                        blist.append(blockName)
-                # put up a dropbox for the user to select the block
-                self.debug("getting block from user")
-                b = JOptionPane.showInputDialog(None,
-                                                "Select starting block for " + newloco.name(),
-                                                "Choose block", 
-                                                JOptionPane.QUESTION_MESSAGE,
-                                                None,
-                                                blist,
-                                                'not in use')
-                if b is None:
-                    # User cancelled
-                    return False
-                if b != "not in use":
-                    # set the block
-                    newloco.setBlock(b)
-
-            elif b == 'multi':
-                raise RuntimeError("loco", a, "is in more than one block")
+                if self.getBlockOccupiedByLocoFromUser(newloco) is False:
+                    # User pressed 'cancel'
+                    return False # abort
             if newloco.block is None:
                 # add to a list to be removed from this operating session
                 noBlocks.append(newloco)
-            elif newloco.reversible() is False:
-                # check it's pointing the right way
-                self.debug("getting direction from user")
-                b = JOptionPane.showConfirmDialog(None, "Loco " + str(newloco.dccAddr) + " is facing the right way?", "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
-                if b == JOptionPane.YES_OPTION:
-                    newloco.wrongway = False
-                else:
-                    newloco.wrongway = True
             else:
-                # can't be facing the wrong way, since reversible is true
-                newloco.wrongway = False
-
+                self.confirmLocoDirection(newloco)
         # remove locos that have no block
         for l in noBlocks:
             self.locos.remove(l)
@@ -128,12 +143,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     def southSidings(self, loc):
         return loc.southSidings
 
-    def locosSouth(self):
-        southList = []
-        for l in self.locos:
-            if self.southSidings(l):
-                southList.append(l)
-        return southList
+    # def locosSouth(self):
+    #     southList = []
+    #     for l in self.locos:
+    #         if self.southSidings(l):
+    #             southList.append(l)
+    #     return southList
 
     # checks for the presence and value of a special memory which
     # can be modified by the user to tell us to stop all activity
@@ -315,6 +330,24 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         self.lastJourneyStartTime = time.time()
 
 
+    # Checks a memory for a value, if there is one, adds a loco
+    # to the list by prompting the user for a dcc address
+    def checkForNewLocos(self):
+        m = memories.provideMemory("IMNEWLOCO")
+        if m.getValue() is not None and m.getValue() != "" and m.getValue() != 0:
+            b = JOptionPane.showInputDialog("DCC address of new loco:")
+            if b != "" and b is not None and int(b) > 0:
+                loc = self.getNewLoco(int(b))
+                self.getLocoThrottle(loc)
+                loc.emergencyStop()
+            b = loc.initBlock()
+            if b is None:
+                if self.getBlockOccupiedByLocoFromUser() is not False:
+                    if loc.block is not None:
+                        self.locos.append(loc)
+            m.setValue(None)
+
+
     def handle(self):
         self.debug("Jack Starting")
 
@@ -344,13 +377,15 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # clear locks
         for lock in ['North Link Lock', 'South Link Lock']:
             self.debug('unlocking ' + lock)
-            memories.getMemory(lock).setValue(None)
+            mem = memories.getMemory(lock)
+            if mem is not None:
+                mem.setValue(None)
 
         # give the sensors time to wake up if we just turned power on
         if poweredOn:
             time.sleep(5)
 
-        # Main Loop
+        # ------------- Main Loop -------------------
         maxloops = 300
         loopcount = 0
         while True:
@@ -363,16 +398,22 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 self.eStop()
                 print "Jack exits on ESTOP"
                 return False
+            # check for journeys that have completed
             self.checkJourneys()
             if self.status == STOPPING and len(self.memories) == 0:
                 # We are doing a graceful stop and all journeys are done
                 print "All done - exiting"
                 return False
-            self.startNewJourneys() # kick off new journeys, if appropriate
+            # kick off new journeys, if appropriate
+            self.startNewJourneys()
+            # check for new locos
+            self.checkForNewLocos()
+            # bow out if there's a limit
             if loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
                 return False # stop the loop for the moment
-            time.sleep(1)
 
+            time.sleep(1)
+        # ------------ end main loop -------------------
 
 Jack().start()
