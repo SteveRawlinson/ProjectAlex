@@ -25,7 +25,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [3144]
+DCC_ADDRESSES = [5144, 3144]
 DEBUG = True
 
 
@@ -218,10 +218,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # enough activity for now, return
             # TODO: turn trains round?
             return
-        if time.time() - self.lastJourneyStartTime < 10.0:
-            # too soon since last journey started
-            # TODO: turn trains around?
-            return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
@@ -237,6 +233,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 return
             else:
                 self.debug("no available tracks to run loco " + loc.name())
+        if time.time() - self.lastJourneyStartTime < 10.0:
+            # too soon since last journey started
+            # TODO: turn trains around?
+            return
         # decide whether to start another journey at all
         if runningCount < 3:
             prob = 1.0
@@ -307,7 +307,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # add memory to lisr
         self.memories.append(memory.getSystemName())
         self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
-        self.debug("klass: " + type(klass).__name__)
         # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
@@ -352,11 +351,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             time.sleep(5)
 
         # Main Loop
-        maxloops = 50
+        maxloops = 300
         loopcount = 0
         while True:
             loopcount += 1
-            self.debug("loop " + str(loopcount))
+            if loopcount % 10 == 0:
+                self.debug("loop " + str(loopcount))
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
                 # Stop everything immediately
@@ -372,7 +372,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             if loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
                 return False # stop the loop for the moment
-            time.sleep(10)
+            time.sleep(1)
 
 
 Jack().start()
