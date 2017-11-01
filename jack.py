@@ -26,7 +26,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = []
+DCC_ADDRESSES = [3144, 5144]
 DEBUG = True
 
 
@@ -82,23 +82,23 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             return False
         if b != "not in use":
             # set the block
-            newloco.setBlock(b)
+            loc.setBlock(b)
         elif b == 'multi':
-            raise RuntimeError("loco", a, "is in more than one block")
+            raise RuntimeError("loco", loc.nameAndAddress(), "is in more than one block")
 
     def confirmLocoDirection(self, loc):
         if loc.reversible() is False:
             # check it's pointing the right way
             self.debug("getting direction from user")
-            b = JOptionPane.showConfirmDialog(None, "Loco " + str(newloco.dccAddr) + " is facing the right way?",
+            b = JOptionPane.showConfirmDialog(None, "Loco " + str(loc.nameAndAddress()) + " is facing the right way?",
                                               "Confirm Loco direction", JOptionPane.YES_NO_OPTION)
             if b == JOptionPane.YES_OPTION:
-                newloco.wrongway = False
+                loc.wrongway = False
             else:
-                newloco.wrongway = True
+                loc.wrongway = True
         else:
             # can't be facing the wrong way, since reversible is true
-            newloco.wrongway = False
+            loc.wrongway = False
 
     # Creates a Loco object for each DDC address listed above, and
     # gets a location for it.
@@ -264,7 +264,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             return
         # Pick a loco to start up. This is done on the basis of the
         # available loco's rarity value - prefer non rare locos
-        self.debug("picking a loco")
+        #self.debug("picking a loco")
         # get a list of candidate locos
         candidates = []
         for loc in self.locos:
@@ -279,7 +279,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             candidates.append(loc)
         # pick one according to rarity
         if len(candidates) == 0:
-            self.debug("no locos available to start a new journey")
+            #self.debug("no locos available to start a new journey")
             return
         tot = 0.0
         for c in candidates:
@@ -335,17 +335,20 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
     def checkForNewLocos(self):
         m = memories.provideMemory("IMNEWLOCO")
         if m.getValue() is not None and m.getValue() != "" and m.getValue() != 0:
-            b = JOptionPane.showInputDialog("DCC address of new loco:")
-            if b != "" and b is not None and int(b) > 0:
-                loc = self.getNewLoco(int(b))
+            addr = JOptionPane.showInputDialog("DCC address of new loco:")
+            self.debug("joptionpane returned " + str(addr) + " type " + type(addr).__name__)
+            if addr != "" and addr is not None and int(addr) > 0:
+                loc = self.getNewLoco(int(addr))
                 self.getLocoThrottle(loc)
                 loc.emergencyStop()
-            b = loc.initBlock()
-            if b is None:
-                if self.getBlockOccupiedByLocoFromUser() is not False:
-                    if loc.block is not None:
-                        self.locos.append(loc)
+                b = loc.initBlock()
+                if b is None:
+                    if self.getBlockOccupiedByLocoFromUser(loc) is not False:
+                        if loc.block is not None:
+                            self.locos.append(loc)
             m.setValue(None)
+            sen = sensors.getSensor("Add Loco")
+            sen.setKnownState(INACTIVE)
 
 
     def handle(self):
@@ -364,6 +367,23 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             poweredOn = False
             self.debug("power is on")
 
+        # clear locks
+        for lock in ['North Link Lock', 'South Link Lock']:
+            self.debug('unlocking ' + lock)
+            mem = memories.getMemory(lock)
+            if mem is not None:
+                mem.setValue(None)
+
+        # set sensors to inactive
+        for s in ["Add Loco"]:
+            sen = sensors.getSensor(s)
+            sen.setKnownState(INACTIVE)
+
+        # reset memories
+        for m in ["IMNEWLOCO"]:
+            mem = memories.getMemory(m)
+            mem.setValue(None)
+
         # Initialise tracks
         self.initTracks()
 
@@ -374,19 +394,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             print "Jack exiting on user cancel"
             return False
 
-        # clear locks
-        for lock in ['North Link Lock', 'South Link Lock']:
-            self.debug('unlocking ' + lock)
-            mem = memories.getMemory(lock)
-            if mem is not None:
-                mem.setValue(None)
-
         # give the sensors time to wake up if we just turned power on
         if poweredOn:
             time.sleep(5)
 
         # ------------- Main Loop -------------------
-        maxloops = 300
+        maxloops = 600
         loopcount = 0
         while True:
             loopcount += 1
@@ -411,6 +424,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # bow out if there's a limit
             if loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
+                self.status = STOPPING
+                self.setStatus()
                 return False # stop the loop for the moment
 
             time.sleep(1)
