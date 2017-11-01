@@ -83,6 +83,23 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         return False
 
+# Javelin
 class Loco5004Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     def getSpeeds(self):
         return [0.3, 0.2, 0.1]
+
+# Eurostar
+class Loco3123Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
+
+# Ave Talgo
+class Loco6719Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
+
+# Class 91
+class Loco1124Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    def getSpeeds(self):
+        return [0.3, 0.2, 0.1]
+
