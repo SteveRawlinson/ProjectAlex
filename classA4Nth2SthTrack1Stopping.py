@@ -39,7 +39,6 @@ class ClassA4Nth2SthTrack1Stopping(alex.Alex):
         else:
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
         self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes, lock=lock, dontStop=True)
-        self.unlock('North Link Lock') # is done anyway by shortJourney but the makes it more readable
 
         # on to PAL P1
         self.shortJourney(True, self.loco.block, "PAL P1", 0.5, dontStop=True)

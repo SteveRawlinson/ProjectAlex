@@ -59,7 +59,6 @@ class LocoAnyNth2SthTrack1(alex.Alex):
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes(siding)
         self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getID()], routes=routes, lock=lock)
-        self.unlock('South Link Lock')
 
         print "route complete."
         stop = time.time()

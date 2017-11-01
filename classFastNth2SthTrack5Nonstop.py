@@ -74,7 +74,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         routes = self.requiredRoutes(siding)
         self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        self.unlock('South Link Lock')
 
         self.loco.status = loco.SIDINGS
         if self.memory is not None:
