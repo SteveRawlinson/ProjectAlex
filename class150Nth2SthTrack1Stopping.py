@@ -21,6 +21,8 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.knownLocation = None
         self.memory = memory
 
+    def getSpeeds(self):
+        return [0.6, 0.3, 0.15]
 
     def handle(self):
         if self.loco.block is None:
@@ -32,23 +34,25 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         self.loco.status = loco.MOVING
 
+        fast, medium, slow = self.getSpeeds()
+
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", 0.6, routes=routes)
+        self.shortJourney(True, self.loco.block, "Nth Slow Link", fast, routes=routes)
 
         # on to PAL P1
-        self.shortJourney(True, self.loco.block, "PAL P1", 0.4, slowSpeed=0.2, slowTime=6000, lock=lock)
+        self.shortJourney(True, self.loco.block, "PAL P1", medium, slowSpeed=slow, slowTime=8000, lock=lock)
         self.waitAtPlatform()
 
         # PAL to AAP
-        self.shortJourney(True, "PAL P1", "AAP P4", 0.4, 0.2, 5000)
+        self.shortJourney(True, "PAL P1", "AAP P4", medium, slow, 7000)
         self.waitAtPlatform()
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P4", "FPK P1", 0.4, 0.25, 11000)
+        self.shortJourney(True, "AAP P4", "FPK P1", medium, slow, 15000)
         self.waitAtPlatform()
 
         # FPK to Sth Sidings
