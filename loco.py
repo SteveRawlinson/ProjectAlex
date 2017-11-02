@@ -166,6 +166,7 @@ class Loco:
     # Takes an array of block names and returns the shortest empty block
     # that the current loco will fit in.
     def shortestBlockTrainFits(self, blocklist):
+        start = time.time()
         sbtf = None
         while sbtf is none:
             for b in blocklist:
@@ -191,6 +192,8 @@ class Loco:
                         sbtf = block
             if sbtf is None:
                 self.debug("no available sidings")
+                if time.time() - start > 60 * 5:
+                    raise RuntimeError("timeout waiting for a free siding")
                 time.sleep(10)
             else:
                 self.debug("selected block " + sbtf.getId())
