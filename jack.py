@@ -375,7 +375,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 mem.setValue(None)
 
         # set sensors to inactive
-        for s in ["Add Loco"]:
+        for s in ["Add Loco", "Stop", "Estop"]:
             sen = sensors.getSensor(s)
             sen.setKnownState(INACTIVE)
 
