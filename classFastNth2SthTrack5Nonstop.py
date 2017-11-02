@@ -100,5 +100,5 @@ class Loco6719Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
 # Class 91
 class Loco1124Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+        return [0.4, 0.3, 0.1]
 
