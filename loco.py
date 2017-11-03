@@ -168,7 +168,7 @@ class Loco:
     def shortestBlockTrainFits(self, blocklist):
         start = time.time()
         sbtf = None
-        while sbtf is none:
+        while sbtf is None:
             for b in blocklist:
                 block = layoutblocks.getLayoutBlock(b)
                 mem = memories.getMemory("Siding " + b)
