@@ -26,7 +26,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [3144, 5144]
+DCC_ADDRESSES = []
 DEBUG = True
 
 
@@ -398,8 +398,10 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if poweredOn:
             time.sleep(5)
 
+        print "Jack entering main loop."
+
         # ------------- Main Loop -------------------
-        maxloops = 600
+        maxloops = 10000
         loopcount = 0
         while True:
             loopcount += 1
@@ -422,7 +424,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             # check for new locos
             self.checkForNewLocos()
             # bow out if there's a limit
-            if loopcount > maxloops:
+            if maxloops is not None and loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
                 self.status = STOPPING
                 self.setStatus()
