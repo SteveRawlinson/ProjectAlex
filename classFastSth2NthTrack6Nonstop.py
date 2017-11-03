@@ -37,7 +37,8 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
 
         # Out the sth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        self.shortJourney(False, self.loco.block, "South Link", bendSpeed, routes=routes, lock=lock, dontStop=True)
+        self.shortJourney(False, self.loco.block, "South Link", bendSpeed, routes=routes, dontStop=True)
+        self.shortJourney(False, self.loco.block, "FPK P8", fullSpeed, lock=lock)
 
         # All the way to North Fast Outer 2
         self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed)
