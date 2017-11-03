@@ -366,7 +366,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 if moving:
                     # stop!
                     print self.loco.dccAddr, "stopping"
-                    throttle.setSpeedSetting(0)
+                    self.loco.setSpeedSetting(0)
                 if tries < 40:
                     # wait ...
                     print self.loco.dccAddr, "waiting..."
@@ -467,7 +467,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
             # slow train to 'slowspeed'
-            throttle.setSpeedSetting(slowSpeed)
+            self.loco.setSpeedSetting(slowSpeed)
 
         if stopIRClear:
             # check if we have a sensor or the name of a sensor
@@ -492,9 +492,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             else:
                 spd = 0   # normal stop
                 self.debug("being loco to a halt")
-            throttle.setSpeedSetting(spd)
-            self.waitMsec(250)
-            throttle.setSpeedSetting(spd)
+            self.loco.setSpeedSetting(spd)
         else:
             self.debug("not stopping loco")
 
