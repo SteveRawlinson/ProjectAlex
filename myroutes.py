@@ -64,4 +64,4 @@ TRACKS = [
     [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1']]
 ]
 
-CLASS_47_SPEEDS = [0.6, 0.5, 0.3]
+CLASS_47_SPEEDS = [0.6, 0.35, 0.2]
