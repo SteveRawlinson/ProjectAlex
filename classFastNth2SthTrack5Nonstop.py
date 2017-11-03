@@ -37,7 +37,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        self.shortJourney(True, self.loco.block, "North Link", slowSpeed, routes=routes)
+        self.shortJourney(True, self.loco.block, "North Link", slowSpeed, routes=routes, dontStop=True)
         self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed)
 
         # slower round the bend
