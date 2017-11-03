@@ -26,11 +26,15 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
             print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
             raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
 
+        # check we are facing the right way
+        if not self.reversible() and self.wrongway:
+            raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
+
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
-        slow, medium, fast = self.getSpeeds()
+        fast, medium, slow = self.getSpeeds()
 
         self.loco.status = loco.MOVING
 
@@ -54,15 +58,27 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
         self.shortJourney(True, "AAP P4", "FPK P1", medium, dontStop=True)
 
         # get a lock and don't block
+        lock = self.getLockNonBlocking("South Link Lock")
+        if lock is False:
+            # wait here for a bit
+            self.loco.setSpeedSetting(slow)
+            time.sleep(1)
+            self.loco.setSpeedSetting(0)
+            # get a lock
+            lock = self.getLock('South Link Lock')
+            # off we go
+            self.loco.setSpeedSetting(slow)
 
-        # FPK to Sth Sidings
-        lock = self.getLock('South Link Lock')
+        # remove the memory - this is how the calling process knows we are done with the track
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
 
         # see if the reverse loop is free
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if b is not None:
             self.setRoute("Sth Hertford Inner")
-            self.loco.setSpeedSetting(0.5)
+            self.loco.setSpeedSetting(medium)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
@@ -70,19 +86,15 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
             if siding.getId() == "FP sidings":
                 routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+                self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             else:
                 routes = self.requiredRoutes(self.loco.block)
-                self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
+                self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
                 routes = self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+                self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             self.loco.unselectSiding(siding)
             self.loco.wrongway = True
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
 
         self.loco.status = loco.SIDINGS
 
