@@ -34,7 +34,7 @@ class Loco:
         self.throttle.setSpeedSetting(-1)
 
     def setSpeedSetting(self, speed):
-        if self.throttle.getSlot() is None:
+        if self.throttle.getLocoNetSlot() is None:
             print "***************************** Throttle for loco ", self.nameAndAddress(), "has no slot ***********************************"
         self.throttle.setSpeedSetting(speed)
         time.sleep(0.2)
