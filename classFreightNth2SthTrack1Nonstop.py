@@ -27,7 +27,7 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
             raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
 
         # check we are facing the right way
-        if not self.reversible() and self.wrongway:
+        if not self.loco.reversible() and self.wrongway:
             raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
 
         # check we have a throttle
@@ -101,3 +101,7 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
         self.debug(type(self).__name__ + ' finished')
 
         return False
+
+loc = loco.Loco(7405)
+loc.setBlock(NORTH_REVERSE_LOOP)
+ClassFreightNth2SthTrack1Nonstop(loc, None).start()
