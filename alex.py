@@ -278,6 +278,21 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         return
 
 
+    # Expects to find a method called getSlowTimes() defined in the journey
+    # class (ie. the class that is the child of this class) which returns a hash
+    # (or whatever they're called in python).
+    def getSlowtime(self, destination):
+        if callable("getSlowTimes"):
+            st = self.getSlowTimes()
+            if st[destination] is not None:
+                return st[destination]
+            else:
+                self.debug("no slow time defined for destination" + destination)
+                return 1
+        else:
+            self.debug("getSlowTimes() missing")
+            return 1
+
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
@@ -288,7 +303,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # endBlock: the destination block
     # normalSpeed: the speed (0 = stop, 1 = full speed) to spend most of the journey
     # slowSpeed: the speed to reduce to once we enter the endBlock
-    # slowTime: the time (in msec) to spend at SlowSpeed before stopping
+    # slowTime: the time (in msec) to spend at SlowSpeed before stopping (values under 200 are assumed to be seconds)
     # unlockOnBlock: (boolean) unlock the supplied lock when the block that is locked goes inactive if True
     # stopIRClear: (Sensor or String) the sensor (or name of the sensor) which will go inactive when it's safe to stop
     # routes: list of Route objects to set (ie. activate)
@@ -312,6 +327,10 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 dontStop = False
         if dontStop is False and passBlock is True:
             raise RuntimeError("dontStop can't be false if passBlock is true")
+
+        # convert slowTime to msecs
+        if 0 < slowTime < 200:
+            slowTime = slowTime * 1000
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
