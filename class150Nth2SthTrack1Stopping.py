@@ -7,12 +7,6 @@ import loco
 from jmri_bindings import *
 from myroutes import *
 
-# alex.sensors = sensors  # explicitly add to auto namespace
-# alex.memories = memories
-# alex.routes = routes
-# alex.layoutblocks = layoutblocks
-# alex.ACTIVE = ACTIVE
-
 
 class Class150Nth2SthTrack1Stopping(alex.Alex):
 
@@ -23,6 +17,9 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
     def getSpeeds(self):
         return [0.6, 0.3, 0.15]
+
+    def getSlowTimes(self):
+        return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 15 }
 
     def handle(self):
         if self.loco.block is None:
@@ -44,15 +41,18 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.shortJourney(True, self.loco.block, "Nth Slow Link", fast, routes=routes)
 
         # on to PAL P1
-        self.shortJourney(True, self.loco.block, "PAL P1", medium, slowSpeed=slow, slowTime=8000, lock=lock)
+        dest = "PAL P1"
+        self.shortJourney(True, self.loco.block, dest, medium, slowSpeed=slow, lock=lock)
         self.waitAtPlatform()
 
         # PAL to AAP
-        self.shortJourney(True, "PAL P1", "AAP P4", medium, slow, 7000)
+        dest = "AAP P4"
+        self.shortJourney(True, self.loco.block, dest, medium, slowSpeed=slow)
         self.waitAtPlatform()
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P4", "FPK P1", medium, slow, 15000)
+        dest = "FPK P1"
+        self.shortJourney(True, "AAP P4", dest, medium, slowSpeed=slow)
         self.waitAtPlatform()
 
         # FPK to Sth Sidings
@@ -81,3 +81,8 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         return False
 
 
+class Loco1234Nth2SthTrack1Stopping(class150Nth2SthTrack1Stopping):
+    def getSpeeds(self):
+        return [0.5, 0.4, 0.3]
+    def getSlowTimes(self):
+        return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 15 }
