@@ -312,7 +312,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
     # dontSrop: (boolean) if true, don't stop the loco
     def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed=None, slowTime=0, unlockOnBlock=False,
+                     normalSpeed, slowSpeed=None, slowTime=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
 
         # check we're not in ESTOP status
@@ -337,7 +337,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
         # slowSpeed implies slowTime
         if slowSpeed is not None:
-            if slowTime == 0:
+            if slowTime is None:
                 slowTime = self.getSlowtime(endBlock.getUserName())
         # convert slowTime to msecs
         if 0 < slowTime < 200:
@@ -505,7 +505,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             print self.loco.dccAddr, "waiting for IR sensor to be inactive"
             self.waitSensorInactive(stopIRClear)
             print self.loco.dccAddr, "IR sensor inactive..."
-        elif slowTime > 0:
+        elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             self.waitMsec(slowTime)
 
