@@ -328,16 +328,21 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if dontStop is False and passBlock is True:
             raise RuntimeError("dontStop can't be false if passBlock is true")
 
-        # convert slowTime to msecs
-        if 0 < slowTime < 200:
-            slowTime = slowTime * 1000
-
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
         endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
         self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName())
+
+        # slowSpeed implies slowTime
+        if slowSpeed is not None:
+            if slowTime == 0:
+                slowTime = self.getSlowtime(endBlock.getUserName())
+        # convert slowTime to msecs
+        if 0 < slowTime < 200:
+            slowTime = slowTime * 1000
+
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
