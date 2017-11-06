@@ -18,7 +18,7 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         return [0.6, 0.3, 0.15]
 
     def getSlowTimes(self):
-        return {"FPK P2": 4, "AAP P3": 4, "PAL P2": 3, "North Link": 2}
+        return {"FPK P2": 7, "AAP P3": 5, "PAL P2": 5, "North Link": 4}
 
 
     def handle(self):
