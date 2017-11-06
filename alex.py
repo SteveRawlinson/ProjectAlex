@@ -341,7 +341,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 slowTime = self.getSlowtime(endBlock.getUserName())
         # convert slowTime to msecs
         if 0 < slowTime < 200:
-            slowTime = slowTime * 1000
+            slowTime = int(slowTime * 1000)
 
 
         # if unlockOnBlock is set it means we remove the supplied lock when the block
