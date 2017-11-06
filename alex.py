@@ -282,7 +282,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # class (ie. the class that is the child of this class) which returns a hash
     # (or whatever they're called in python).
     def getSlowtime(self, destination):
-        if callable("getSlowTimes"):
+        if callable(self.getSlowTimes):
             st = self.getSlowTimes()
             if st[destination] is not None:
                 return st[destination]
