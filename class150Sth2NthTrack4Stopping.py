@@ -32,6 +32,8 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
+        fast, medium, slow = self.getSpeeds()
+
         self.loco.status = loco.MOVING
         start = time.time()
 

@@ -19,7 +19,7 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         return [0.6, 0.3, 0.15]
 
     def getSlowTimes(self):
-        return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 15 }
+        return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 18 }
 
     def handle(self):
         if self.loco.block is None:

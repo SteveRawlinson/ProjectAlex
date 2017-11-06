@@ -18,7 +18,7 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         return [0.6, 0.3, 0.15]
 
     def getSlowTimes(self):
-        return {"FPK P2": 3, "AAP P3": 4, "PAL P2": 2, "North Link": 2}
+        return {"FPK P2": 4, "AAP P3": 4, "PAL P2": 3, "North Link": 2}
 
 
     def handle(self):
@@ -41,8 +41,8 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         # out of sth sidings to FPK
         lock = self.getLock('South Link Lock')
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('Sth Hertford Outer')
-        self.shortJourney(False, self.loco.block, "South Link", fast, dontStop=True)
-        self.shortJourney(False, self.loco.block, "FPK P2", medium, slowSpeed=slow, routes=routes, lock=lock)
+        self.shortJourney(False, self.loco.block, "South Link", fast, dontStop=True, routes=routes)
+        self.shortJourney(False, self.loco.block, "FPK P2", medium, slowSpeed=slow, lock=lock)
         self.waitAtPlatform()
 
         # FPK to AAP

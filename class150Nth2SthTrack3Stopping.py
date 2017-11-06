@@ -33,6 +33,8 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
+        fast, medium, slow = self.getSpeeds()
+
         self.loco.status = loco.MOVING
 
         # get a 'lock' on the north link track
