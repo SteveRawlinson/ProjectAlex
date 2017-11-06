@@ -14,6 +14,11 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         self.loco = loc
         self.memory = memory
 
+    def getSpeeds(self):
+        return [0.6, 0.3, 0.15]
+
+    def getSlowTimes(self):
+        return {"FPK P3": 11, "AAP P2": 5, "NSG P1": 6}
 
     def handle(self):
         if self.loco.block is None:
@@ -30,51 +35,45 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        start = time.time()
-        platformWaitTimeMsecs = self.platformWaitTimeMsecs
-        addr = self.loco.dccAddr
-
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", fast, routes=routes)
 
         # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.4, slowSpeed=0.2, slowTime=6000, lock=lock)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, self.loco.block, "NSG P1", medium, slowSpeed=slow, lock=lock)
+        self.waitAtPlatform()
 
         # PAL to AAP
-        self.shortJourney(True, "NSG P1", "AAP P2", 0.4, 0.2, 5000)
-        print "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, "NSG P1", "AAP P2", medium, slowSpeed=slow)
+        self.waitAtPlatform()
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P2", "FPK P3", 0.4, 0.25, 11000)
-        print addr, "waiting at platform for", platformWaitTimeMsecs / 1000, "secs"
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, "AAP P2", "FPK P3", medium, slowSpeed=slow)
+        self.waitAtPlatform()
 
         # FPK to Sth Sidings
         lock = self.getLock('South Link Lock')
-
-        # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        if siding.getId() == "FP sidings":
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        else:
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        self.loco.unselectSiding(siding)
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+
+        # select a siding
+        siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        if siding.getId() == "FP sidings":
+            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+            self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        else:
+            routes = self.requiredRoutes(self.loco.block)
+            self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
+            routes = self.requiredRoutes(siding)
+            self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        self.loco.unselectSiding(siding)
+
 
         self.loco.status = loco.SIDINGS
 
