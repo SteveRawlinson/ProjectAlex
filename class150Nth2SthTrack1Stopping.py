@@ -29,6 +29,10 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
             print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
             raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
 
+        # check we have a throttle
+        if self.loco.throttle is None:
+            self.getLocoThrottle(self.loco)
+
         self.loco.status = loco.MOVING
 
         fast, medium, slow = self.getSpeeds()
@@ -80,8 +84,12 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         return False
 
+# loc = loco.Loco(5144)
+# loc.setBlock("Nth Sidings 3")
+# Class150Nth2SthTrack1Stopping(loc, None).start()
 
-class Loco1234Nth2SthTrack1Stopping(class150Nth2SthTrack1Stopping):
+
+class Loco1234Nth2SthTrack1Stopping(Class150Nth2SthTrack1Stopping):
     def getSpeeds(self):
         return [0.5, 0.4, 0.3]
     def getSlowTimes(self):
