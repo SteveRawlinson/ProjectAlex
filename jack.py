@@ -26,7 +26,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = []
+DCC_ADDRESSES = [5144, 2144]
 DEBUG = True
 
 
@@ -325,7 +325,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
-        self.debug("loco " + str(loc.dccAddr) + " status: " + str(loc.status))
         trak.occupancy += 1
         self.lastJourneyStartTime = time.time()
 
