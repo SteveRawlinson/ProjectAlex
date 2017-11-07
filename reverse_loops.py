@@ -23,20 +23,20 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
         if self.loco.block is None:
             self.loco.setBlock(SOUTH_REVERSE_LOOP)
         else:
-            b = layoutblocks.getBlock(SOUTH_REVERSE_LOOP).getBlock()
+            b = layoutblocks.getLayoutBlock(SOUTH_REVERSE_LOOP).getBlock()
             if self.loco.block != b:
                 raise RuntimeError("loco " + self.loco.nameAndAddress() + " is in " + self.loco.block.getDisplayName() + " not South Reverse Loop")
 
-        if not self.loco.blockIsOccupied():
+        if not self.isBlockOccupied(self.loco.block):
             raise RuntimeError("South Reverse Loop is not occupied")
 
         lock = self.getLock("South Link Lock")
         self.loco.status = loco.MOVING
 
-        routes = [ROUTEMAP[SOUTH_REVERSE_LOOP[1]]]
-        self.shortJourney(True, self.loco.block, "South Link", 0.5,  stopIRClear=IRSENSORS["South Link Clear"], routes=routes)
+        routes = [ROUTEMAP[SOUTH_REVERSE_LOOP][1]]
+        self.shortJourney(True, self.loco.block, "South Link", 0.3,  stopIRClear=IRSENSORS["South Link Clear"], routes=routes)
 
-        routes = ROUTEMAP[siding]
+        routes = self.requiredRoutes(siding)
         self.shortJourney(False, self.loco.block, siding, 0.5, routes=routes)
 
         self.unlock(lock)
@@ -70,3 +70,7 @@ class SouthSidingsToSouthReverseLoop(alex.Alex):
         self.loco.status = loco.SIDINGS
 
         return False
+
+loc = loco.Loco(7405)
+loc.setBlock(SOUTH_REVERSE_LOOP)
+SouthReverseLoopToSouthSidings(loc).start()
