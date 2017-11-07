@@ -65,6 +65,12 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
             self.debug("stopping early")
             routes = self.requiredRoutes(self.loco.block)
             self.shortJourney(False, self.loco.block, "North Link", medium, slowSpeed=slow, routes=routes)
+            # check JackStatus hasn't changed in the meantime
+            if self.getJackStatus() == STOPPING:
+                self.debug("JackStatus is now STOPPING - moving to siding")
+                siding = self.loco.selectSiding(NORTH_SIDINGS)
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(False, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
             # PAL to North sidings
             siding = self.loco.selectSiding(NORTH_SIDINGS)
