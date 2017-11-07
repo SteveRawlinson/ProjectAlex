@@ -296,10 +296,15 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
     # can be a string, a layoutblock, or a block.
     def isBlockOccupied(self, thing):
+        self.debug("isBlockOccupied: thing type: " + type(thing).__name__ + " value: " + str(thing))
         block, sensor = self.convertToLayoutBlockAndSensor(thing)
+        self.debug("  block: " + block.getDisplayName())
+        if sensor is not None:
+            self.debug("  sensor: " + sensor.getSystemName())
         if sensor is None:
+            self.debug("  sensor is none")
             return False
-        return sensor == ACTIVE
+        return sensor.getKnownState() == ACTIVE
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
