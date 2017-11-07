@@ -328,18 +328,27 @@ class Loco:
     def setLayoutBlock(self, b):
         self.setBlock(b)
 
+    def blockIsOccupied(self):
+        return self.isBlockOccupied(self.block)
+
     # Returns True if self is in the north sidings
     def northSidings(self):
         blockname = self.block.getUserName()
         #self.debug("northSidings: my status is SIDINGS, my blockname is " + blockname + " type " + type(blockname).__name__)
         if blockname in NORTH_SIDINGS or blockname == NORTH_REVERSE_LOOP or blockname == "North Link":
-            return True
+            if self.blockIsOccupied():
+                return True
+            else:
+                self.debug("block is in North Sidings but is not occupied")
         return False
 
     # returns True if self is in the South Sidings
     def southSidings(self):
         if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
-            return True
+            if self.blockIsOccupied():
+                return True
+            else:
+                self.debug("block is in South Sidings but is not occupied")
         return False
 
     def active(self):
