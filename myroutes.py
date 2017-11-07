@@ -24,7 +24,7 @@ IRSENSORS = {
     NORTH_REVERSE_LOOP: "LS58",
     SOUTH_REVERSE_LOOP: "LS26",
     "North Link Clear": "LS99",
-    "South Link Clear": "LS98"
+    "South Link Clear": "LS59"
 }
 
 ROUTEMAP = {
