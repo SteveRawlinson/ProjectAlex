@@ -293,6 +293,13 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             self.debug("getSlowTimes() missing")
             return 1
 
+    # Returns True if the block indicated by +thing+ is occupied. The +thing+
+    # can be a string, a layoutblock, or a block.
+    def isBlockOccupied(self, thing):
+        block, sensor = self.convertToLayoutBlockAndSensor(thing)
+        if sensor is None:
+            return False
+        return sensor == ACTIVE
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
