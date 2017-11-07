@@ -86,3 +86,10 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
         return False
+
+class Loco1087Sth2NthTrack4Stopping(Class150Sth2NthTrack4Stopping):
+    def getSpeeds(self):
+        return [0.6, 0.35, 0.2]
+
+    def getSlowTimes(self):
+        return {"FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "North Link": 4}
