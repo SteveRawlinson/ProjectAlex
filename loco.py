@@ -328,9 +328,6 @@ class Loco:
     def setLayoutBlock(self, b):
         self.setBlock(b)
 
-    def blockIsOccupied(self):
-        return self.isBlockOccupied(self.block)
-
     # Returns True if self is in the north sidings
     def northSidings(self):
         blockname = self.block.getUserName()
