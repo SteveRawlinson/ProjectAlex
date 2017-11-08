@@ -229,9 +229,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if self.status == STOPPING:
             # no new journeys
             return
-        if runningCount > 4:
+        if runningCount > 5:
             # enough activity for now, return
             # TODO: turn trains round?
+            return
+        if runningCount == 1 and time.time() - self.lastJourneyStartTime < 30.0:
+            # we're just starting up, stagger first two journeys
             return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
