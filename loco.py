@@ -333,19 +333,13 @@ class Loco:
         blockname = self.block.getUserName()
         #self.debug("northSidings: my status is SIDINGS, my blockname is " + blockname + " type " + type(blockname).__name__)
         if blockname in NORTH_SIDINGS or blockname == NORTH_REVERSE_LOOP or blockname == "North Link":
-            if self.blockIsOccupied():
-                return True
-            else:
-                self.debug("block is in North Sidings but is not occupied")
+            return True
         return False
 
     # returns True if self is in the South Sidings
     def southSidings(self):
         if self.block.getUserName() in SOUTH_SIDINGS or self.block.getUserName() == SOUTH_REVERSE_LOOP:
-            if self.blockIsOccupied():
-                return True
-            else:
-                self.debug("block is in South Sidings but is not occupied")
+            return True
         return False
 
     def active(self):
