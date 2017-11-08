@@ -10,6 +10,7 @@ from myroutes import *
 class SouthReverseLoopToSouthSidings(alex.Alex):
     def __init__(self, loc):
         self.loco = loc
+        self.knownLocation = None
 
     def handle(self):
 
@@ -33,11 +34,11 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
         lock = self.getLock("South Link Lock")
         self.loco.status = loco.MOVING
 
-        routes = [ROUTEMAP[SOUTH_REVERSE_LOOP][1]]
+        routes = [ROUTEMAP[SOUTH_REVERSE_LOOP][1]] + self.requiredRoutes("FPK P1")
         self.shortJourney(True, self.loco.block, "South Link", 0.3,  stopIRClear=IRSENSORS["South Link Clear"], routes=routes)
 
         routes = self.requiredRoutes(siding)
-        self.shortJourney(False, self.loco.block, siding, 0.5, routes=routes)
+        self.shortJourney(False, self.loco.block, siding, 0.5, routes=routes, stopIRClear=IRSENSORS[siding.getId()])
 
         self.unlock(lock)
         self.loco.status = loco.SIDINGS
@@ -48,25 +49,28 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
 class SouthSidingsToSouthReverseLoop(alex.Alex):
     def __init__(self, loc):
         self.loco = loc
+        self.knownLocation = None
 
     def handle(self):
 
         # check we have a block and the block is occupied
         if not self.loco.southSidings():
             raise RuntimeError("I'm not in the South Sidings!")
+        print "boo"
 
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
-        lock.getLock("South Link Lock")
+        self.getLock("South Link Lock")
         self.loco.status = loco.MOVING
-        routes = ROUTEMAP[self.loco.block]
+        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P1")
         self.shortJourney(False, self.loco.block, "South Link", 0.5, routes=routes, stopIRClear=IRSENSORS["South Link Clear"])
 
-        routes = [ROUTEMAP[SOUTH_REVERSE_LOOP[0]]]
-        self.shortJourney(True, self.loco.block, SOUTH_REVERSE_LOOP, 0.5, routes=routes, stopIRClear=IRSENSORS[SOUTH_REVERSE_LOOP])
-        self.unlock(lock)
+        # now go in the reverse loop
+        self.loco.forward()
+        self.loco.setSpeedSetting(0.4)
+        self.reverseLoop(SOUTH_REVERSE_LOOP)
         self.loco.status = loco.SIDINGS
 
         return False
@@ -74,3 +78,5 @@ class SouthSidingsToSouthReverseLoop(alex.Alex):
 loc = loco.Loco(7405)
 loc.setBlock(SOUTH_REVERSE_LOOP)
 SouthReverseLoopToSouthSidings(loc).start()
+#loc.setBlock("Sth Sidings 2")
+#SouthSidingsToSouthReverseLoop(loc).start()
