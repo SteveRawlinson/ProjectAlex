@@ -340,6 +340,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if dontStop is False and passBlock is True:
             raise RuntimeError("dontStop can't be false if passBlock is true")
 
+        # convert string speeds to floats
+        if type(normalSpeed) == str:
+            normalSpeed = self.loco.speed(normalSpeed)
+        if type(slowSpeed) == str:
+            slowSpeed  = self.loco.speed(slowSpeed)
+
         # Get a startBlock and endBlock converted to layoutBlocks and get their
         # sensors too.
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
