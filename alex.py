@@ -551,7 +551,8 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
                 self.knownLocation = nextBlock
 
         finishTime = time.time()
-        logStr = self.loco.nameAndAddress() + ',' + str(startTime) + ',' + str(arriveTime) + ',' + str(finishTime) + ',' + str(arriveTime - startTime) + "\r\n"
+        logStr = self.loco.nameAndAddress() + ',' + startBlock.getUserName() + ',' + endBlock.getUserName() + ',' + str(startTime) + \
+                 ',' + str(arriveTime) + ',' + str(finishTime) + ',' + str(arriveTime - startTime) + "\n"
         logfile = open('startJourney.log', 'a')
         logfile.write(logStr)
         logfile.close()
