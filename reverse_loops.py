@@ -103,7 +103,7 @@ class NorthReverseLoopToNorthSidings(alex.Alex):
         self.loco.status = loco.MOVING
 
         routes = [ROUTEMAP[NORTH_REVERSE_LOOP][1]] + self.requiredRoutes("PAL P1")
-        self.shortJourney(True, self.loco.block, "North Link", 0.3,  stopIRClear=IRSENSORS["North Link Clear"], routes=routes)
+        self.shortJourney(True, self.loco.block, "North Link", 0.5,  stopIRClear=IRSENSORS["North Link Clear"], routes=routes)
 
         routes = self.requiredRoutes(siding)
         self.shortJourney(False, self.loco.block, siding, 0.4, routes=routes, stopIRClear=IRSENSORS[siding.getId()])
@@ -144,8 +144,12 @@ class NorthSidingsToNorthReverseLoop(alex.Alex):
         return False
 
 
-loc = loco.Loco(7405)
-loc.setBlock(SOUTH_REVERSE_LOOP)
-SouthReverseLoopToSouthSidings(loc).start()
+loc = loco.Loco(68)
+# loc.setBlock(SOUTH_REVERSE_LOOP)
+# SouthReverseLoopToSouthSidings(loc).start()
 #loc.setBlock("Sth Sidings 2")
 #SouthSidingsToSouthReverseLoop(loc).start()
+#loc.setBlock(NORTH_REVERSE_LOOP)
+#NorthReverseLoopToNorthSidings(loc).start()
+loc.setBlock("Nth Sidings 4")
+NorthSidingsToNorthReverseLoop(loc).start()
