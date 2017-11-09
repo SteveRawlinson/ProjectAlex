@@ -373,6 +373,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         
         # are we moving
         if throttle.getSpeedSetting() > 0:
+            startTime = time.time()
             self.debug("we are already moving")
             moving = True
         else:
@@ -454,6 +455,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         # set throttle position if we're not already moving (if we
         # are moving we set the throttle earlier)
         if not moving:
+            startTime = time.time()
             print self.loco.dccAddr, "Setting normal Speed", normalSpeed
             self.loco.setSpeedSetting(normalSpeed)
 
@@ -489,6 +491,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor in changedList:
                 arrived = True
 
+        arriveTime = time.time()
         self.debug("destination block " +  endBlock.userName +  " is active, we have arrived")
 
         # set the value in the new occupied block
@@ -546,6 +549,12 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
             if nextBlock:
                 self.loco.setBlock(nextBlock)
                 self.knownLocation = nextBlock
+
+        finishTime = time.time()
+        logStr = self.loco.nameAndAddress() + ',' + str(startTime) + ',' + str(arriveTime) + ',' + str(finishTime) + "\r\n"
+        logfile = open('startJourney.log', 'a')
+        logfile.write(logStr)
+        logfile.close()
 
         return True
                 
