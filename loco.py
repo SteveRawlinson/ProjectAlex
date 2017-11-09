@@ -350,3 +350,20 @@ class Loco:
 
     def idle(self):
         return self.status == SIDINGS
+
+    # Returns a floating point number between 0 and 1 which it looks
+    # up in the SPEEDMAP constant. It first looks for the dcc address
+    # as the key, and then for the class.
+    def speed(self, speed):
+        if self.dccAddr in SPEEDMAP:
+            if speed in SPEEDMAP[self.dccAddr]:
+                return SPEEDMAP[self.dccAddr][speed]
+        if self.brclass() is not None:
+            k = "class" + str(self.brclass())
+            if k in SPEEDMAP:
+                if speed in SPEEDMAP[k]:
+                    return SPEEDMAP[k][speed]
+        raise RuntimeError("failed to find speed for loco " + self.nameAndAddress() + " in SPEEDMAP")
+
+
+
