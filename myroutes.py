@@ -23,7 +23,7 @@ IRSENSORS = {
     "Nth Sidings 5": "LS57",
     NORTH_REVERSE_LOOP: "LS58",
     SOUTH_REVERSE_LOOP: "LS26",
-    "North Link Clear": "LS99",
+    "North Link Clear": "LS63",
     "South Link Clear": "LS59"
 }
 
