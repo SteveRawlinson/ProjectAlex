@@ -23,7 +23,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
-        fullSpeed, bendSpeed, slowSpeed = self.getSpeeds()
+        fullSpeed, bendSpeed, slowSpeed = 'fast', 'bend', 'slow'
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -84,21 +84,17 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
 # Javelin
 class Loco5004Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Eurostar
 class Loco3123Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Ave Talgo
 class Loco6719Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Class 91
 class Loco1124Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
-    def getSpeeds(self):
-        return [0.4, 0.3, 0.1]
+    pass
 

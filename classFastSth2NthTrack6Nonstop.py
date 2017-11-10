@@ -82,20 +82,16 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
 
 # Javelin
 class Loco5004Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Eurostar
 class Loco3123Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Ave Talgo
 class Loco6719Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Class 91
 class Loco1124Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.4, 0.3, 0.1]
+    pass
