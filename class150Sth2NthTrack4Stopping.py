@@ -14,9 +14,6 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.loco = loc
         self.memory = memory
 
-    def getSpeeds(self):
-        return [0.6, 0.3, 0.15]
-
     def getSlowTimes(self):
         return {"FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "North Link": 4}
 
@@ -32,7 +29,7 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
-        fast, medium, slow = self.getSpeeds()
+        fast, medium, slow = 'fast', 'medium', 'slow'
 
         self.loco.status = loco.MOVING
         start = time.time()
@@ -88,8 +85,5 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         return False
 
 class Loco1087Sth2NthTrack4Stopping(Class150Sth2NthTrack4Stopping):
-    def getSpeeds(self):
-        return [0.6, 0.35, 0.2]
-
     def getSlowTimes(self):
         return {"FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "North Link": 4}

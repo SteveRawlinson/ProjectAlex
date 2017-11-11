@@ -35,7 +35,7 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        fast, medium, slow = self.getSpeeds()
+        fast, medium, slow = 'fast', 'medium', 'slow'
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
