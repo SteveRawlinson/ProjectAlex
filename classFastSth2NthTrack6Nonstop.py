@@ -23,7 +23,7 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
-        fullSpeed, bendSpeed, slowSpeed = self.getSpeeds()
+        fullSpeed, bendSpeed, slowSpeed = 'fast', 'bend', 'slow'
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -79,23 +79,20 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
 
         return False
 
-
 # Javelin
 class Loco5004Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Eurostar
 class Loco3123Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Ave Talgo
 class Loco6719Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
+    pass
 
 # Class 91
 class Loco1124Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
-    def getSpeeds(self):
-        return [0.4, 0.3, 0.1]
+    pass
+
+
