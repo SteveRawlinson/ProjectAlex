@@ -33,10 +33,9 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
-        fast, medium, slow = self.getSpeeds()
-
         self.loco.status = loco.MOVING
         start = time.time()
+        fast, medium, slow = 'fast', 'medium', 'slow'
 
         # out of sth sidings to FPK
         lock = self.getLock('South Link Lock')
@@ -84,6 +83,10 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
 
+        # remove the memory - this is how the calling process knows we are done
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')

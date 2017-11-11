@@ -97,3 +97,8 @@ class Loco1087Nth2SthTrack1Stopping(Class150Nth2SthTrack1Stopping):
         return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 18 }
 
 
+# class Loco1234Nth2SthTrack1Stopping(class150Nth2SthTrack1Stopping):
+#     def getSpeeds(self):
+#         return [0.5, 0.4, 0.3]
+#     def getSlowTimes(self):
+#         return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 15 }
