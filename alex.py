@@ -304,7 +304,18 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         if sensor is None:
             self.debug("  sensor is none")
             return False
-        return sensor.getKnownState() == ACTIVE
+        if sensor.getKnownState() == ACTIVE:
+            # see if we know the identity of the loco
+            b = block.getBlock()
+            if b.getValue() is not None:
+                self.debug("  returning value: " + b.getValue())
+                return b.getValue()
+            else:
+                return True
+        else:
+            return False
+
+
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
