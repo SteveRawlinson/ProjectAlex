@@ -1,5 +1,7 @@
 import jmri
 import time
+from myroutes import *
+from jmri_bindings import *
 
 class StartUp :
 
@@ -53,4 +55,24 @@ class StartUp :
 
         print "StartUp done."
 
-StartUp().do()
+lssensorlist = [112, 113, 114, 115, 116, 117, 105, 106, 107, 108, 109, 110, 101, 102, 103]
+issensorlist = [18, 19, 20, 21, 22, 28, 29, 33, 34, 'IS32']
+class SetStartupSensors:
+    def __init__(self, lssensorlist, issensorlist):
+        self.lssensorlist = lssensorlist
+        self.issensorlist = issensorlist
+
+    def do(self):
+        for s in self.lssensorlist:
+            name = 'LS' + str(s)
+            sen = sensors.getSensor(name)
+            sen.setKnownState(INACTIVE)
+        for s in self.issensorlist:
+            name = 'IS' + str(s)
+            sen = sensors.getSensor(name)
+            sen.setKnownState(INACTIVE)
+
+SetStartupSensors(lssensorlist, issensorlist).do()
+
+
+#StartUp().do()
