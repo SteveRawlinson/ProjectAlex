@@ -65,6 +65,7 @@ TRACKS = [
     [1, True, False, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1']],
     [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1']]
 ]
+
 # A hash of hashes. Keys are either a loco's dcc addr (eg. 68) or the name of
 # a BR class (eg. "class150"). Values are a hash of string -> float where the
 # string describes the speed and the float is the value to send to the throttle

@@ -28,7 +28,7 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
             if self.loco.block != b:
                 raise RuntimeError("loco " + self.loco.nameAndAddress() + " is in " + self.loco.block.getDisplayName() + " not South Reverse Loop")
 
-        if not self.isBlockOccupied(self.loco.block):
+        if self.isBlockOccupied(self.loco.block) is False:
             raise RuntimeError("South Reverse Loop is not occupied")
 
         lock = self.getLock("South Link Lock")
@@ -96,7 +96,7 @@ class NorthReverseLoopToNorthSidings(alex.Alex):
             if self.loco.block != b:
                 raise RuntimeError("loco " + self.loco.nameAndAddress() + " is in " + self.loco.block.getDisplayName() + " not North Reverse Loop")
 
-        if not self.isBlockOccupied(self.loco.block):
+        if self.isBlockOccupied(self.loco.block) is False:
             raise RuntimeError("North Reverse Loop is not occupied")
 
         lock = self.getLock("North Link Lock")
