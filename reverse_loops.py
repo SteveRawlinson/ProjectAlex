@@ -133,7 +133,7 @@ class NorthSidingsToNorthReverseLoop(alex.Alex):
         self.getLock("North Link Lock")
         self.loco.status = loco.MOVING
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        self.shortJourney(False, self.loco.block, "South Link", 0.5, routes=routes, stopIRClear=IRSENSORS["North Link Clear"])
+        self.shortJourney(False, self.loco.block, "North Link", 0.5, routes=routes, stopIRClear=IRSENSORS["North Link Clear"])
 
         # now go in the reverse loop
         self.loco.forward()
