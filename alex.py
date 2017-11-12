@@ -105,12 +105,21 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         print loco.dccAddr, "does not have lock on ", mem
         return False
 
+    def setTroublesomeTurnouts(self, route):
+        for i in range(0, route.getNumOutputTurnouts()):
+            t = range.getOutputTurnout(i)
+            if t.getSystemName() in TROUBLESOME_TURNOUTS:
+                s = range.getOutputTurnoutState(i)
+                t.setCommandedState(s)
+
+
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=1):
         print self.loco.dccAddr, 'setting route', route
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
+        self.setTroublesomeTurnouts(route)
         r.activateRoute()
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:

@@ -77,3 +77,5 @@ SPEEDMAP = {
     6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},          # Ave Talgo
     1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # class 91 virgin
 }
+
+TROUBLESOME_TURNOUTS = []
