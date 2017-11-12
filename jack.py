@@ -279,6 +279,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
+            if loc.reversible() is False and loc.northSidings() and isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
+                # the reverse loop is occupied and we don't know by what
+                continue
+            if loc.reversible() is False and loc.southSidings() and isBlockOccupied(NORTH_REVERSE_LOOP) is True:
+                # the reverse loop is occupied and we don't know by what
+                continue
             candidates.append(loc)
         # pick one according to rarity
         if len(candidates) == 0:
