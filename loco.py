@@ -365,3 +365,11 @@ class Loco:
                 if speed in SPEEDMAP[k]:
                     return SPEEDMAP[k][speed]
         raise RuntimeError("failed to find speed for loco " + self.nameAndAddress() + " in SPEEDMAP")
+
+    def slowTimes(self):
+        if self.dccAddr in SLOWTIMEMAP:
+            return SLOWTIMEMAP[self.dccAddr]
+        k = "class" + self.brclass()
+        if k in SLOWTIMEMAP:
+            return SLOWTIMEMAP[k]
+        raise "nothing in slowtime map for loco " + str(self.dccAddr)
