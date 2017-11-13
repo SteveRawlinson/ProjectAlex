@@ -163,6 +163,8 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         else:
             self.status = int(mem.getValue())
             #self.debug("reading new status from status memory: " + str(self.status))
+        return self.status
+
 
     def setStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
