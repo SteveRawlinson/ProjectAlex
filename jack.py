@@ -38,6 +38,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         self.memories = [] # list of names of  active journeys
         self.status = NORMAL
         self.lastJourneyStartTime = time.time() - 300 # 5 minutes ago
+        self.status = NORMAL
 
     def debug(self, message):
         if DEBUG:
@@ -404,6 +405,12 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # give the sensors time to wake up if we just turned power on
         if poweredOn:
             time.sleep(5)
+
+        # final status check before we hit main loop
+        if self.checkStatus() != NORMAL:
+            self.debug("exiting on non-normal status")
+            return False
+
 
         print "Jack entering main loop."
 
