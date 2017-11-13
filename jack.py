@@ -330,7 +330,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
         # add memory to lisr
         self.memories.append(memory.getSystemName())
-        self.debug("startJourney: set memory " + mem + " value to 1: memory value: " + str(memory.getValue()))
         # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
