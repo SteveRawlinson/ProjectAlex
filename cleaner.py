@@ -200,7 +200,9 @@ class Cleaner(alex.Alex):
             # wait for the siding to become occupied
             lb = layoutblocks.getLayoutBlock(siding)
             ls = lb.getOccupancySensor()
-            if ls.knownState() == INACTIVE:
+            if ls.knownState() == ACTIVE:
+                raise RuntimeError("block " + siding + " is occupied")
+            else:
                 self.waitChange([ls], 60 * 1000)
             # wait for a bit to get into the siding
             time.sleep(CLEANER_SIDING_TIME[siding])
@@ -222,6 +224,7 @@ class Cleaner(alex.Alex):
         # and just past it
         self.loco.setSpeedSetting(0.3)
         self.waitChange([sen], 60 * 1000)
+        self.looo.setSpeedSetting(0)
 
 
 
