@@ -69,11 +69,14 @@ TRACKS = [
 # A hash of hashes. Keys are either a loco's dcc addr (eg. 68) or the name of
 # a BR class (eg. "class150"). Values are a hash of string -> float where the
 # string describes the speed and the float is the value to send to the throttle
+
 SPEEDMAP = {
     68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.3},          # Mallard
-    "class150": {'fast': 0.6, 'medium': 0.4, 'slow': 0.35}, # class 150s
+    "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25}, # class 150s
     5004: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # Javelin
-    3123: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # Eurostar
+    3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # Eurostar
     6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},          # Ave Talgo
     1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # class 91 virgin
 }
+
+SLOWTIMEMAP = {}
