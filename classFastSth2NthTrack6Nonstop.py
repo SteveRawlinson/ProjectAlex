@@ -84,7 +84,7 @@ class Loco5004Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
     pass
 
 # Eurostar
-class Loco3123Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
+class Loco3213Sth2NthTrack6Nonstop(ClassFastSth2NthTrack6Nonstop):
     pass
 
 # Ave Talgo
