@@ -14,9 +14,14 @@ DEBUG = True
 
 class Cleaner(alex.Alex):
 
-    def __init__(self, loc):
+    def __init__(self, loc, clean=None):
         self.loco = loc
         self.tracks = []
+        if clean is None:
+            self.clean = 'trackpair'
+        else:
+            self.clean = clean
+
 
 
     def debug(self, message):
@@ -288,8 +293,12 @@ class Cleaner(alex.Alex):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
-
-        self.trackPair()
+        if self.clean == 'trackpair':
+            self.trackPair()
+        elif self.clean == 'northsidings':
+            self.northSidings()
+        else:
+            print "don't recognise this instruction: " + self.clean
 
         self.debug("exiting")
         return False
