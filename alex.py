@@ -107,9 +107,14 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
 
     def setTroublesomeTurnouts(self, route):
         for i in range(0, route.getNumOutputTurnouts()):
-            t = range.getOutputTurnout(i)
+            t = route.getOutputTurnout(i)
             if t.getSystemName() in TROUBLESOME_TURNOUTS:
-                s = range.getOutputTurnoutState(i)
+                s = route.getOutputTurnoutState(i)
+                if s == CLOSED:
+                    state = 'CLOSED'
+                else:
+                    state = 'THROWN'
+                self.debug("setting troublesome turnout " + t.getSystemName() + " to state " + state)
                 t.setCommandedState(s)
 
 
