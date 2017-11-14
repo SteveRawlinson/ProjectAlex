@@ -8,6 +8,9 @@ NORMAL = 0
 STOPPING = 1
 ESTOP = 2
 
+# direction constants
+NORTHBOUND = 0
+SOUTHBOUND = 1
 
 IRSENSORS = {
     "Sth Sidings 1": "LS61",
