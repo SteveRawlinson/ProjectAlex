@@ -124,7 +124,7 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
-        self.setTroublesomeTurnouts(route)
+        self.setTroublesomeTurnouts(r)
         r.activateRoute()
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:
