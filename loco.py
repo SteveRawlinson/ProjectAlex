@@ -289,6 +289,7 @@ class Loco:
             # technically a loco can be in more than one block but in
             # practice at startup it's much more likely that multiple
             # blocks means there's nan error. Reset all block values.
+            self.block = None
             for lb in lblocks:
                 b = lb.getBlock()
                 b.setValue(None)
