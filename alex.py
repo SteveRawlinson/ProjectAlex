@@ -17,7 +17,7 @@ ESTOP = 2
 # a parent to a particular journey class
 
 # noinspection PyInterpreter
-class Alex(jmri.jmrit.automat.AbstractAutomaton):
+class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
@@ -306,29 +306,6 @@ class Alex(jmri.jmrit.automat.AbstractAutomaton):
         else:
             self.debug("getSlowTimes() missing")
             return 1
-
-    # Returns True if the block indicated by +thing+ is occupied. The +thing+
-    # can be a string, a layoutblock, or a block.
-    def isBlockOccupied(self, thing):
-        self.debug("isBlockOccupied: thing type: " + type(thing).__name__ + " value: " + str(thing))
-        block, sensor = self.convertToLayoutBlockAndSensor(thing)
-        self.debug("  block: " + block.getDisplayName())
-        if sensor is not None:
-            self.debug("  sensor: " + sensor.getSystemName())
-        if sensor is None:
-            self.debug("  sensor is none")
-            return False
-        if sensor.getKnownState() == ACTIVE:
-            # see if we know the identity of the loco
-            b = block.getBlock()
-            if b.getValue() is not None:
-                self.debug("  returning value: " + b.getValue())
-                return b.getValue()
-            else:
-                return True
-        else:
-            return False
-
 
 
     # Gets a train from startBlock to endBlock and optionally slows it down
