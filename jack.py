@@ -421,7 +421,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         loopcount = 0
         while True:
             loopcount += 1
-            if loopcount % 10 == 0:
+            if loopcount % 100 == 0:
                 self.debug("loop " + str(loopcount))
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
