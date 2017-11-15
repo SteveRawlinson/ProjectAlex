@@ -11,6 +11,7 @@ from jmri_bindings import *
 from myroutes import *
 import track
 import random
+import util
 
 # import journey classes
 from class150Nth2SthTrack1Stopping import *
@@ -30,7 +31,7 @@ DCC_ADDRESSES = [3144, 2144]
 DEBUG = True
 
 
-class Jack(jmri.jmrit.automat.AbstractAutomaton):
+class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     
     def init(self):
         self.locos = [] # array of Loco
@@ -200,12 +201,6 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
             self.memories.remove(m)
 
 
-    def northBoundTrack(self, track):
-        return track.nr % 2 == 0
-
-    def southBoundTrack(self, track):
-        return not self.northBoundTrack(track)
-
     # Makes a guess at the class name that should describe the
     # journey for this loco on this track.
     def constructClassName(self, loco, track):
@@ -265,13 +260,25 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         if random.random() > prob:
             self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
             return
+
         # Pick a loco to start up. This is done on the basis of the
-        # available loco's rarity value - prefer non rare locos
-        #self.debug("picking a loco")
+        # available loco's rarity value - prefer non rare locos.
+
         # get a list of candidate locos
         candidates = []
+        preferred_loco = None
         for loc in self.locos:
             if loc.active():
+                if loc.reversible() is False:
+                    # check if non-reversible loco is heading towards occupied reverse loop
+                    if self.loco.dir() == 'Nth2Sth':
+                        oloop = SOUTH_REVERSE_LOOP
+                    else:
+                        oloop = NORTH_REVERSE_LOOP
+                    addr = self.isBlockOccupied(oloop)
+                    if addr is not False and addr is not True:
+                        # must be the address of the loco in the loop, remember it for later
+                        preferred_loco = loco.Loco.getLocoByAddr(addr)
                 continue
             if loc.wrongway is True:
                 continue
@@ -279,37 +286,42 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
-            if loc.reversible() is False and loc.northSidings() and isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
+            if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
                 continue
-            if loc.reversible() is False and loc.southSidings() and isBlockOccupied(NORTH_REVERSE_LOOP) is True:
+            if loc.reversible() is False and loc.southSidings() and self.isBlockOccupied(NORTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
                 continue
             candidates.append(loc)
-        # pick one according to rarity
-        if len(candidates) == 0:
-            #self.debug("no locos available to start a new journey")
-            return
-        tot = 0.0
-        for c in candidates:
-            tot += (1 - c.rarity())
-        n = tot * random.random()
-        for c in candidates:
-            n -= (1 - c.rarity())
-            if n < 0.0:
-                loc = c
-                break
-        self.debug("picked loco " + str(loc.dccAddr) + " status: " + str(loc.status))
+        # if we have a preferred loco, and it's in the candidate list, pick that one
+        if preferred_loco is not None and preferred_loco in candidates:
+            loc = preferred_loco
+        else:
+            # pick one according to rarity
+            if len(candidates) == 0:
+                #self.debug("no locos available to start a new journey")
+                return
+            tot = 0.0
+            for c in candidates:
+                tot += (1 - c.rarity())
+            n = tot * random.random()
+            for c in candidates:
+                n -= (1 - c.rarity())
+                if n < 0.0:
+                    loc = c
+                    break
+        self.debug("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
         # pick a track
         trak = track.Track.preferred_track(loc, self.tracks)
-        if trak is not None:
-            self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
-            self.startJourney(loc, trak)
-            return
-        else:
+        if trak is None:
             self.debug("no available tracks to run loco " + loc.name())
             if DEBUG:
                 track.Track.trackReport(self.tracks)
+            return
+        self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+        self.startJourney(loc, trak)
+
+
 
 
 
@@ -333,6 +345,7 @@ class Jack(jmri.jmrit.automat.AbstractAutomaton):
         # kick the journey off
         klass(loc, mem).start()
         loc.status = loco.MOVING
+        loc.track = trak
         trak.occupancy += 1
         self.lastJourneyStartTime = time.time()
 

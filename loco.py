@@ -29,6 +29,7 @@ class Loco:
         self._fast = None
         self.throttle = None
         self.wrongway = False
+        self.track = None
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
@@ -383,3 +384,18 @@ class Loco:
         if k in SLOWTIMEMAP:
             return SLOWTIMEMAP[k]
         raise "nothing in slowtime map for loco " + str(self.dccAddr)
+
+    def dir(self):
+        if self.track is None:
+            return None
+        return self.trak.dir()
+
+    @class_method
+    def getLocoByAddr(self, addr, locos):
+        addr = int(addr)
+        for l in locos:
+            if l.dccAddr == addr:
+                return l
+        return None
+
+
