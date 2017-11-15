@@ -283,8 +283,18 @@ class Loco:
         lblocks = self.myLayoutBlocks()
         if len(lblocks) == 0:
             self.block = None
-        else:
+        elif len(blocks) == 1:
             self.block = lblocks[0].getBlock()
+        else:
+            # technically a loco can be in more than one block but in
+            # practice at startup it's much more likely that multiple
+            # blocks means there's nan error. Reset all block values.
+            self.block = None
+            for lb in lblocks:
+                b = lb.getBlock()
+                b.setValue(None)
+
+
         if DEBUG:
             if self.block is None:
                 self.debug("loco " + str(self.dccAddr) + " block: None")
