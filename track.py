@@ -145,14 +145,17 @@ class Track:
         myblocks = self.blocks[:]
         myblocks.reverse()
         for b in myblocks:
+            #self.debug("nBS: checking block " + b)
             if b == block.getUserName():  # this is the block we're in
                 i = myblocks.index(b) + 1
+                #self.debug("  index is " + str(i))
                 if len(myblocks) <= i:
                     nb = 'South Link'
                 else:
-                    nb = self.blocks[i]
+                    nb = myblocks[i]
+                    #self.debug("  returning block " + nb)
                 return blocks.getBlock(nb)
-        # the block supplied is on on this track
+        # the block supplied is not on this track
         self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
@@ -168,7 +171,6 @@ class Track:
             farBlock = self.northernmostBlock()
         else:
             farBlock = self.southernmostBlock()
-        self.debug("farblock: " + farBlock)
         routes = ROUTEMAP[farBlock]
         return routes[0] # there's only one
 
