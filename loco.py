@@ -29,6 +29,7 @@ class Loco:
         self._fast = None
         self.throttle = None
         self.wrongway = False
+        self.track = None
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
@@ -283,7 +284,7 @@ class Loco:
         lblocks = self.myLayoutBlocks()
         if len(lblocks) == 0:
             self.block = None
-        elif len(blocks) == 1:
+        elif len(lblocks) == 1:
             self.block = lblocks[0].getBlock()
         else:
             # technically a loco can be in more than one block but in
@@ -379,7 +380,22 @@ class Loco:
     def slowTimes(self):
         if self.dccAddr in SLOWTIMEMAP:
             return SLOWTIMEMAP[self.dccAddr]
-        k = "class" + self.brclass()
+        k = "class" + str(self.brclass())
         if k in SLOWTIMEMAP:
             return SLOWTIMEMAP[k]
         raise "nothing in slowtime map for loco " + str(self.dccAddr)
+
+    def dir(self):
+        if self.track is None:
+            return None
+        return self.track.dir()
+
+    @classmethod
+    def getLocoByAddr(self, addr, locos):
+        addr = int(addr)
+        for l in locos:
+            if l.dccAddr == addr:
+                return l
+        return None
+
+

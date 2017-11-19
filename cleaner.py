@@ -8,6 +8,7 @@ import track
 from jmri_bindings import *
 from javax.swing import JOptionPane
 from myroutes import *
+import random
 
 DEBUG = True
 
@@ -53,8 +54,10 @@ class Cleaner(alex.Alex):
         self.debug("direction: " + direction)
         nextLayoutBlockNorth = layoutblocks.getLayoutBlock(trak.nextBlockNorth(self.loco.block).getUserName())
         nextSensorNorth = nextLayoutBlockNorth.getOccupancySensor()
+        self.debug("nextLayoutBlockNorth: " + nextLayoutBlockNorth.getUserName())
         nextLayoutBlockSouth = layoutblocks.getLayoutBlock(trak.nextBlockSouth(self.loco.block).getUserName())
         nextSensorSouth = nextLayoutBlockSouth.getOccupancySensor()
+        self.debug("nextLayoutBlockSouth: " + nextLayoutBlockSouth.getUserName())
 
         # check those sensors are not active
         if nextSensorNorth.knownState == ACTIVE:
@@ -165,12 +168,14 @@ class Cleaner(alex.Alex):
         else:
             loop = SOUTH_REVERSE_LOOP
         self.reverseLoop(loop, stop=False)
+        self.debug("done with reverse loop")
 
         # work out which track we are going (back) down now
         if trak.southbound():
             trak = self.tracks[trak.nr] # move up one (eg. track 1 -> 2)
         else:
-            trak = self.tracks[trak.nr - 2] # move up one (eg. 2 -> 1)
+            trak = self.tracks[trak.nr - 2] # move down one (eg. 2 -> 1)
+        self.debug("going down track " + str(trak.nr))
 
         # set route for entry
         rt = trak.entryRoute()
@@ -183,39 +188,67 @@ class Cleaner(alex.Alex):
         s = startBlock.getSensor()
         if s.knownState != ACTIVE:
             self.waitChange([s])
+        # go past
         self.waitChange([s])
-        self.loco.setSpeedSetting(-1)
+        # come back a bit
+        self.loco.reverse()
+        time.sleep(6)
+        self.loco.setSpeedSetting(0)
 
-    def northSidings(self):
+    def sidings(self, which='north'):
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
         self.debug("track: " + str(trak.nr))
 
-        startBlock = self.loco.block()
+        startBlock = self.loco.block
 
         # set exit route for this track
         route = trak.exitRoute()
         self.setRoute(route)
 
-        for siding in NORTH_SIDINGS:
+        # pick which sidings we're doing
+        if which == 'north':
+            sidings = NORTH_SIDINGS
+        else:
+            sidings = SOUTH_SIDINGS
+        if random.random() > 0.5:
+            sidings.reverse()
+
+        for siding in sidings:
+            # FP sidings is a special case
+            if siding == "FP sidings" and siding != sidings[0]:
+                # reverse out behind the south link clear sensor
+                self.loco.reverse()
+                self.loco.setSpeedSetting(0.4)
+                sensor = sensors.getSensor(IRSENSORS["South Link Clear"])
+                if sensor.knownState != ACTIVE:
+                    self.waitChange([sensor])
+                self.waitChange([sensor])
             # set the route into the siding
-            route = self.requiredRoutes(siding)
-            self.setRoute(route)
+            routes = self.requiredRoutes(siding)
+            for route in routes:
+                self.setRoute(route)
             self.loco.forward()
             self.loco.setSpeedSetting(0.4)
             # wait for the siding to become occupied
             lb = layoutblocks.getLayoutBlock(siding)
             ls = lb.getOccupancySensor()
-            if ls.knownState() == ACTIVE:
+            if ls.knownState == ACTIVE:
                 raise RuntimeError("block " + siding + " is occupied")
             else:
                 self.waitChange([ls], 60 * 1000)
             # wait for a bit to get into the siding
             time.sleep(CLEANER_SIDING_TIME[siding])
-            # turn loco around
+            # switch direction
             self.loco.reverse()
             # wait till IR sensor goes active
-            ls = sensors.getSensors(IRSENSORS["North Link Clear"])
-            if ls.knownState() == INACTIVE:
+            if which == 'north':
+                irsensor = IRSENSORS["North Link Clear"]
+            elif siding == "FP sidings":
+                irsensor = IRSENSORS["South Link Clear"]
+            else:
+                irsensor = IRSENSORS["South Sidings Clear"]
+            ls = sensors.getSensor(irsensor)
+            if ls.knownState == INACTIVE:
                 self.waitChange([ls], 60 * 1000)
             # and then wait for it to clear
             self.waitChange([ls], 60 * 1000)
@@ -224,12 +257,12 @@ class Cleaner(alex.Alex):
         # reverse back to the block we started on
         self.loco.reverse()
         self.loco.setSpeedSetting(0.4)
-        sen = startBlock.getOccupancySensor()
+        sen = startBlock.getSensor()
         self.waitChange([sen], 120 * 1000)
         # and just past it
         self.loco.setSpeedSetting(0.3)
         self.waitChange([sen], 60 * 1000)
-        self.looo.setSpeedSetting(0)
+        self.loco.setSpeedSetting(0)
 
 
 
@@ -296,7 +329,9 @@ class Cleaner(alex.Alex):
         if self.clean == 'trackpair':
             self.trackPair()
         elif self.clean == 'northsidings':
-            self.northSidings()
+            self.sidings('north')
+        elif self.clean == 'southsidings':
+            self.sidings('south')
         else:
             print "don't recognise this instruction: " + self.clean
 
@@ -305,4 +340,4 @@ class Cleaner(alex.Alex):
 
 
 loc = loco.Loco(7405)
-Cleaner(loc).start()
+Cleaner(loc, 'southsidings').start()
