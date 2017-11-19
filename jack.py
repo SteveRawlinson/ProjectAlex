@@ -39,6 +39,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.memories = [] # list of names of  active journeys
         self.status = NORMAL
         self.lastJourneyStartTime = time.time() - 300 # 5 minutes ago
+        self.status = NORMAL
 
     def debug(self, message):
         if DEBUG:
@@ -163,6 +164,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             self.status = int(mem.getValue())
             #self.debug("reading new status from status memory: " + str(self.status))
+        return self.status
+
 
     def setStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
@@ -419,6 +422,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if poweredOn:
             time.sleep(5)
 
+        # final status check before we hit main loop
+        if self.checkStatus() != NORMAL:
+            self.debug("exiting on non-normal status")
+            return False
+
+
         print "Jack entering main loop."
 
         # ------------- Main Loop -------------------
@@ -426,7 +435,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         loopcount = 0
         while True:
             loopcount += 1
-            if loopcount % 10 == 0:
+            if loopcount % 100 == 0:
                 self.debug("loop " + str(loopcount))
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
