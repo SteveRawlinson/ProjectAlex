@@ -1,5 +1,11 @@
 SOUTH_SIDINGS = ['FP sidings', 'Sth Sidings 1', 'Sth Sidings 2', 'Sth Sidings 3', 'Sth Sidings 4', 'Sth Sidings 5']
 NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 4', 'Nth Sidings 5']
+
+CLEANER_SIDING_TIME = {
+    'Nth Siding 1': 7.3, 'Nth Sidings 2': 8.3, 'Nth Sidings 3': 7.1, 'Nth Sidings 4': 12.5, 'Nth Sidings 5': 9.7,
+    'FP sidings': 3.2, 'Sth Sidings 1': 9.5, 'Sth Sidings 2': 9, 'Sth Sidings 3': 7.8, 'Sth Sidings 4': 7, 'Sth Sidings 5': 7
+}
+
 NORTH_REVERSE_LOOP = 'Nth Reverse Loop'
 SOUTH_REVERSE_LOOP = 'Sth Reverse Loop'
 
@@ -27,7 +33,8 @@ IRSENSORS = {
     NORTH_REVERSE_LOOP: "LS58",
     SOUTH_REVERSE_LOOP: "LS26",
     "North Link Clear": "LS63",
-    "South Link Clear": "LS59"
+    "South Link Clear": "LS59",
+    "South Sidings Clear": "LS30"
 }
 
 ROUTEMAP = {
