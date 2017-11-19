@@ -4,6 +4,7 @@ import random
 import os
 from jmri_bindings import *
 from myroutes import *
+import util
 
 DEBUG = True
 
@@ -124,7 +125,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
-        self.setTroublesomeTurnouts(route)
+        self.setTroublesomeTurnouts(r)
         r.activateRoute()
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:
@@ -227,31 +228,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             raise RuntimeError("failed to get a throttle for " + loc.name())
         self.debug("throttle is set, type is " + type(loc.throttle).__name__)
 
-    # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
-    # and return the layout block and the sensor (if there is one).
-    def convertToLayoutBlockAndSensor(self, thing):
-        if type(thing) == str:
-            lb = layoutblocks.getLayoutBlock(thing)
-            if lb is None:
-                raise RuntimeError("no such block: " + thing)
-            block = lb
-            sensor = lb.getOccupancySensor()
-        elif type(thing) == jmri.jmrit.display.layoutEditor.LayoutBlock:
-            # startBlock is a LayoutBlock
-            block = thing
-            sensor = thing.getOccupancySensor()
-        elif type(thing) == jmri.Block:
-            # thing is a Block
-            lb = layoutblocks.getLayoutBlock(thing.getUserName())
-            if lb is None:
-                raise RuntimeError("no such layoutBlock: " + thing.getUserName())
-            block = lb
-            sensor = block.getOccupancySensor()
-        else:
-            # thing is the sensor
-            sensor = thing
-            block = layoutblocks.getBlockWithSensorAssigned(thing)
-        return block, sensor
 
     # checks the JackStatus memory to see if an ESTOP status
     # has been set by the user, and exits immediately if so
