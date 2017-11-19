@@ -27,7 +27,7 @@ from classFastNth2SthTrack5Nonstop import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [3144, 2144]
+DCC_ADDRESSES = [68, 7405]
 DEBUG = True
 
 
@@ -271,14 +271,14 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if loc.active():
                 if loc.reversible() is False:
                     # check if non-reversible loco is heading towards occupied reverse loop
-                    if self.loco.dir() == 'Nth2Sth':
+                    if loc.dir() == 'Nth2Sth':
                         oloop = SOUTH_REVERSE_LOOP
                     else:
                         oloop = NORTH_REVERSE_LOOP
                     addr = self.isBlockOccupied(oloop)
                     if addr is not False and addr is not True:
                         # must be the address of the loco in the loop, remember it for later
-                        preferred_loco = loco.Loco.getLocoByAddr(addr)
+                        preferred_loco = loco.Loco.getLocoByAddr(addr, self.locos)
                 continue
             if loc.wrongway is True:
                 continue
@@ -295,6 +295,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             candidates.append(loc)
         # if we have a preferred loco, and it's in the candidate list, pick that one
         if preferred_loco is not None and preferred_loco in candidates:
+            self.debug("picking preferred loco")
             loc = preferred_loco
         else:
             # pick one according to rarity
