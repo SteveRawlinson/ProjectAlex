@@ -407,7 +407,7 @@ class Loco:
         k = "class" + str(self.brclass())
         if k in SLOWTIMEMAP:
             return SLOWTIMEMAP[k]
-        raise "nothing in slowtime map for loco " + str(self.dccAddr)
+        return None
 
     def dir(self):
         if self.track is None:
