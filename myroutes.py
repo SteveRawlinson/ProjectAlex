@@ -81,13 +81,17 @@ TRACKS = [
 # string describes the speed and the float is the value to send to the throttle
 
 SPEEDMAP = {
-    68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.3},          # Mallard
+    68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.3},           # Mallard
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25}, # class 150s
-    5004: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # Javelin
-    3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # Eurostar
-    6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},          # Ave Talgo
-    1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},          # class 91 virgin
+    5004: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Javelin
+    3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Eurostar
+    6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},           # Ave Talgo
+    1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # class 91 virgin
+    "class47": {'fast': 0.6, 'medium': 0.4, 'slow': 0.3}     # class 47
 }
 
-SLOWTIMEMAP = {}
+SLOWTIMEMAP = {
+    "class47": {'FPK P7': 16}
+}
+
 TROUBLESOME_TURNOUTS = ['LT17', 'LT20', 'LT23']
