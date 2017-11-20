@@ -267,22 +267,24 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.setRoute(outroute)
         return
 
-
-    # Expects to find a method called getSlowTimes() defined in the journey
+    # Checks two places to get the slowtime - the number of seconds to
+    # move at slowSpeed before coming to a halt at a platform. It first
+    # calls the loco.getSlowTimes() method which returns a hash defined in
+    # myroutes.py. If that does't work it tries
+    #  to find a method called getSlowTimes() defined in the journey
     # class (ie. the class that is the child of this class) which returns a hash
     # (or whatever they're called in python).
     def getSlowtime(self, destination):
+        st = self.loco.slowTimes()
+        if st is not None:
+            if destination in st:
+                return st[destination]
         if callable(self.getSlowTimes):
             st = self.getSlowTimes()
             if st[destination] is not None:
                 return st[destination]
-            else:
-                self.debug("no slow time defined for destination" + destination)
-                return 1
-        else:
-            self.debug("getSlowTimes() missing")
-            return 1
-
+        self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
+        return 1
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
