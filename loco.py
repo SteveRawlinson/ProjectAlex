@@ -30,6 +30,8 @@ class Loco:
         self.throttle = None
         self.wrongway = False
         self.track = None
+        self._canGoFast = None
+        self._freight = None
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
@@ -115,6 +117,17 @@ class Loco:
                 self._passenger = False
         return self._passenger
 
+    def freight(self):
+        if self._freight is None:
+            r = self.rosterEntry().getAttribute('freight')
+            if r is None:
+                self._freight = False  # this is the default
+            if r == 'true':
+                self._freight = True
+            else:
+                self._freight = False
+        return self._freight
+
     # Returns True if this train can move in both directions, False otherwise
     def reversible(self):
         if self._reversible is None:
@@ -137,6 +150,17 @@ class Loco:
             else:
                 self._fast = False
         return self._fast
+
+    def canGoFast(self):
+        if self._canGoFast is None:
+            r = self.rosterEntry().getAttribute('canGoFast')
+            if r is None:
+                self._canGoFast = False
+            if r == 'true':
+                self._canGoFast = True
+            else:
+                self._canGoFast = False
+        return self._canGoFast
     
     # Returns the roster entry for the current loco
     def rosterEntry(self):
