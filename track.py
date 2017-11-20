@@ -90,15 +90,24 @@ class Track:
         if verbose:
             print "not u/s"
         score = 0
-        if self.fast and loco.fast():
-            score += 1
-            if verbose:
-                print "fast status matched"
+        if self.fast:
+            if loco.fast():
+                score += 2
+                if verbose:
+                    print "fast status matched"
+            elif loco.canGoFast():
+                score += 1
+                if verbose:
+                    print "fast status semi-matched"
         else:
             if verbose:
                 print "fast status not matched. self.fast:", self.fast, type(self.fast).__name__, "loco.fast():", loco.fast(), type(loco.fast()).__name__
-        if self.stops > 1 and loco.passenger():
+        if self.fast is False and loco.freight():
             score += 1
+            if verbose:
+                print "freight loco on non-fast track match"
+        if self.stops > 1 and loco.passenger():
+            score += 2
             if verbose:
                 print "passenger status matched"
         if verbose:
