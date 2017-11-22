@@ -24,6 +24,10 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
             print str(self.loco.dccAddr) + ": not in north sidings. Block: " + self.loco.block.getUserName()
             raise RuntimeError(str(self.loco.dccAddr) + ": I'm not in the north sidings!")
 
+        # check we are facing the right way
+        if not self.loco.reversible() and self.loco.wrongway:
+            raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
+
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
@@ -47,47 +51,55 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
         self.shortJourney(True, "PAL P1", "AAP P4", self.loco.speed('medium'), dontStop=True)
 
         # AAP to FPK
-        lock = self.getLockNonBlocking("North Link")
-        if lock is None:
-            self.shortJourney(True, "AAP P4", "FPK P1", self.loco.speed('medium'), self.loco.speed('slow'), 16000)
-            self.waitAtPlatform()
+        self.shortJourney(True, "AAP P4", "FPK P1", self.loco.speed('medium'), dontStop=True)
+
+        # see if we can get a lock immediately
+        lock = self.getLockNonBlocking("South Link Lock")
+        if lock is False:
+            # nope, we wait
+            self.loco.setSpeedSetting('slow')
+            time.sleep(16)
+            self.loco.setSpeedSetting(0)
             lock = self.getLock('South Link Lock')
-        else:
-            self.shortJourney(True, "AAP P4", "FPK P1", self.loco.speed('medium'), dontStop=True)
-
-
-        # see if the reverse loop is free
-        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
-        if b is not None:
-            self.setRoute("Sth Hertford Inner")
-            self.loco.setSpeedSetting(0.5)
-            self.reverseLoop(SOUTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
-        else:
-            # select a siding
-            siding = self.loco.selectSiding(SOUTH_SIDINGS)
-            if siding.getId() == "FP sidings":
-                routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, self.loco.speed('medium'), stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            else:
-                routes = self.requiredRoutes(self.loco.block)
-                self.shortJourney(True, self.loco.block, "South Link", self.loco.speed('medium'), routes=routes)
-                routes = self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, self.loco.speed('fast'), stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            if self.loco.reversible() is False:
-                self.loco.wrongway = True
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
 
-        self.loco.status = loco.SIDINGS
+        # off the visible layout
+        routes = self.requiredRoutes(self.loco.block)
+        self.shortJourney(True, self.loco.block, 'South Link', self.loco.speed('medium'), dontStop=True, routes=routes)
 
+        # see if the reverse loop is free
+        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
+        if b is not None:
+            self.loco.setSpeedSetting(self.loco.speed('fast'))
+            self.reverseLoop(SOUTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
+            if lock:
+                self.unlock(lock)
+        else:
+            # select a siding
+            siding = self.loco.selectSiding(SOUTH_SIDINGS)
+            if siding.getId() == "FP sidings":
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(True, self.loco.block, siding, self.loco.speed('medium'), stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            else:
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(True, self.loco.block, siding, self.loco.speed('fast'), stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.loco.unselectSiding(siding)
+            if self.loco.reversible() is False:
+                self.loco.wrongway = True
+
+        self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
 
         return False
 
 class Class47Nth2SthTrack1Nonstop(ClassAnyNth2SthTrack1Nonstop):
     pass
+
+loc = loco.Loco(7405)
+loc.setBlock(NORTH_REVERSE_LOOP)
+Class47Nth2SthTrack1Nonstop(loc, None).start()
