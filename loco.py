@@ -39,6 +39,8 @@ class Loco:
     def setSpeedSetting(self, speed):
         if self.throttle.getLocoNetSlot() is None:
             print "***************************** Throttle for loco ", self.nameAndAddress(), "has no slot ***********************************"
+        if type(speed) == str or type(speed) == unicode:
+            speed = self.speed(speed)
         self.throttle.setSpeedSetting(speed)
         time.sleep(0.2)
         self.throttle.setSpeedSetting(speed)
@@ -258,6 +260,13 @@ class Loco:
             mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
         mem.setValue(None)
 
+    # unselect a bunch of sidings
+    @classmethod
+    def unselectSidings(cls, sidings):
+        for siding in sidings:
+            Loco(None).unselectSiding(siding)
+
+
     # Checks if the reverse loop (name) supplied is occupied
     # or already selected, returns None if so, or the block
     # if it's available
@@ -276,6 +285,11 @@ class Loco:
     def unselectReverseLoop(self, loop):
         mem = memories.provideMemory("IMLOOP" + loop.upper())
         mem.setValue(None)
+
+    @classmethod
+    def unselectReverseLoops(cls, loops):
+        for loop in loops:
+            Loco(None).unselectReverseLoop(loop)
 
     # returns True if the loco is in a reverse loop
     def inReverseLoop(self):
