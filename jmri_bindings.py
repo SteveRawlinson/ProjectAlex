@@ -25,3 +25,5 @@ warrants     = jmri.InstanceManager.getDefault(jmri.jmrit.logix.WarrantManager)
 ACTIVE = jmri.Sensor.ACTIVE
 INACTIVE = jmri.Sensor.INACTIVE
 OCCUPIED = jmri.Block.OCCUPIED
+CLOSED = jmri.Turnout.CLOSED
+THROWN = jmri.Turnout.THROWN
