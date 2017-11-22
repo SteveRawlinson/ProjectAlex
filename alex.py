@@ -265,6 +265,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             return
         self.debug('reverseLoop: setting exit route and returning')
         self.setRoute(outroute)
+        self.loco.unselectReverseLoop(loop)
         return
 
     # Checks two places to get the slowtime - the number of seconds to
@@ -360,7 +361,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # are we moving
         if throttle.getSpeedSetting() > 0:
             startTime = time.time()
-            self.debug("we are already moving")
             moving = True
         else:
             moving = False
