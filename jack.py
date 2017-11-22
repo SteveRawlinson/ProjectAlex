@@ -398,6 +398,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if mem is not None:
                 mem.setValue(None)
 
+        # unselect all sidings
+        loco.Loco.unselectSidings(NORTH_SIDINGS + SOUTH_SIDINGS)
+        loco.Loco.unselectReverseLoops([NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP])
+
         # set sensors to inactive
         for s in ["Add Loco", "Stop", "Estop"]:
             sen = sensors.getSensor(s)
