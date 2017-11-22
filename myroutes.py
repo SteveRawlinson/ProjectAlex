@@ -87,7 +87,7 @@ SPEEDMAP = {
     3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Eurostar
     6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},           # Ave Talgo
     1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # class 91 virgin
-    "class47": {'fast': 0.6, 'medium': 0.4, 'slow': 0.3}     # class 47
+    "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25}     # class 47
 }
 
 SLOWTIMEMAP = {
