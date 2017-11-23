@@ -322,6 +322,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             raise RuntimeError("dontStop can't be false if passBlock is true")
 
         # convert string speeds to floats
+        origNormalSpeed = 'dunno'
         if type(normalSpeed) == str or type(normalSpeed) == unicode:
             origNormalSpeed = normalSpeed
             normalSpeed = self.loco.speed(normalSpeed)
@@ -445,7 +446,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if normalSpeed is None:
                 raise RuntimeError("normalSpeed is None (was specified as " + str(origNormalSpeed) + ")")
             startTime = time.time()
-            print self.loco.dccAddr, "Setting normal Speed", normalSpeed
+            print self.loco.dccAddr, "not moving, setting normal Speed", normalSpeed
             self.loco.setSpeedSetting(normalSpeed)
 
         # Set remaining routes
