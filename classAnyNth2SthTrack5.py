@@ -32,17 +32,17 @@ class ClassAnyNth2SthTrack5(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        sp = self.loco.speed('northSidings') or self.loco('fast')
+        sp = self.loco.speed('northSidings') or self.loco.speed('fast')
         self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 'fast')
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", 'fast', dontStop=True)
 
         # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 'northFastBend', lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 'northFastBend', lock=lock, dontStop=True)
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 'medium')
+        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 'medium', dontStop=True)
 
-        self.shortJourney(True, self.loco.block, "FPK 7", 'medium')
+        self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
 
         # get a lock on the south link, but if it's not available immediately ...
         lock = self.getLockNonBlocking('South Link Lock')
@@ -65,10 +65,28 @@ class ClassAnyNth2SthTrack5(alex.Alex):
             m.setValue(0)
 
         # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        routes = self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 'fast', 'medium', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        b = None
+        if not self.loco.reversible():
+            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        if b is not None:
+            self.loco.setSpeedSetting('fast')
+            self.reverseLoop(NORTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+            if lock:
+                self.unlock(lock)
+        else:
+            siding = self.loco.selectSiding(SOUTH_SIDINGS)
+            routes = self.requiredRoutes(siding)
+            self.shortJourney(True, self.loco.block, siding, 'fast', 'medium', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.loco.unselectSiding(siding)
 
         self.loco.status = loco.SIDINGS
         return False
+
+class Class47Nth2SthTrack5Nonstop(ClassAnyNth2SthTrack5):
+    pass
+
+loc = loco.Loco(7405)
+loc.setBlock(NORTH_REVERSE_LOOP)
+Class47Nth2SthTrack5Nonstop(loc, None).start()
 
