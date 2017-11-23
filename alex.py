@@ -322,9 +322,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             raise RuntimeError("dontStop can't be false if passBlock is true")
 
         # convert string speeds to floats
-        if type(normalSpeed) == str:
+        if type(normalSpeed) == str or type(normalSpeed) == unicode:
+            origNormalSpeed = normalSpeed
             normalSpeed = self.loco.speed(normalSpeed)
-        if type(slowSpeed) == str:
+        if type(slowSpeed) == str or type(slowSpeed) == unicode:
             slowSpeed = self.loco.speed(slowSpeed)
 
         # Get a startBlock and endBlock converted to layoutBlocks and get their
@@ -409,7 +410,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # if we are already moving set the new throttle setting
         # before we set routes or we might get to the next turnout
         # too soon, too fast
-        if moving:
+        if moving and normalSpeed is not None:
             self.debug("we are already moving, setting normal speed: " +  str(normalSpeed))
             self.loco.setSpeedSetting(normalSpeed)
 
@@ -441,6 +442,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # set throttle position if we're not already moving (if we
         # are moving we set the throttle earlier)
         if not moving:
+            if normalSpeed is None:
+                raise RuntimeError("normalSpeed is None (was specified as " + str(origNormalSpeed) + ")")
             startTime = time.time()
             print self.loco.dccAddr, "Setting normal Speed", normalSpeed
             self.loco.setSpeedSetting(normalSpeed)
