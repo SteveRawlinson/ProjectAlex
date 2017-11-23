@@ -9,7 +9,7 @@ from jmri_bindings import *
 from myroutes import *
 
 
-class ClassFastSth2NthTrack6Nonstop(alex.Alex):
+class ClassAnySth2NthTrack6(alex.Alex):
     def __init__(self, loc, memory):
         self.loco = loc
         self.knownLocation = None
@@ -28,23 +28,32 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         self.loco.status = loco.MOVING
         start = time.time()
 
+        # set the direction
+        if self.loco.reversible():
+            dir = False
+        else:
+            dir = True
+
         # get a 'lock' on the south link track
         lock = self.getLock('South Link Lock')
 
         # Out the sth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        self.shortJourney(False, self.loco.block, "South Link", 'fast', routes=routes, dontStop=True)
-        self.shortJourney(False, self.loco.block, "FPK P8", 'fast', lock=lock, dontStop=True)
+        self.shortJourney(dir, self.loco.block, "South Link", 'fast', routes=routes, dontStop=True)
+        self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', lock=lock, dontStop=True)
 
-        # All the way to North Fast Outer 2
-        self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 'fast', dontStop=True)
+        # All the way to North Fast Outer 1
+        self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 'medium', dontStop=True)
 
         # get a lock on the north link, but if it's not available immediately ...
         lock = self.getLockNonBlocking('North Link Lock')
         if lock is False:
             # stop the train at North Fast Outer 1
             self.loco.setSpeedSetting('slow')
-            time.sleep(8)
+            st = self.loco.getSlowTime("NORTH FAST")
+            if st is None:
+                st = 8
+            time.sleep(st)
             self.loco.setSpeedSetting(0)
             lock = self.getLock('North Link Lock')
 
@@ -57,8 +66,8 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
             m.setValue(0)
 
         # progress to ...
-        self.shortJourney(False, self.loco.block, "North Fast Link", 'medium', dontStop=True)
-        self.shortJourney(False, self.loco.block, "North Link", 'fast', dontStop=True)
+        self.shortJourney(dir, self.loco.block, "Nth Fast Link", 'medium', dontStop=True)
+        self.shortJourney(dir, self.loco.block, "North Link", 'fast', dontStop=True)
 
         # select a siding
         b = None
@@ -67,13 +76,13 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         if b is not None:
             self.loco.setSpeedSetting('fast')
             self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(NORTHTH_REVERSE_LOOP)
             if lock:
                 self.unlock(lock)
         else:
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             routes = self.requiredRoutes(siding)
-            self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
@@ -82,4 +91,9 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
 
         return False
 
+class Class47Sth2NthTrack6Nonstop(ClassAnySth2NthTrack6):
+    pass
 
+loc = loco.Loco(7405)
+loc.setBlock(SOUTH_REVERSE_LOOP)
+Class47Sth2NthTrack6Nonstop(loc, None).start()
