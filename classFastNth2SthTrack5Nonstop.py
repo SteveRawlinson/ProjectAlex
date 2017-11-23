@@ -40,13 +40,13 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
         self.shortJourney(True, self.loco.block, "North Link", slowSpeed, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed)
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, dontStop=True)
 
         # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock)
+        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock, dontStop=True)
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed)
+        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed, dontStop=True)
 
         # get a lock on the south link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('South Link Lock')
