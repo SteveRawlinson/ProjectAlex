@@ -58,7 +58,7 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         if lock is False:
             # we didn't get a lock, stop at the signal
             self.loco.setSpeedSetting('slow')
-            time.sleep(8)
+            time.sleep(9)
             self.loco.setSpeedSetting(0)
             # now wait for a lock
             lock = self.getLock('North Link Lock')
@@ -96,7 +96,7 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         self.debug(type(self).__name__ + ' finished')
         return False
 
-class Class47Sth2NthTrack4Nonstop(ClassAnySth2NthTrack2Nonstop):
+class Class47Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
 loc = loco.Loco(7405)

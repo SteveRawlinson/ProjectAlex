@@ -39,10 +39,10 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
 
         # Out the nth sidings
         if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG 1')
+            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
         else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG 1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
+            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
+        self.shortJourney(True, self.loco.block, "Nth Fast Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
 
         # on to PAL P1
         self.shortJourney(True, self.loco.block, "NSG P1", self.loco.speed('medium'), dontStop=True)
@@ -58,7 +58,7 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
         if lock is False:
             # nope, we wait
             self.loco.setSpeedSetting('slow')
-            time.sleep(16)
+            time.sleep(14)
             self.loco.setSpeedSetting(0)
             lock = self.getLock('South Link Lock')
 
@@ -97,7 +97,7 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
 
         return False
 
-class Class47Nth2SthTrack3Nonstop(ClassAnyNth2SthTrack1Nonstop):
+class Class47Nth2SthTrack3Nonstop(ClassAnyNth2SthTrack3Nonstop):
     pass
 
 loc = loco.Loco(7405)
