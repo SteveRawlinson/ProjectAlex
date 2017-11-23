@@ -72,7 +72,9 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
             m.setValue(0)
 
         # into North sidings
-        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        b = None
+        if not self.loco.reversible():
+            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if b is not None:
             self.loco.setSpeedSetting(fast)
             self.reverseLoop(NORTH_REVERSE_LOOP)
@@ -80,7 +82,6 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
             if lock:
                 self.unlock(lock)
         else:
-            self.debug("North Reverse Loop unavailable")
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             routes = self.requiredRoutes(self.loco.block)
             self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
