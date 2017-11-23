@@ -100,6 +100,6 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
 class Class47Nth2SthTrack3Nonstop(ClassAnyNth2SthTrack3Nonstop):
     pass
 
-loc = loco.Loco(7405)
-loc.setBlock(NORTH_REVERSE_LOOP)
-Class47Nth2SthTrack3Nonstop(loc, None).start()
+# loc = loco.Loco(7405)
+# loc.setBlock(NORTH_REVERSE_LOOP)
+# Class47Nth2SthTrack3Nonstop(loc, None).start()
