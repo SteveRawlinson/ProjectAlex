@@ -49,7 +49,8 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         if lock is False:
             # stop the train at FPK 7
             self.loco.setSpeedSetting('slow')
-            time.sleep(8)
+            st = self.loco.getSlowTime("FPK P7") or 8
+            time.sleep(st)
             self.loco.setSpeedSetting(0)
             # wait for a lock
             lock = self.getLock('South Link Lock')
@@ -67,11 +68,11 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         # select a siding
         b = None
         if not self.loco.reversible():
-            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+            b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if b is not None:
             self.loco.setSpeedSetting('fast')
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+            self.reverseLoop(SOUTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
             if lock:
                 self.unlock(lock)
         else:
