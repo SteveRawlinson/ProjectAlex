@@ -413,7 +413,7 @@ class Loco:
             if k in SPEEDMAP:
                 if speed in SPEEDMAP[k]:
                     return SPEEDMAP[k][speed]
-        raise RuntimeError("failed to find speed for loco " + self.nameAndAddress() + " in SPEEDMAP")
+        return None
 
     def slowTimes(self):
         if self.dccAddr in SLOWTIMEMAP:
