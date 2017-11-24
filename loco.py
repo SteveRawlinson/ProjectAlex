@@ -45,6 +45,19 @@ class Loco:
         time.sleep(0.2)
         self.throttle.setSpeedSetting(speed)
 
+    # Changes the loco's speed setting in 0.5 second steps over
+    # the duration. So, if duration is 2 secs then there are 5 steps 0.5
+    # seconds apart.
+    def graduallyChangeSpeed(self, newSpeed, duration = 2):
+        speed = self.throttle.getSpeedSetting()
+        gradCount = float(duration) * 2 + 1
+        grad = (newSpeed - speed) / gradCount
+        s = speed + grad
+        for i in range(gradCount):
+            self.throttle.setSpeedSetting(s)
+            if i != gradCount - 1:
+                time.sleep(0.5)
+
     def forward(self):
         self.throttle.setIsForward(True)
         time.sleep(0.2)
@@ -403,7 +416,6 @@ class Loco:
     # Returns a floating point number between 0 and 1 which it looks
     # up in the SPEEDMAP constant. It first looks for the dcc address
     # as the key, and then for the class.
-
     def speed(self, speed):
         if self.dccAddr in SPEEDMAP:
             if speed in SPEEDMAP[self.dccAddr]:
@@ -435,5 +447,6 @@ class Loco:
             if l.dccAddr == addr:
                 return l
         return None
+
 
 
