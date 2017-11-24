@@ -40,10 +40,14 @@ class ClassAnySth2NthTrack6(alex.Alex):
         # Out the sth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
         self.shortJourney(dir, self.loco.block, "South Link", 'fast', routes=routes, dontStop=True)
-        self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', lock=lock, dontStop=True)
+        if 'Stopping' in type(self).__name__:
+            self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', 'slow', lock=lock)
+            self.waitAtPlatform()
+        else:
+            self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', lock=lock, dontStop=True)
 
         # All the way to North Fast Outer 1
-        self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 'medium', dontStop=True)
+        self.shortJourney(dir, self.loco.block, "Nth Fast Outer 1", 'medium', dontStop=True)
 
         # get a lock on the north link, but if it's not available immediately ...
         lock = self.getLockNonBlocking('North Link Lock')
@@ -76,13 +80,13 @@ class ClassAnySth2NthTrack6(alex.Alex):
         if b is not None:
             self.loco.setSpeedSetting('fast')
             self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTHTH_REVERSE_LOOP)
+            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
             if lock:
                 self.unlock(lock)
         else:
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             routes = self.requiredRoutes(siding)
-            self.shortJourney(dir, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, siding, 'fast', 'slow', stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
@@ -94,6 +98,12 @@ class ClassAnySth2NthTrack6(alex.Alex):
 class Class47Sth2NthTrack6Nonstop(ClassAnySth2NthTrack6):
     pass
 
-loc = loco.Loco(7405)
-loc.setBlock(SOUTH_REVERSE_LOOP)
-Class47Sth2NthTrack6Nonstop(loc, None).start()
+class ClassA4Sth2NthTrack6Stopping(ClassAnySth2NthTrack6):
+    pass
+
+class ClassA4Sth2NthTrack6Nonstop(ClassAnySth2NthTrack6):
+    pass
+
+# loc = loco.Loco(68)
+# loc.setBlock(SOUTH_REVERSE_LOOP)
+# ClassA4Sth2NthTrack6Stopping(loc, None).start()
