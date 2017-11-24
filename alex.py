@@ -496,8 +496,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
             # slow train to 'slowspeed'
-            self.debug("setting slowSpeed" + str(slowSpeed))
-            self.loco.setSpeedSetting(slowSpeed)
+            if isBlockVisible(endBlock) and stopIRClear is None:
+                self.debug("gradually setting slowSpeed: " + str(slowSpeed))
+                self.loco.graduallyChangeSpeed(slowSpeed)
+            else:
+                self.debug("setting slowSpeed" + str(slowSpeed))
+                self.loco.setSpeedSetting(slowSpeed)
 
         if stopIRClear:
             # check if we have a sensor or the name of a sensor
