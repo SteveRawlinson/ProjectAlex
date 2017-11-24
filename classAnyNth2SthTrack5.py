@@ -18,14 +18,11 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
-
-
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
-        start = time.time()
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
@@ -42,20 +39,24 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 'medium', dontStop=True)
 
-        self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
-
-        # get a lock on the south link, but if it's not available immediately ...
-        lock = self.getLockNonBlocking('South Link Lock')
-        if lock is False:
-            # stop the train at FPK 7
-            self.loco.setSpeedSetting('slow')
-            st = self.loco.getSlowTime("FPK P7") or 8
-            time.sleep(st)
-            self.loco.setSpeedSetting(0)
-            # wait for a lock
+        if 'Stopping' in type(self).__name__:
+            self.shortJourney(True, self.loco.block, "FPK P7", 'medium', 'slow')
+            self.waitAtPlatform()
             lock = self.getLock('South Link Lock')
+        else:
+            self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
+            # get a lock on the south link, but if it's not available immediately ...
+            lock = self.getLockNonBlocking('South Link Lock')
+            if lock is False:
+                # stop the train at FPK 7
+                self.loco.setSpeedSetting('slow')
+                st = self.loco.getSlowTime("FPK P7") or 8
+                time.sleep(st)
+                self.loco.setSpeedSetting(0)
+                # wait for a lock
+                lock = self.getLock('South Link Lock')
 
-        # we got the lock - set the turnouts for FPK 7
+        # one way or another we have a lock - set the turnouts for FPK 7
         for r in self.requiredRoutes("FPK P7"):
             self.setRoute(r, 0)
             # progress to south link
@@ -87,7 +88,10 @@ class ClassAnyNth2SthTrack5(alex.Alex):
 class Class47Nth2SthTrack5Nonstop(ClassAnyNth2SthTrack5):
     pass
 
-loc = loco.Loco(7405)
-loc.setBlock(NORTH_REVERSE_LOOP)
-Class47Nth2SthTrack5Nonstop(loc, None).start()
+class ClassA4Nth2SthTrack5Stopping(ClassAnyNth2SthTrack5):
+    pass
+
+# loc = loco.Loco(68)
+# loc.setBlock(NORTH_REVERSE_LOOP)
+# ClassA4Nth2SthTrack5Stopping(loc, None).start()
 
