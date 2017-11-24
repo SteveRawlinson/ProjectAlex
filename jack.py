@@ -28,6 +28,8 @@ from classAnyNth2SthTrack1Nonstop import *
 from classAnySth2NthTrack2Nonstop import *
 from classAnyNth2SthTrack3Nonstop import *
 from classAnySth2NthTrack4Nonstop import *
+from classAnyNth2SthTrack5 import *
+from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
