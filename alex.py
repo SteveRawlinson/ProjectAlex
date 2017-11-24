@@ -496,6 +496,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
             # slow train to 'slowspeed'
+            self.debug("setting slowSpeed" + str(slowSpeed))
             self.loco.setSpeedSetting(slowSpeed)
 
         if stopIRClear:
@@ -512,6 +513,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             print self.loco.dccAddr, "IR sensor inactive..."
         elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
+            self.debug("waiting slowtime " + str(slowTime / 1000))
             self.waitMsec(slowTime)
 
         if dontStop is False:
