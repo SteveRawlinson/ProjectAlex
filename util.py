@@ -34,6 +34,18 @@ class Util:
         else:
             return False
 
+    # Returns True if the block referred to be +thing+ (which can be
+    # a string, a block, or a layoutBlock) is on the visible part of
+    # the layout
+    def isBlockVisible(self, thing):
+        if type(thing) != str and type(thing) != unicode:
+            block, sensor = self.convertToLayoutBlockAndSensor(thing)
+            blockname = block.getId()
+        else:
+            blockname = thing
+        if re.match('^(FPK|PAL|NSG|AAP)', blockname):
+            return True
+        return False
 
     # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
     # and return the layout block and the sensor (if there is one).
