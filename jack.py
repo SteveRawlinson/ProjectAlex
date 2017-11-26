@@ -172,7 +172,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             #self.debug("reading new status from status memory: " + str(self.status))
         return self.status
 
-
     def setStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
         mem.setValue(self.status)
@@ -267,7 +266,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             prob = 0.3
         if random.random() > prob:
-            self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
+            #self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
             return
 
         # Pick a loco to start up. This is done on the basis of the
