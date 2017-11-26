@@ -51,6 +51,7 @@ class ClassAnyNth2SthTrack5(alex.Alex):
                 # stop the train at FPK 7
                 self.loco.setSpeedSetting('slow')
                 st = self.getSlowTime("FPK P7") or 8
+                self.debug("waiting slowtime at FPK P7 " + str(slowTime / 1000))
                 time.sleep(st)
                 self.loco.setSpeedSetting(0)
                 # wait for a lock

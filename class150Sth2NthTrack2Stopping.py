@@ -92,8 +92,8 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         return False
 
 class Loco1087Sth2NthTrack2Stopping(Class150Sth2NthTrack2Stopping):
-    def getSlowTimes(self):
-        return {"FPK P2": 8, "AAP P3": 7, "PAL P2": 7, "North Link": 4}
+    pass
+
 
 
 # loc = loco.Loco(2144)

@@ -57,6 +57,7 @@ class ClassAnySth2NthTrack6(alex.Alex):
             st = self.getSlowTime("NORTH FAST")
             if st is None:
                 st = 8
+            self.debug("waiting slowtime at NORTH FAST: "+ str(slowTime / 1000))
             time.sleep(st)
             self.loco.setSpeedSetting(0)
             lock = self.getLock('North Link Lock')

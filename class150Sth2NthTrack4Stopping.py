@@ -14,9 +14,6 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.loco = loc
         self.memory = memory
 
-    def getSlowTimes(self):
-        return {"FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "North Link": 4}
-
     def handle(self):
 
         if self.loco.block is None:
@@ -87,5 +84,4 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         return False
 
 class Loco1087Sth2NthTrack4Stopping(Class150Sth2NthTrack4Stopping):
-    def getSlowTimes(self):
-        return {"FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "North Link": 4}
+    pass

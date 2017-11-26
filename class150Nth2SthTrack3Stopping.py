@@ -14,9 +14,6 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         self.loco = loc
         self.memory = memory
 
-    def getSlowTimes(self):
-        return {"FPK P3": 13, "AAP P2": 6, "NSG P1": 9}
-
     def handle(self):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
@@ -81,5 +78,5 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
         return False
 
 class Loco1087Nth2SthTrack3Stopping(Class150Nth2SthTrack3Stopping):
-    def getSlowTimes(self):
-        return {"FPK P3": 13, "AAP P2": 6, "NSG P1": 13}
+    pass
+
