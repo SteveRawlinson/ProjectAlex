@@ -54,7 +54,7 @@ class ClassAnySth2NthTrack6(alex.Alex):
         if lock is False:
             # stop the train at North Fast Outer 1
             self.loco.setSpeedSetting('slow')
-            st = self.loco.getSlowTime("NORTH FAST")
+            st = self.getSlowTime("NORTH FAST")
             if st is None:
                 st = 8
             time.sleep(st)
