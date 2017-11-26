@@ -50,7 +50,7 @@ class ClassAnyNth2SthTrack5(alex.Alex):
             if lock is False:
                 # stop the train at FPK 7
                 self.loco.setSpeedSetting('slow')
-                st = self.loco.getSlowTime("FPK P7") or 8
+                st = self.getSlowTime("FPK P7") or 8
                 time.sleep(st)
                 self.loco.setSpeedSetting(0)
                 # wait for a lock
