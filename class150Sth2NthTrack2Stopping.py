@@ -14,8 +14,8 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         self.loco = loc
         self.memory = memory
 
-    def getSlowTimes(self):
-        return {"FPK P2": 7, "AAP P3": 5, "PAL P2": 5, "North Link": 4}
+    # def getSlowTimes(self):
+    #     return {"FPK P2": 7, "AAP P3": 5, "PAL P2": 5, "North Link": 4}
 
 
     def handle(self):
@@ -96,6 +96,6 @@ class Loco1087Sth2NthTrack2Stopping(Class150Sth2NthTrack2Stopping):
         return {"FPK P2": 8, "AAP P3": 7, "PAL P2": 7, "North Link": 4}
 
 
-# loc = loco.Loco(1087)
-# loc.setBlock("Sth Sidings 4")
-# Loco1087Sth2NthTrack2Stopping(loc, None).start()
+# loc = loco.Loco(2144)
+# loc.setBlock("FP sidings")
+# Class150Sth2NthTrack2Stopping(loc, None).start()
