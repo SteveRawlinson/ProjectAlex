@@ -18,9 +18,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
     def getSpeeds(self):
         return [0.6, 0.3, 0.15]
 
-    def getSlowTimes(self):
-        return {"PAL P1": 8, "AAP P4": 7, "FPK P1": 15 }
-
     def handle(self):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
