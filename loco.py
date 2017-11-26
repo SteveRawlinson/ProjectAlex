@@ -53,8 +53,9 @@ class Loco:
         gradCount = float(duration) * 2 + 1
         grad = (newSpeed - speed) / gradCount
         s = speed + grad
-        for i in range(gradCount):
+        for i in range(int(gradCount)):
             self.throttle.setSpeedSetting(s)
+            s += grad
             if i != gradCount - 1:
                 time.sleep(0.5)
 
