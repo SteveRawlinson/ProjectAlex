@@ -144,12 +144,12 @@ class NorthSidingsToNorthReverseLoop(alex.Alex):
         return False
 
 
-loc = loco.Loco(68)
+#loc = loco.Loco(68)
 # loc.setBlock(SOUTH_REVERSE_LOOP)
 # SouthReverseLoopToSouthSidings(loc).start()
 #loc.setBlock("Sth Sidings 2")
 #SouthSidingsToSouthReverseLoop(loc).start()
-loc.setBlock(NORTH_REVERSE_LOOP)
-NorthReverseLoopToNorthSidings(loc).start()
+#loc.setBlock(NORTH_REVERSE_LOOP)
+#NorthReverseLoopToNorthSidings(loc).start()
 #loc.setBlock("Nth Sidings 4")
 #NorthSidingsToNorthReverseLoop(loc).start()
