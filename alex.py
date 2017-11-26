@@ -229,14 +229,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.debug("throttle is set, type is " + type(loc.throttle).__name__)
 
 
-    # checks the JackStatus memory to see if an ESTOP status
-    # has been set by the user, and exits immediately if so
-    def checkStatus(self):
-        if self.getJackStatus() == ESTOP:
-            print "Alex: detected ESTOP status"
-            return False
-        return True
-
     # Returns the value of the JACKSTATUS memory
     def getJackStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
@@ -309,8 +301,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
 
         # check we're not in ESTOP status
-        if self.checkStatus() is False:
-            return False
+        if self.getJackStatus() == ESTOP:
+            return RuntimeError("shortJourney called while status is ESTOP")
 
         # passBlock implies dontStop
         if dontStop is None:
@@ -469,7 +461,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
                 self.waitChange(sensorList, 5000)
-                if self.checkStatus() is False:
+                if self.getJackStatus() == ESTOP:
                     return False
                 if time.time() - slowJourneyStart > 30 * 60.0: # 30 minute timeout
                     raise RuntimeError("shortJourney took too long")
@@ -496,7 +488,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
             # slow train to 'slowspeed'
-            if isBlockVisible(endBlock) and stopIRClear is None:
+            if self.isBlockVisible(endBlock) and stopIRClear is None:
                 self.debug("gradually setting slowSpeed: " + str(slowSpeed))
                 self.loco.graduallyChangeSpeed(slowSpeed)
             else:
@@ -517,7 +509,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             print self.loco.dccAddr, "IR sensor inactive..."
         elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
-            self.debug("waiting slowtime " + str(slowTime / 1000))
+            self.debug("waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000))
             self.waitMsec(slowTime)
 
         if dontStop is False:
