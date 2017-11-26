@@ -1,6 +1,7 @@
 import jmri
 from jmri_bindings import *
 from myroutes import *
+import re
 
 # This is a mixin
 class Util:
@@ -15,7 +16,6 @@ class Util:
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
     # can be a string, a layoutblock, or a block.
     def isBlockOccupied(self, thing):
-        self.debug("isBlockOccupied: thing type: " + type(thing).__name__ + " value: " + str(thing))
         block, sensor = self.convertToLayoutBlockAndSensor(thing)
         #self.debug("  block: " + block.getDisplayName())
 #        if sensor is not None:
@@ -73,4 +73,12 @@ class Util:
             sensor = thing
             block = layoutblocks.getBlockWithSensorAssigned(thing)
         return block, sensor
+
+    def getJackStatus(self):
+        mem = memories.provideMemory('IMJACKSTATUS')
+        v = mem.getValue()
+        return v
+
+
+
 
