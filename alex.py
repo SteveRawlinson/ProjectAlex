@@ -509,7 +509,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             print self.loco.dccAddr, "IR sensor inactive..."
         elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
-            self.debug("waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000))
+            self.debug(" ********************** waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000) + " **********************************************")
             self.waitMsec(slowTime)
 
         if dontStop is False:
