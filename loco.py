@@ -42,8 +42,14 @@ class Loco:
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
         self.throttle.setSpeedSetting(speed)
-        time.sleep(0.2)
-        self.throttle.setSpeedSetting(speed)
+        if float(speed) ==  0.0:
+            # make sure the message gets through - wait a bit
+            time.sleep(0.1)
+            # set the speed to the minimum above zero
+            self.throttle.setSpeedSetting(self.throttle.getSpeedIncrement())
+            # set zero again
+            time.sleep(0.05)
+            self.throttle.setSpeedSetting(speed)
 
     # Changes the loco's speed setting in 0.5 second steps over
     # the duration. So, if duration is 2 secs then there are 5 steps 0.5
