@@ -15,9 +15,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.knownLocation = None
         self.memory = memory
 
-    def getSpeeds(self):
-        return [0.6, 0.3, 0.15]
-
     def handle(self):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
@@ -63,12 +60,12 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         siding = self.loco.selectSiding(SOUTH_SIDINGS)
         if siding.getId() == "FP sidings":
             routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
             routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
+            self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
             routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
