@@ -87,14 +87,15 @@ SPEEDMAP = {
     3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Eurostar
     6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},           # Ave Talgo
     1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # class 91 virgin
-    "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25}     # class 47
+    "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},     # class 47
+    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2}
 }
 
 SLOWTIMEMAP = {
     "class47": {'FPK P7': 10, "NORTH FAST": 13},
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17 },
     "class150": {"FPK P2": 5, "AAP P3": 2, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10,
-                 "FPK P4": 4, "AAP P1": 3, "NSG P2": 3,  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
+                 "FPK P4": 4, "AAP P1": 2, "NSG P2": 3,  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
     1087: {"FPK P3": 13, "AAP P2": 6, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 18, "FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "FPK P2": 8, "AAP P3": 7, "PAL P2": 7, "North Link": 4},
 }
 
