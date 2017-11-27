@@ -33,7 +33,7 @@ from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [5144, 2144, 68, 7405]
+DCC_ADDRESSES = [5144, 2144]
 DEBUG = True
 
 
@@ -454,10 +454,14 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 return False
             # check for journeys that have completed
             self.checkJourneys()
-            if self.status == STOPPING and len(self.memories) == 0:
-                # We are doing a graceful stop and all journeys are done
-                print "All done - exiting"
-                return False
+            if self.status == STOPPING:
+                if len(self.memories) == 0:
+                    print "All done - exiting"
+                    return False
+                else:
+                    self.debug("waiting for " + str(len(self.memories)) + " journeys to complete")
+                    for m in self.memories:
+                        self.debug('  ' + m)
             # kick off new journeys, if appropriate
             self.startNewJourneys()
             # check for new locos
