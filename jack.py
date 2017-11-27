@@ -458,7 +458,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if len(self.memories) == 0:
                     print "All done - exiting"
                     return False
-                else:
+                elif loopcount % 20 == 0:
                     self.debug("waiting for " + str(len(self.memories)) + " journeys to complete")
                     for m in self.memories:
                         self.debug('  ' + m)
