@@ -94,9 +94,10 @@ SPEEDMAP = {
 SLOWTIMEMAP = {
     "class47": {'FPK P7': 10, "NORTH FAST": 13},
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17 },
-    "class150": {"FPK P2": 5, "AAP P3": 2, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10,
+    "class150": {"FPK P2": 4, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10,
                  "FPK P4": 4, "AAP P1": 2, "NSG P2": 3,  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
-    1087: {"FPK P3": 13, "AAP P2": 6, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 18, "FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "FPK P2": 8, "AAP P3": 7, "PAL P2": 7, "North Link": 4},
+    1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 15, "FPK P4": 5, "AAP P1": 5, "NSG P2": 1, "FPK P2": 8, "AAP P3": 7, "PAL P2": 5, "North Link": 4},
+    5004: {'North Link': 5, 'FPK P7': 5}
 }
 
 TROUBLESOME_TURNOUTS = ['LT17', 'LT20', 'LT23']
