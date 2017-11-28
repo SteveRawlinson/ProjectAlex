@@ -423,15 +423,19 @@ class Loco:
     # Returns a floating point number between 0 and 1 which it looks
     # up in the SPEEDMAP constant. It first looks for the dcc address
     # as the key, and then for the class.
-    def speed(self, speed):
+    def speed(self, speed, fallback = 'medium'):
         if self.dccAddr in SPEEDMAP:
             if speed in SPEEDMAP[self.dccAddr]:
                 return SPEEDMAP[self.dccAddr][speed]
+            if fallback in SPEEDMAP[self.dccAddr]:
+                return SPEEDMAP[self.dccAddr][fallback]
         if self.brclass() is not None:
             k = "class" + str(self.brclass())
             if k in SPEEDMAP:
                 if speed in SPEEDMAP[k]:
                     return SPEEDMAP[k][speed]
+            if fallback in SPEEDMAP[k]:
+                return SPEEDMAP[k][fallback]
         return None
 
     def slowTimes(self):
