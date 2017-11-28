@@ -551,6 +551,48 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         return True
                 
+
+    # moves a train from their current block into the north sidings
+    def moveIntoNorthSidings(self, lock=None):
+        if lock is None:
+            self.getLock('North Link Lock')
+        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        if not self.loco.reversible() and b is not none:
+            # we need a reverse loop and it's available
+            speed = self.loco.speed('into reverse loop', 'fast')
+            self.loco.setSpeedSetting(speed)
+            self.reverseLoop(NORTH_REVERSE_LOOP)
+        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and not self.loco.reversible():
+            # If this loco has a rarity of zero and we're not shutting down operations
+            # there's no point in going all the way to the sidings because we'll just get
+            # started up again. Stop on the North Link
+            self.debug("stopping early")
+            routes = self.requiredRoutes(self.loco.block)
+            speed = self.loco.speed('track to north link', 'medium')
+            self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=slow, routes=routes)
+            # check JackStatus hasn't changed in the meantime
+            if self.getJackStatus() == STOPPING:
+                self.debug("JackStatus is now STOPPING - moving to siding")
+                siding = self.loco.selectSiding(NORTH_SIDINGS)
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(False, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        else:
+            # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
+            siding = self.loco.selectSiding(NORTH_SIDINGS)
+            routes = self.requiredRoutes(self.loco.block)
+            speed = self.loco.speed('track to north link', 'medium')
+            if self.loco.reversible():
+                dir = False
+            else:
+                dir = True
+            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, lock=lock)
+            routes = self.requiredRoutes(siding)
+            speed = self.loco.speed('north link to sidings', 'fast')
+            self.shortJourney(dir, self.loco.block, siding, speed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        if b:
+            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+
+
     def handle(self):
         pass
 
