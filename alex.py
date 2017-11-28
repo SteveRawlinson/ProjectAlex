@@ -272,10 +272,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if st is not None:
             if destination in st:
                 return st[destination]
-        if callable(self.getSlowTimes):
-            st = self.getSlowTimes()
-            if st[destination] is not None:
-                return st[destination]
+        try:
+            callable(self.getSlowTimes)
+        except AttributeError, e:
+            self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
+            return 1
+        st = self.getSlowTimes()
+        if st[destination] is not None:
+            return st[destination]
         self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
         return 1
 
@@ -328,8 +332,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName())
 
-        # slowSpeed implies slowTime
-        if slowSpeed is not None:
+        # slowSpeed implies slowTime (if there's no IR sensor involved)
+        if slowSpeed is not None and stopIRClear is None:
             if slowTime is None:
                 slowTime = self.getSlowtime(endBlock.getUserName())
         # convert slowTime to msecs
