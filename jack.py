@@ -141,7 +141,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for t in TRACKS:
             tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
             self.tracks.append(tr)
-            print "New track: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # Returns True if the loco supplied is in the north sidings
     def northSidings(self, loc):
@@ -365,7 +364,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         m = memories.provideMemory("IMNEWLOCO")
         if m.getValue() is not None and m.getValue() != "" and m.getValue() != 0:
             addr = JOptionPane.showInputDialog("DCC address of new loco:")
-            self.debug("joptionpane returned " + str(addr) + " type " + type(addr).__name__)
             if addr != "" and addr is not None and int(addr) > 0:
                 loc = self.getNewLoco(int(addr))
                 self.getLocoThrottle(loc)
