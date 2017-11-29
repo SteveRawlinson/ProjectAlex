@@ -6,6 +6,7 @@ from jmri_bindings import *
 from myroutes import *
 import util
 import datetime
+import track
 
 DEBUG = True
 
@@ -20,6 +21,12 @@ ESTOP = 2
 
 # noinspection PyInterpreter
 class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
+
+    def __init__(self, loc, memory, track):
+        self.loco = loc
+        self.knownLocation = None
+        self.memory = memory
+        self.track = track
 
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
@@ -443,7 +450,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if normalSpeed is None:
                 raise RuntimeError("normalSpeed is None (was specified as " + str(origNormalSpeed) + ")")
             startTime = time.time()
-            print self.loco.dccAddr, "not moving, setting normal Speed", normalSpeed
+            self.debug("not moving, setting normal Speed" +  str(normalSpeed))
             self.loco.setSpeedSetting(normalSpeed)
 
         # Set remaining routes
@@ -555,8 +562,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
-        trak = track.Track.findTrackByBlock(self.loco.block)
-        routes = [trak.exitRoute(trak.southbound())]
+        routes = [self.track.exitRoute(self.track.southbound())]
         if lock is None:
             self.getLock('North Link Lock')
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
@@ -591,7 +597,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, lock=lock)
             routes = self.requiredRoutes(siding)
             speed = self.loco.speed('north link to sidings', 'fast')
-            self.shortJourney(dir, self.loco.block, siding, speed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            slowSpeed = self.loco.speed('north sidings entry', 'medium')
+            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         if b:
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
 
