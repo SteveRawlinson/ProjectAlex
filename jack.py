@@ -34,7 +34,8 @@ from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 5004]
-DCC_ADDRESSES = [5144, 2144]
+#DCC_ADDRESSES = [5144, 2144]
+DCC_ADDRESSES = [6719]
 DEBUG = True
 
 
@@ -352,7 +353,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # add memory to lisr
         self.memories.append(memory.getSystemName())
         # kick the journey off
-        klass(loc, mem).start()
+        klass(loc, mem, trak).start()
         loc.status = loco.MOVING
         loc.track = trak
         trak.occupancy += 1
