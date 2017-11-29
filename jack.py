@@ -450,6 +450,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # Stop everything immediately
                 self.eStop()
                 print "Jack exits on ESTOP"
+                powermanager.setPower(jmri.PowerManager.OFF)
                 return False
             # check for journeys that have completed
             self.checkJourneys()
