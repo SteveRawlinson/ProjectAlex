@@ -6,9 +6,6 @@ import re
 # This is a mixin
 class Util:
 
-    def __init__(self):
-        pass
-
     def debug(self, message):
         if DEBUG:
             print message
