@@ -9,12 +9,6 @@ from myroutes import *
 
 class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
-
-
     def handle(self):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
@@ -35,7 +29,8 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         # Out the nth sidings
         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        self.shortJourney(True, self.loco.block, "North Link", slowSpeed, routes=routes, dontStop=True)
+        sp = self.loco.speed('north sidings exit', 'slow')
+        self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
         self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, dontStop=True)
 
         # slower round the bend
