@@ -10,13 +10,6 @@ from myroutes import *
 
 class Class150Sth2NthTrack2Stopping(alex.Alex):
 
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.memory = memory
-
-    # def getSlowTimes(self):
-    #     return {"FPK P2": 7, "AAP P3": 5, "PAL P2": 5, "North Link": 4}
-
 
     def handle(self):
 

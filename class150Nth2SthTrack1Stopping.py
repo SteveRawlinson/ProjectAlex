@@ -10,11 +10,6 @@ from myroutes import *
 
 class Class150Nth2SthTrack1Stopping(alex.Alex):
 
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
-
     def handle(self):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
