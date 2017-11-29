@@ -2,6 +2,7 @@ import jmri
 import time
 from jmri_bindings import *
 from myroutes import *
+import util
 
 DEBUG = True
 
@@ -10,7 +11,7 @@ SIDINGS = 1
 MOVING = 2
 
 
-class Loco:
+class Loco(util.Util):
     
     def __init__(self, dccAddr):
         self.dccAddr = dccAddr
@@ -76,9 +77,9 @@ class Loco:
         self.throttle.setIsForward(False)
 
 
-    def debug(self, message):
-        if DEBUG:
-            print "Loco: ", str(self.dccAddr) + ': ' + message
+    # def debug(self, message):
+    #     if DEBUG:
+    #         print "Loco: ", str(self.dccAddr) + ': ' + message
 
     # Returns the roster ID (ie. the name)
     def name(self):
