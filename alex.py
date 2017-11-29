@@ -5,6 +5,7 @@ import os
 from jmri_bindings import *
 from myroutes import *
 import util
+import datetime
 
 DEBUG = True
 
@@ -29,7 +30,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     def debug(self, message):
         if DEBUG:
-            print 'alex: ' + str(self.loco.dccAddr) + ': ' + message
+            print str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
 
     # Get's a 'lock' on a memory variable. It sets the variable
     # to the loco number but only if the value is blank. If 
@@ -557,25 +558,25 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if lock is None:
             self.getLock('North Link Lock')
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if not self.loco.reversible() and b is not none:
+        if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
-        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and not self.loco.reversible():
+        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
             self.debug("stopping early")
             routes = self.requiredRoutes(self.loco.block)
             speed = self.loco.speed('track to north link', 'medium')
-            self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=slow, routes=routes)
+            self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes)
             # check JackStatus hasn't changed in the meantime
             if self.getJackStatus() == STOPPING:
                 self.debug("JackStatus is now STOPPING - moving to siding")
                 siding = self.loco.selectSiding(NORTH_SIDINGS)
                 routes = self.requiredRoutes(siding)
-                self.shortJourney(False, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+                self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(NORTH_SIDINGS)
