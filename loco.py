@@ -36,6 +36,10 @@ class Loco(util.Util):
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
+        time.sleep(0.1)
+        self.throttle.setSpeedSetting(0)
+        time.sleep(0.1)
+        self.throttle.setSpeedSetting(-1)
 
     def setSpeedSetting(self, speed):
         if self.throttle.getLocoNetSlot() is None:
