@@ -83,13 +83,21 @@ TRACKS = [
 # string describes the speed and the float is the value to send to the throttle
 
 SPEEDMAP = {
-    68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.35},           # Mallard
-    "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25}, # class 150s
-    5004: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Javelin
-    3213: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # Eurostar
-    6719: {'fast': 0.4, 'bend': 0.2, 'slow': 0.1},           # Ave Talgo
-    1124: {'fast': 0.3, 'bend': 0.2, 'slow': 0.1},           # class 91 virgin
-    "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},     # class 47
+    # Mallard
+    68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.35},
+    # class 150s
+    "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
+    # Javelin
+    5004: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
+    # Eurostar
+    3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
+    # Ave Talgo
+    6719: {'fast': 0.4, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'north sidings exit': 0.4, 'track to north link': 0.4, 'north link to sidings': 0.3, 'north sidings entry': 0.2},
+    # class 91 virgin
+    1124: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
+    # class 47
+    "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
+    # Underground
     1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2}
 }
 
@@ -102,4 +110,4 @@ SLOWTIMEMAP = {
     5004: {'North Link': 5, 'FPK P7': 5}
 }
 
-TROUBLESOME_TURNOUTS = ['LT17', 'LT20', 'LT23']
+TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
