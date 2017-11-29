@@ -9,11 +9,6 @@ from myroutes import *
 
 
 class ClassA4Nth2SthTrack3Stopping(alex.Alex):
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.memory = memory
-        self.knownLocation = None
-
 
     def handle(self):
         if self.loco.block is None:
