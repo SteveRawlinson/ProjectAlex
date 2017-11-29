@@ -13,8 +13,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
-        fullSpeed, bendSpeed, slowSpeed = 'fast', 'medium', 'slow'
-
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
@@ -22,7 +20,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         fullSpeed, bendSpeed, slowSpeed = 'fast', 'bend', 'slow'
 
         self.loco.status = loco.MOVING
-        start = time.time()
 
         # get a 'lock' on the north link track
         lock = self.getLock('North Link Lock')
