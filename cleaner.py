@@ -24,11 +24,6 @@ class Cleaner(alex.Alex):
             self.clean = clean
 
 
-
-    def debug(self, message):
-        if DEBUG:
-            print 'cleaner: ' + message
-
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
