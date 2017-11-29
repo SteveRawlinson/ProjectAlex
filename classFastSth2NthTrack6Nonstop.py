@@ -9,15 +9,6 @@ from myroutes import *
 
 class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
-
-    # This method should be overridden by the child classes
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
-
     def handle(self):
 
         if self.loco.block is None:
@@ -42,7 +33,7 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         self.shortJourney(False, self.loco.block, "FPK P8", fullSpeed, lock=lock)
 
         # All the way to North Fast Outer 2
-        self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed)
+        self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed, dontStop=True)
 
         # get a lock on the north link, but if it's not available immediately we need to know pronto
         lock = self.getLockNonBlocking('North Link Lock')
