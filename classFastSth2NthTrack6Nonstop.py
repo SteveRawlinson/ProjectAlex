@@ -48,27 +48,30 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         lock = self.getLockNonBlocking('North Link Lock')
         if lock is False:
             # stop the train at North Fast Outer 1
-            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, slowSpeed, 5000)
+            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 'fast', 'slow')
             # wait for a lock
             lock = self.getLock('North Link Lock')
-        else:
-            # we got the lock - set the turnouts for Nth Fast Outer 1
-            for r in self.requiredRoutes("Nth Fast Outer 1"):
-                self.setRoute(r, 0)
-            # progress to ...
-            self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, dontStop=True)
-            # check we still have the lock
-            rc = self.checkLock(lock)
-            if rc is False :
-                # we lost it, abort!
-                self.throttle.setSpeedSetting(0)
-                print loco, "race conditions on South Link Lock? Exiting"
-                return False
 
-        # select a siding
-        siding = self.loco.selectSiding(NORTH_SIDINGS)
-        routes = self.requiredRoutes(siding)
-        self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        self.moveIntoNorthSidings(lock)
+
+        # else:
+        #     # we got the lock - set the turnouts for Nth Fast Outer 1
+        #     for r in self.requiredRoutes("Nth Fast Outer 1"):
+        #         self.setRoute(r, 0)
+        #     # progress to ...
+        #     self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, dontStop=True)
+        #     # check we still have the lock
+        #     rc = self.checkLock(lock)
+        #     if rc is False :
+        #         # we lost it, abort!
+        #         self.throttle.setSpeedSetting(0)
+        #         print loco, "race conditions on South Link Lock? Exiting"
+        #         return False
+        #
+        # # select a siding
+        # siding = self.loco.selectSiding(NORTH_SIDINGS)
+        # routes = self.requiredRoutes(siding)
+        # self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()
