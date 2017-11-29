@@ -12,6 +12,7 @@ from myroutes import *
 import track
 import random
 import util
+import datetime
 
 # import journey classes
 from class150Nth2SthTrack1Stopping import *
@@ -49,7 +50,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     def debug(self, message):
         if DEBUG:
-            print "Jack:", message
+            print str(datetime.datetime.now()) + ' ' + "Jack:", message
 
     # Gets a DCC throttle for the loco supplied
     def getLocoThrottle(self, loc):
