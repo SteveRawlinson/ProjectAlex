@@ -603,6 +603,33 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
 
 
+    # moves a train from their current block into the north sidings
+    def moveIntoSouthSidings(self, lock=None):
+        routes = [self.track.exitRoute(self.track.northbound())]
+        if lock is None:
+            self.getLock('South Link Lock')
+        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
+        if not self.loco.reversible() and b is not None:
+            # we need a reverse loop and it's available
+            for r in routes:
+                self.setRoute(r)
+            speed = self.loco.speed('into reverse loop', 'fast')
+            self.loco.setSpeedSetting(speed)
+            self.reverseLoop(SOUTH_REVERSE_LOOP)
+        else:
+            # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
+            siding = self.loco.selectSiding(SOUTH_SIDINGS)
+            speed = self.loco.speed('track to south link', 'medium')
+            dir = True
+            self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, lock=lock)
+            routes = self.requiredRoutes(siding)
+            speed = self.loco.speed('south link to sidings', 'fast')
+            slowSpeed = self.loco.speed('south sidings entry', 'medium')
+            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        if b:
+            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
+
+
     def handle(self):
         pass
 
