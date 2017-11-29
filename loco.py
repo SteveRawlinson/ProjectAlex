@@ -344,7 +344,8 @@ class Loco(util.Util):
         if len(lblocks) == 0:
             self.block = None
         elif len(lblocks) == 1:
-            self.block = lblocks[0].getBlock()
+            if lblocks[0].getOccupancy() == OCCUPIED:
+                self.block = lblocks[0].getBlock()
         else:
             # technically a loco can be in more than one block but in
             # practice at startup it's much more likely that multiple
@@ -426,25 +427,29 @@ class Loco(util.Util):
     # as the key, and then for the class. If it doesn't find it in
     # either place it then looks for the 'fallback' option instead
     def speed(self, speed, fallback = 'medium'):
+        sp = None
         if self.dccAddr in SPEEDMAP:
             if speed in SPEEDMAP[self.dccAddr]:
-                return SPEEDMAP[self.dccAddr][speed]
-        if self.brclass() is not None:
+                sp = SPEEDMAP[self.dccAddr][speed]
+        if sp is None and self.brclass() is not None:
             k = "class" + str(self.brclass())
             if k in SPEEDMAP:
                 if speed in SPEEDMAP[k]:
-                    return SPEEDMAP[k][speed]
-            if fallback in SPEEDMAP[k]:
+                    sp = SPEEDMAP[k][speed]
+            if sp is None and fallback in SPEEDMAP[k]:
                 return SPEEDMAP[k][fallback]
-        if self.dccAddr in SPEEDMAP:
+        if sp is None and self.dccAddr in SPEEDMAP:
             if fallback in SPEEDMAP[self.dccAddr]:
-                return SPEEDMAP[self.dccAddr][fallback]
-        if self.brclass() is not None:
+                sp = SPEEDMAP[self.dccAddr][fallback]
+        if sp is None and self.brclass() is not None:
             k = "class" + str(self.brclass())
             if k in SPEEDMAP:
                 if fallback in SPEEDMAP[k]:
-                    return SPEEDMAP[k][fallback]
-        return None
+                    sp = SPEEDMAP[k][fallback]
+        if sp is not None and sp > 1.0:
+            self.emergencyStop()
+            raise RuntimeError("speed " + str(sp) + " is too high")
+        return sp
 
     def slowTimes(self):
         if self.dccAddr in SLOWTIMEMAP:
