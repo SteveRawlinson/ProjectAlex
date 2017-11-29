@@ -555,11 +555,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
+        trak = track.Track.findTrackByBlock(self.loco.block)
+        routes = [trak.exitRoute(trak.southbound())]
         if lock is None:
             self.getLock('North Link Lock')
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
+            for r in routes:
+                self.setRoute(r)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
@@ -568,7 +572,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
             self.debug("stopping early")
-            routes = self.requiredRoutes(self.loco.block)
             speed = self.loco.speed('track to north link', 'medium')
             self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes)
             # check JackStatus hasn't changed in the meantime
@@ -580,7 +583,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(self.loco.block)
             speed = self.loco.speed('track to north link', 'medium')
             if self.loco.reversible():
                 dir = False
