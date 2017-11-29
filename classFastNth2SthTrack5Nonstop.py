@@ -15,15 +15,11 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.memory = memory
 
 
-    # This method should be overridden by the child classes
-    def getSpeeds(self):
-        return [0.3, 0.2, 0.1]
-
     def handle(self):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 
-        fullSpeed, bendSpeed, slowSpeed = self.getSpeeds()
+        fullSpeed, bendSpeed, slowSpeed = 'fast', 'medium', 'slow'
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -89,7 +85,7 @@ class Loco5004Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     pass
 
 # Eurostar
-class Loco3123Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+class Loco3213Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     pass
 
 # Ave Talgo
