@@ -10,6 +10,7 @@ class Util:
         if DEBUG:
             print message
 
+
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
     # can be a string, a layoutblock, or a block.
     def isBlockOccupied(self, thing):
