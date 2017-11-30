@@ -33,9 +33,9 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-#DCC_ADDRESSES = [5144, 2144, 68, 5004]
+DCC_ADDRESSES = [5144, 2144, 68, 7405]
 #DCC_ADDRESSES = [5144, 2144]
-DCC_ADDRESSES = [6719]
+#DCC_ADDRESSES = [6719]
 DEBUG = True
 
 
@@ -458,6 +458,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.status == STOPPING:
                 if len(self.memories) == 0:
                     print "All done - exiting"
+                    time.sleep(20)
+                    powermanager.setPower(jmri.PowerManager.OFF)
                     return False
                 elif loopcount % 20 == 0:
                     self.debug("waiting for " + str(len(self.memories)) + " journeys to complete")
