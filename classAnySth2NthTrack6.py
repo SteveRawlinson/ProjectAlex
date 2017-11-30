@@ -69,20 +69,22 @@ class ClassAnySth2NthTrack6(alex.Alex):
         self.shortJourney(dir, self.loco.block, "Nth Fast Link", 'medium', dontStop=True)
         self.shortJourney(dir, self.loco.block, "North Link", 'fast', dontStop=True)
 
-        # select a siding
-        b = None
-        if not self.loco.reversible():
-            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if b is not None:
-            self.loco.setSpeedSetting('fast')
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-            if lock:
-                self.unlock(lock)
-        else:
-            siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(dir, self.loco.block, siding, 'fast', 'slow', stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
+        self.moveIntoNorthSidings(lock)
+
+        # # select a siding
+        # b = None
+        # if not self.loco.reversible():
+        #     b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.loco.setSpeedSetting('fast')
+        #     self.reverseLoop(NORTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        #     if lock:
+        #         self.unlock(lock)
+        # else:
+        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(dir, self.loco.block, siding, 'fast', 'slow', stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
 
         print "route complete."
         stop = time.time()

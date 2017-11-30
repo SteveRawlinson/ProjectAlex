@@ -29,6 +29,13 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
+        # check we have a track
+        if self.track is None:
+            self.tracks = []
+            self.initTracks()
+            self.track = self.tracks[1]
+
+
         self.loco.status = loco.MOVING
         start = time.time()
 
@@ -97,4 +104,4 @@ class Class47Sth2NthTrack2Nonstop(ClassAnySth2NthTrack2Nonstop):
 
 # loc = loco.Loco(7405)
 # loc.setBlock(SOUTH_REVERSE_LOOP)
-# Class47Sth2NthTrack2Nonstop(loc, None).start()
+# Class47Sth2NthTrack2Nonstop(loc, None, None).start()

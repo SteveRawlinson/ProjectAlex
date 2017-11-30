@@ -66,28 +66,30 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
             m = memories.provideMemory(self.memory)
             m.setValue(0)
 
-        # into North sidings
-        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if b is not None:
-            self.loco.setSpeedSetting(fast)
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-            if lock:
-                self.unlock(lock)
-        else:
-            self.debug("North Reverse Loop unavailable")
-            siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            self.loco.wrongway = True
+        self.moveIntoNorthSidings(lock)
 
-        stop = time.time()
-        print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
-
-        self.loco.status = loco.SIDINGS
+        # # into North sidings
+        # b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.loco.setSpeedSetting(fast)
+        #     self.reverseLoop(NORTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        #     if lock:
+        #         self.unlock(lock)
+        # else:
+        #     self.debug("North Reverse Loop unavailable")
+        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+        #     routes = self.requiredRoutes(self.loco.block)
+        #     self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     self.loco.unselectSiding(siding)
+        #     self.loco.wrongway = True
+        #
+        # stop = time.time()
+        # print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
+        #
+        # self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
         return False
 
