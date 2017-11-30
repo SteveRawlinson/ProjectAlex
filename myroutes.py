@@ -20,6 +20,9 @@ ESTOP = 2
 SIDINGS = 1
 MOVING = 2
 
+# ends of the track
+NORTH = 0
+SOUTH = 1
 
 # direction constants
 NORTHBOUND = 0
