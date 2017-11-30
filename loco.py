@@ -6,11 +6,6 @@ import util
 
 DEBUG = True
 
-# status
-SIDINGS = 1
-MOVING = 2
-
-
 class Loco(util.Util):
     
     def __init__(self, dccAddr):
