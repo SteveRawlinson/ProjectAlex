@@ -134,7 +134,7 @@ class Lock(util.Util):
 
     # Calls the above method repeatedly until at least a partial lock
     # is available.
-    def getLock(self, end, direction, trak, loc):
+    def getLock(self, end, direction, loc):
         while self.empty():
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
