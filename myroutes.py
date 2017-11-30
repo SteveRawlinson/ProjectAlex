@@ -16,6 +16,11 @@ NORMAL = 0
 STOPPING = 1
 ESTOP = 2
 
+# loco status
+SIDINGS = 1
+MOVING = 2
+
+
 # direction constants
 NORTHBOUND = 0
 SOUTHBOUND = 1
@@ -24,7 +29,7 @@ IRSENSORS = {
     "Sth Sidings 1": "LS61",
     "Sth Sidings 2": "LS62",
     "Sth Sidings 3": "LS32",
-    "Sth Sidings 4": None,
+    "Sth Sidings 4": "LS31",
     "Sth Sidings 5": "LS31",
     "FP sidings": "LS25",
     "Nth Siding 1": "LS27",
@@ -92,7 +97,8 @@ SPEEDMAP = {
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
     # Ave Talgo
-    6719: {'fast': 0.4, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'north sidings exit': 0.4, 'track to north link': 0.4, 'north link to sidings': 0.3, 'north sidings entry': 0.2},
+    6719: {'fast': 0.4, 'bend': 0.4, 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 0.4, 'track to north link': 0.4, 'north link to sidings': 0.3, 'north sidings entry': 0.2,
+           'track to south link': 0.4},
     # class 91 virgin
     1124: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
     # class 47
@@ -102,12 +108,20 @@ SPEEDMAP = {
 }
 
 SLOWTIMEMAP = {
+    # class 47
     "class47": {'FPK P7': 10, "NORTH FAST": 13},
+    # Mallard
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17 },
-    "class150": {"FPK P2": 4, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10,
-                 "FPK P4": 4, "AAP P1": 1, "NSG P2": 3,  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
-    1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 15, "FPK P4": 5, "AAP P1": 5, "NSG P2": 1, "FPK P2": 8, "AAP P3": 7, "PAL P2": 5, "North Link": 4},
-    5004: {'North Link': 5, 'FPK P7': 5}
+    # class 150s
+    "class150": {"FPK P2": 4, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 4, "AAP P1": 1, "NSG P2": 3,
+                 "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
+    # Underground
+    1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 15, "FPK P4": 5, "AAP P1": 5, "NSG P2": 1, "FPK P2": 8,
+           "AAP P3": 7, "PAL P2": 5, "North Link": 4},
+    # Javelin
+    5004: {'North Link': 5, 'FPK P7': 5},
+    # Ave Talgo
+    6719: {'Nth Fast Outer 1': 3}
 }
 
 TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
