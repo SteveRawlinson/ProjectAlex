@@ -55,20 +55,22 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
             m = memories.provideMemory(self.memory)
             m.setValue(0)
 
-        # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        if siding.getId() == "FP sidings":
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        else:
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        self.loco.unselectSiding(siding)
+        self.moveIntoSouthSidings(lock)
 
-
-        self.loco.status = loco.SIDINGS
+        # # select a siding
+        # siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        # if siding.getId() == "FP sidings":
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block)
+        #     self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        # self.loco.unselectSiding(siding)
+        #
+        #
+        # self.loco.status = loco.SIDINGS
 
         self.debug(type(self).__name__ + ' finished')
 
