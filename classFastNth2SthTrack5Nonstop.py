@@ -46,24 +46,27 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             # now we got the lock, set the exit route
             for r in self.requiredRoutes("FPK P7"):
                 self.setRoute(r, 0)
-        else:
-            # we got the lock - set the turnouts for FPK 7
-            for r in self.requiredRoutes("FPK P7"):
-                self.setRoute(r, 0)
-            # progress to FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
-            # check we still have the lock
-            rc = self.checkLock(lock)
-            if rc is False :
-                # we lost it, abort!
-                self.throttle.setSpeedSetting(0)
-                print loco, "race conditions on South Link Lock?"
-                return False
 
-        # select a siding
-        siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        routes = self.requiredRoutes(siding)
-        self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        self.moveIntoSouthSidings()
+
+        # else:
+        #     # we got the lock - set the turnouts for FPK 7
+        #     for r in self.requiredRoutes("FPK P7"):
+        #         self.setRoute(r, 0)
+        #     # progress to FPK 7
+        #     self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
+        #     # check we still have the lock
+        #     rc = self.checkLock(lock)
+        #     if rc is False :
+        #         # we lost it, abort!
+        #         self.throttle.setSpeedSetting(0)
+        #         print loco, "race conditions on South Link Lock?"
+        #         return False
+        #
+        # # select a siding
+        # siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        # routes = self.requiredRoutes(siding)
+        # self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         self.loco.status = loco.SIDINGS
         if self.memory is not None:
