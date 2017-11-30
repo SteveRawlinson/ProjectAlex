@@ -125,6 +125,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("setting troublesome turnout " + t.getSystemName() + " to state " + state)
                 t.setCommandedState(s)
 
+    # Initialises the tracks[] array, according to information in the myroutes.py file
+    def initTracks(self):
+        for t in TRACKS:
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
+            self.tracks.append(tr)
+            #print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=1):
