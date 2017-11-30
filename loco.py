@@ -3,6 +3,7 @@ import time
 from jmri_bindings import *
 from myroutes import *
 import util
+import lock
 
 DEBUG = True
 
@@ -470,6 +471,22 @@ class Loco(util.Util):
             if l.dccAddr == addr:
                 return l
         return None
+
+
+    def getLockNonBlocking(self, end):
+        if self.track.northbound():
+            dir = NORTH
+        else:
+            dir = SOUTH
+        return lock.Lock().getLock(end, dir, self)
+
+    def getLock(self, end):
+        if self.track.northbound():
+            dir = NORTH
+        else:
+            dir = SOUTH
+        return lock.Lock().getLock(end=end, direction=dir, loc=self)
+
 
 
 
