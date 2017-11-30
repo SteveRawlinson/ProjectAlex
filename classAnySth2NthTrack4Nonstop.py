@@ -9,11 +9,6 @@ from myroutes import *
 
 class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.memory = memory
-        self.knownLocation = None
-
     def handle(self):
 
         if self.loco.block is None:

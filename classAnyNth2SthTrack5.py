@@ -9,11 +9,6 @@ from myroutes import *
 
 class ClassAnyNth2SthTrack5(alex.Alex):
 
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
-
     def handle(self):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")

@@ -10,11 +10,6 @@ from myroutes import *
 
 
 class ClassAnySth2NthTrack6(alex.Alex):
-    def __init__(self, loc, memory):
-        self.loco = loc
-        self.knownLocation = None
-        self.memory = memory
-
 
     def handle(self):
 
