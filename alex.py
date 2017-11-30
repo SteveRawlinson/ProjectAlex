@@ -87,15 +87,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getLockNonBlocking(self, mem, loco = None):
         if loco is None:
             loco = self.loco
-        lock = False
-        print loco.dccAddr, "getting non-blocking lock on", mem
+        self.debug("getting non-blocking lock on " + str(mem))
         value = memories.getMemory(mem).getValue()
         if value == str(loco.dccAddr):
             return mem
         if value is None or value == '':
             memories.getMemory(mem).setValue(str(loco.dccAddr))
             return mem
-        print loco.dccAddr, "failed to get non-blocking lock on", mem
+        self.debug("failed to get non-blocking lock on" +  mem)
         return False
 
     # Returns true if the loco supplied has a lock on the
@@ -129,7 +128,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=1):
-        print self.loco.dccAddr, 'setting route', route
+        self.debug('setting route' +  str(route))
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
@@ -417,7 +416,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # too soon, too fast
         if moving and normalSpeed is not None:
             self.debug("we are already moving, setting normal speed: " +  str(normalSpeed))
-            self.loco.setSpeedSetting(normalSpeed)
+            if self.isBlockVisible(self.loco.block):
+                self.loco.graduallyChangeSpeed(normalSpeed)
+            else:
+                self.loco.setSpeedSetting(normalSpeed)
 
         # If we have a lock specified, check we've got it
         if lock:
@@ -450,7 +452,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if normalSpeed is None:
                 raise RuntimeError("normalSpeed is None (was specified as " + str(origNormalSpeed) + ")")
             startTime = time.time()
-            self.debug("not moving, setting normal Speed" +  str(normalSpeed))
+            self.debug("not moving, setting normal Speed: " +  str(normalSpeed))
             self.loco.setSpeedSetting(normalSpeed)
 
         # Set remaining routes
@@ -504,7 +506,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("gradually setting slowSpeed: " + str(slowSpeed))
                 self.loco.graduallyChangeSpeed(slowSpeed)
             else:
-                self.debug("setting slowSpeed" + str(slowSpeed))
+                self.debug("setting slowSpeed: " + str(slowSpeed))
                 self.loco.setSpeedSetting(slowSpeed)
 
         if stopIRClear:
@@ -601,6 +603,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         if b:
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        self.loco.status = SIDINGS
 
 
     # moves a train from their current block into the north sidings
@@ -628,7 +631,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         if b:
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
-
+        self.loco.status = SIDINGS
 
     def handle(self):
         pass
