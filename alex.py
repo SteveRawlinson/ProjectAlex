@@ -615,21 +615,27 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
-        routes = [self.track.exitRoute(self.track.southbound())]
+        route = self.track.exitRoute(self.track.southbound())
+        routes = [route]
         if lock is None:
-            self.getLock('North Link Lock')
+            lock = self.loco.getLock(NORTH)
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
-            for r in routes:
-                self.setRoute(r)
             speed = self.loco.speed('into reverse loop', 'fast')
+            self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
+            if lock.partial():
+                self.loco.setSpeedSetting(0)
+            lock.upgradeLock()
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
+            if lock.partial():
+                # we need a full lock for stopping early
+                lock.upgradeLock(keepOldPartial=True)
             self.debug("stopping early")
             speed = self.loco.speed('track to north link', 'medium')
             self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes)
@@ -648,6 +654,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 dir = True
             self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, lock=lock)
+            if lock.partial():
+                lock.upgradeLock()
             routes = self.requiredRoutes(siding)
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')

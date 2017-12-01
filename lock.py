@@ -170,31 +170,35 @@ class Lock(util.Util):
 
 
     # Upgrades a lock from a partial to a full lock then
-    # unlocks the other part.
-    def upgradeLock(self):
+    # unlocks the other part (unless keepOldPartial is True)
+    def upgradeLock(self, keepOldPartial=False):
         while True:
             self.readMemories()
             if self.end == NORTH:
                 if self.direction == NORTHBOUND:
                     if self.northSidingsVal is None:
                         self.northSidings = True
-                        self.northTrackLink = None
+                        if not keepOldPartial:
+                            self.northTrackLink = None
                         break
                 else:
                     if self.northTrackLinkVal is None:
                         self.northTrackLink = True
-                        self.northSidings = None
+                        if not keepOldPartial:
+                            self.northSidings = None
                         break
             else:
                 if self.direction == SOUTHBOUND:
                     if self.southSidingsVal is None:
                         self.southSidings = True
-                        self.southTrackLink = None
+                        if not keepOldPartial:
+                            self.southTrackLink = None
                         break
                 else:
                     if self.southTrackLinkVal is None:
                         self.southTrackLink = True
-                        self.southSidings = None
+                        if not keepOldPartial:
+                            self.southSidings = None
                         break
             time.sleep(0.5)
         self.writeMemories()
@@ -272,6 +276,12 @@ class Lock(util.Util):
     def partialUnlock(self):
         self.unlock(partial=True)
 
+    # Returns true if this lock has part of a link locked
+    def partial(self):
+        if self.end == NORTH:
+            return self.northSidings is not self.northTrackLink
+        else:
+            return self.southSidings is not self.southTrackLink
 
 
 
