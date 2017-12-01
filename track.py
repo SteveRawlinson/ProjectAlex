@@ -17,7 +17,7 @@ class Track:
         self.us = unserviceable
         self.last_used = time.time()
         self.blocks = blks
-        self.signal = signals.getSignalHead(signal)
+        self.exitSignal = signals.getSignalHead(signal)
 
     def debug(self, message):
         if DEBUG:
@@ -51,7 +51,7 @@ class Track:
         #     print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
         return picked_s[0]
 
-    # Returns a string descriving the direction of travel for
+    # Returns a string describing the direction of travel for
     # this track
     def dir(self):
         if self.northbound():
@@ -174,6 +174,13 @@ class Track:
 
     def southernmostBlock(self):
         return self.blocks[0]
+
+    def lastBlock(self):
+        if self.northbound():
+            return self.northernmostBlock()
+        else:
+            return self.southernmostBlock()
+
 
     # returns the name of the route to set for exiting this track to sidings
     def exitRoute(self, reverse = False):
