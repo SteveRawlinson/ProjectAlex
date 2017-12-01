@@ -101,27 +101,36 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getLock(self, mem):
         if "North" in mem:
             end = NORTH
+            end_s = "North"
         else:
             end = SOUTH
+            end_s = "South"
         if self.loco.dir() == "Nth2Sth":
             dir = SOUTHBOUND
         else:
             dir = NORTHBOUND
+        debug("getting lock on " + end_s + " Link")
         lck = lock.Lock().getLock(end, dir, self.loco)
+        debug(lck.status())
         return lck
 
     def getLockNonBlocking(self, mem):
         if "North" in mem:
             end = NORTH
+            end_s = "North"
         else:
             end = SOUTH
+            end_s = "South"
         if self.loco.dir() == "Nth2Sth":
             dir = SOUTHBOUND
         else:
             dir = NORTHBOUND
+        debug("getting non blocking lock on " + end_s + " Link")
         lck = lock.Lock().getLockNonBlocking(end, dir, self.loco)
         if lck.empty():
+            debug("failed to get lock")
             return False
+        debug(lck.status())
         return lck
 
     def unlock(self, lck):
