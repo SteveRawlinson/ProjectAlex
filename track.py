@@ -9,7 +9,7 @@ DEBUG = True
 
 class Track:
 
-    def __init__(self, nr, stops, fast, unserviceable, blks):
+    def __init__(self, nr, stops, fast, unserviceable, blks, signal):
         self.nr = nr
         self.stops = stops
         self.fast = fast
@@ -17,6 +17,7 @@ class Track:
         self.us = unserviceable
         self.last_used = time.time()
         self.blocks = blks
+        self.signal = signals.getSignalHead(signal)
 
     def debug(self, message):
         if DEBUG:
