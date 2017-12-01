@@ -111,7 +111,7 @@ class Lock(util.Util):
                     self.northSidings = True
             else:
                 # North Link, Southbound
-                if self.northSidingsVal or self.northFastLinkVal or self.northSlowLinkVal:
+                if self.northSidingsVal or self.northTrackLinkVal:
                     # no lock available
                     pass
                 else:
@@ -138,7 +138,33 @@ class Lock(util.Util):
         while self.empty():
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
-                time.sleep(1)
+                time.sleep(0.5)
+
+    # Get a lock on the whole link, emulating the old style lock
+    def getOldLockNonBlocking(self, end, direction, loc):
+        self.end = end
+        self.direction = direction
+        self.loco = loc
+        self.readMemories()
+        if end == NORTH:
+            if self.northSidingsVal or self.northTrackLinkVal:
+                # no lock available
+                pass
+            else:
+                # everything is available
+                self.northTrackLink = self.northSidings = True
+        else:
+            if self.southSidingsVal or self.southTrackLinkVal:
+                pass
+            else:
+                self.southTrackLink = self.southSidings = True
+        self.writeMemories()
+
+    def getOldLock(self):
+        while self.empty():
+            self.getOldLockNonBlocking(end, direction, loc)
+            if self.empty():
+                time.sleep(0.5)
 
 
     # Upgrades a lock from a partial to a full lock then
@@ -172,6 +198,7 @@ class Lock(util.Util):
         self.writeMemories()
 
 
+    # Return a string describing this lock
     def status(self):
         str = "Lock status: "
         str += str(self.loco.dccAddr) + ' '

@@ -451,6 +451,7 @@ class Loco(util.Util):
             raise RuntimeError("speed " + str(sp) + " is too high")
         return sp
 
+    # Returns the hash of slowtimes for this loco
     def slowTimes(self):
         if self.dccAddr in SLOWTIMEMAP:
             return SLOWTIMEMAP[self.dccAddr]
@@ -459,11 +460,14 @@ class Loco(util.Util):
             return SLOWTIMEMAP[k]
         return None
 
+    # String representation of my direction, ie Nth2Sth or Sth2Nth
     def dir(self):
         if self.track is None:
             return None
         return self.track.dir()
 
+    # Returns the loco object from the array locos with
+    # the matching DCC addr
     @classmethod
     def getLocoByAddr(self, addr, locos):
         addr = int(addr)
@@ -472,14 +476,16 @@ class Loco(util.Util):
                 return l
         return None
 
-
+    # Attempts to get a lock but doesn't wait if it's not
+    # available
     def getLockNonBlocking(self, end):
         if self.track.northbound():
             dir = NORTH
         else:
             dir = SOUTH
-        return lock.Lock().getLock(end, dir, self)
+        return lock.Lock().getLockNonBlocking(end, dir, self)
 
+    # Gets a lock. See lock.py for details
     def getLock(self, end):
         if self.track.northbound():
             dir = NORTH

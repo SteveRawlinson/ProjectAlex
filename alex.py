@@ -7,6 +7,7 @@ from myroutes import *
 import util
 import datetime
 import track
+import lock
 
 DEBUG = True
 
@@ -39,63 +40,92 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if DEBUG:
             print str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
 
-    # Get's a 'lock' on a memory variable. It sets the variable
-    # to the loco number but only if the value is blank. If 
-    # it's already got a value then we wait for a while to see
-    # if it clears, otherwise we give up.
-    def getLock(self, mem, loco=None):
-        if loco is None:
-            loco = self.loco
-        lock = False
-        tries = 0
-        while lock is not True:
-            print loco.dccAddr, "getting lock on", mem
-            value = memories.getMemory(mem).getValue()
-            if value == str(loco.dccAddr):
-                self.debug("already had a lock, returning")
-                return mem
-            if value is None or value == '':
-                memories.getMemory(mem).setValue(str(loco.dccAddr))
-                time.sleep(1)
-                value = memories.getMemory(mem).getValue()
-                if value == str(loco.dccAddr):
-                    self.debug("lock acquired")
-                    lock = True
-                else:
-                    # race condition and we lost
-                    tries += 1
-                    if tries < 20:
-                        print loco.dccAddr, "new memory setting did not stick, trying again"
-                        time.sleep(5)
-                    else:
-                        print loco.dccAddr, "giving op on lock"
-                        raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
-            else:
-                # link track is busy
-                tries += 1
-                if tries < 40:
-                    print loco.dccAddr, "track is locked, waiting ..."
-                    time.sleep(5)
-                else:
-                    print loco.dccAddr, "giving up on lock"
-                    raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
-        return mem
+    # # Get's a 'lock' on a memory variable. It sets the variable
+    # # to the loco number but only if the value is blank. If
+    # # it's already got a value then we wait for a while to see
+    # # if it clears, otherwise we give up.
+    # def getLock(self, mem, loco=None):
+    #     if loco is None:
+    #         loco = self.loco
+    #     lock = False
+    #     tries = 0
+    #     while lock is not True:
+    #         print loco.dccAddr, "getting lock on", mem
+    #         value = memories.getMemory(mem).getValue()
+    #         if value == str(loco.dccAddr):
+    #             self.debug("already had a lock, returning")
+    #             return mem
+    #         if value is None or value == '':
+    #             memories.getMemory(mem).setValue(str(loco.dccAddr))
+    #             time.sleep(1)
+    #             value = memories.getMemory(mem).getValue()
+    #             if value == str(loco.dccAddr):
+    #                 self.debug("lock acquired")
+    #                 lock = True
+    #             else:
+    #                 # race condition and we lost
+    #                 tries += 1
+    #                 if tries < 20:
+    #                     print loco.dccAddr, "new memory setting did not stick, trying again"
+    #                     time.sleep(5)
+    #                 else:
+    #                     print loco.dccAddr, "giving op on lock"
+    #                     raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
+    #         else:
+    #             # link track is busy
+    #             tries += 1
+    #             if tries < 40:
+    #                 print loco.dccAddr, "track is locked, waiting ..."
+    #                 time.sleep(5)
+    #             else:
+    #                 print loco.dccAddr, "giving up on lock"
+    #                 raise RuntimeError(str(loco.dccAddr) + ": giving up getting lock on " + mem)
+    #     return mem
+    #
+    # # Attempts to get a lock and returns immediately whether or
+    # # not the attempt was successful. No race condition testing
+    # # is done, the calling function can do that with checkLock()
+    # def getLockNonBlocking(self, mem, loco = None):
+    #     if loco is None:
+    #         loco = self.loco
+    #     self.debug("getting non-blocking lock on " + str(mem))
+    #     value = memories.getMemory(mem).getValue()
+    #     if value == str(loco.dccAddr):
+    #         return mem
+    #     if value is None or value == '':
+    #         memories.getMemory(mem).setValue(str(loco.dccAddr))
+    #         return mem
+    #     self.debug("failed to get non-blocking lock on" +  mem)
+    #     return False
 
-    # Attempts to get a lock and returns immediately whether or
-    # not the attempt was successful. No race condition testing
-    # is done, the calling function can do that with checkLock()
-    def getLockNonBlocking(self, mem, loco = None):
-        if loco is None:
-            loco = self.loco
-        self.debug("getting non-blocking lock on " + str(mem))
-        value = memories.getMemory(mem).getValue()
-        if value == str(loco.dccAddr):
-            return mem
-        if value is None or value == '':
-            memories.getMemory(mem).setValue(str(loco.dccAddr))
-            return mem
-        self.debug("failed to get non-blocking lock on" +  mem)
-        return False
+    def getLock(self, mem):
+        if "North" in mem:
+            end = NORTH
+        else:
+            end = SOUTH
+        if self.loco.dir() == "Nth2Sth":
+            dir = SOUTHBOUND
+        else:
+            dir = NORTHBOUND
+        lck = lock.Lock().getLock(end, dir, self.loco)
+        return lck
+
+    def getLockNonBlocking(self, mem):
+        if "North" in mem:
+            end = NORTH
+        else:
+            end = SOUTH
+        if self.loco.dir() == "Nth2Sth":
+            dir = SOUTHBOUND
+        else:
+            dir = NORTHBOUND
+        lck = lock.Lock().getLockNonBlocking(end, dir, self.loco)
+        if lck.empty():
+            return False
+        return lck
+
+    def unlock(self, lck):
+        lck.unlock()
 
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
@@ -144,17 +174,17 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if sleeptime is not None and sleeptime > 0:
             time.sleep(sleeptime)
 
-    # removes a lock
-    def unlock(self, mem, loco=None):
-        # if there's no lock silently return
-        if memories.getMemory(mem).getValue() is None or memories.getMemory(mem).getValue() == "":
-            return
-        if loco is None:
-            loco = self.loco
-        self.debug('unlocking ' + mem)
-        if memories.getMemory(mem).getValue() != str(loco.dccAddr):
-            raise RuntimeError("loco " + str(loco.dccAddr) + " attempted to remove lock it does not own on mem " + mem)
-        memories.getMemory(mem).setValue(None)
+    # # removes a lock
+    # def unlock(self, mem, loco=None):
+    #     # if there's no lock silently return
+    #     if memories.getMemory(mem).getValue() is None or memories.getMemory(mem).getValue() == "":
+    #         return
+    #     if loco is None:
+    #         loco = self.loco
+    #     self.debug('unlocking ' + mem)
+    #     if memories.getMemory(mem).getValue() != str(loco.dccAddr):
+    #         raise RuntimeError("loco " + str(loco.dccAddr) + " attempted to remove lock it does not own on mem " + mem)
+    #     memories.getMemory(mem).setValue(None)
 
     # Calculates the routes required to connect the siding using
     # a dictionary (aka hash) specified in an external file
