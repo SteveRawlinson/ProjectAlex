@@ -46,8 +46,8 @@ class Track:
         picked_s = sorted(picked, key=lambda t: t.last_used)
         if picked_s[0].score(loco) == 0:
             return None
-        if DEBUG:
-            print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
+        # if DEBUG:
+        #     print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
         return picked_s[0]
 
     # Returns a string descriving the direction of travel for

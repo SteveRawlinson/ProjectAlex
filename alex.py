@@ -109,9 +109,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             dir = SOUTHBOUND
         else:
             dir = NORTHBOUND
-        debug("getting lock on " + end_s + " Link")
-        lck = lock.Lock().getLock(end, dir, self.loco)
-        debug(lck.status())
+        self.debug("getting lock on " + end_s + " Link")
+        lck = lock.Lock()
+        lck.getOldLock(end, dir, self.loco)
+        self.debug(lck.status())
         return lck
 
     def getLockNonBlocking(self, mem):
@@ -125,32 +126,40 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             dir = SOUTHBOUND
         else:
             dir = NORTHBOUND
-        debug("getting non blocking lock on " + end_s + " Link")
-        lck = lock.Lock().getLockNonBlocking(end, dir, self.loco)
+        self.debug("getting non blocking lock on " + end_s + " Link")
+        lck = lock.Lock()
+        lck.getOldLockNonBlocking(end, dir, self.loco)
         if lck.empty():
             debug("failed to get lock")
             return False
-        debug(lck.status())
+        self.debug(lck.status())
         return lck
 
     def unlock(self, lck):
+        if lck.end == NORTH:
+            end_s = 'North'
+        else:
+            end_s = 'South'
+        self.debug("unlocking " + end_s + " Link")
         lck.unlock()
 
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
     def checkLock(self, mem, loco=None):
-        if loco is None:
-            loco = self.loco
-        memory = memories.getMemory(mem)
-        if memory is None:
-            memory = memories.newMemory(mem)
-        if memory is None:
-            print loco.dccAddr, "could not create memory called", mem, "giving up"
-            raise RuntimeError('coulnd not create new memory')
-        if memory and memory.getValue() == str(loco.dccAddr):
-            return True
-        print loco.dccAddr, "does not have lock on ", mem
-        return False
+        return True
+
+        # if loco is None:
+        #     loco = self.loco
+        # memory = memories.getMemory(mem)
+        # if memory is None:
+        #     memory = memories.newMemory(mem)
+        # if memory is None:
+        #     print loco.dccAddr, "could not create memory called", mem, "giving up"
+        #     raise RuntimeError('coulnd not create new memory')
+        # if memory and memory.getValue() == str(loco.dccAddr):
+        #     return True
+        # print loco.dccAddr, "does not have lock on ", mem
+        # return False
 
     def setTroublesomeTurnouts(self, route):
         for i in range(0, route.getNumOutputTurnouts()):
@@ -261,11 +270,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.sensorStates = None
         return changedList
 
-    def platformMessage(self):
-        print self.loco.dccAddr, "waiting at platform for ", self.platformWaitTimeMsecs / 1000, "secs"
-
     def waitAtPlatform(self):
-        self.platformMessage()
+        self.debug("waiting at platform for " + str(self.platformWaitTimeMsecs / 1000) + " secs")
         waitTimeMsecs = int(self.platformWaitTimeMsecs + (random.random() * (self.platformWaitTimeMsecs / 2)))
         self.waitMsec(waitTimeMsecs)
 

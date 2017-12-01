@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144, 2144, 68, 7405]
-#DCC_ADDRESSES = [5144, 2144]
+#DCC_ADDRESSES = [5144, 2144, 68, 7405]
+DCC_ADDRESSES = [2144]
 #DCC_ADDRESSES = [6719]
 DEBUG = True
 
@@ -202,7 +202,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("track " + str(trak.nr) + " occupancy reduced to " + str(trak.occupancy))
                 # update the last used time
                 trak.last_used = time.time()
-                self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
+                #self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
                 mems_to_delete.append(m)
         # Remove the memories corresponding to the journeys
         # that have no finished
@@ -397,7 +397,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("power is on")
 
         # clear locks
-        for lock in ['North Link Lock', 'South Link Lock']:
+        for lock in ['North Link Lock', 'South Link Lock', 'IMLOCKNORTHSIDINGS', 'IMLOCKNORTHTRACKLINK', 'IMLOCKSOUTHSIDINGS', 'IMLOCKSOUTHTRACKLINK']:
             self.debug('unlocking ' + lock)
             mem = memories.getMemory(lock)
             if mem is not None:

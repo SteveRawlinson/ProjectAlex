@@ -3,7 +3,7 @@ from jmri_bindings import *
 import loco
 import track
 import util
-
+import time
 class Lock(util.Util):
 
     def __init__(self):
@@ -25,7 +25,7 @@ class Lock(util.Util):
     # Read the appropriate memory values indicating whether bits of track
     # are locked by other locos and fill in some variables
     def readMemories(self):
-        addr = str(self.loco.dccAddr)
+        addr = self.loco.dccAddr
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             self.southSidingsVal = m.getValue()
@@ -53,23 +53,25 @@ class Lock(util.Util):
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
                 m.setValue(self.loco.dccAddr)
-            elif self.southSidingsVal == str(self.loco.dccAddr):
+            elif self.southSidingsVal is None:
                 m.setValue(None)
+            else:
+                self.debug("southSidings: " + str(self.southSidings) + " southsidingsVal: " + str(self.southSidingsVal) + ' ' + str(type(self.southSidingsVal)) + ' addr: ' + str(self.loco.dccAddr))
             m = memories.provideMemory("IMLOCKSOUTHTRACKLINK")
             if self.southTrackLink:
                 m.setValue(self.loco.dccAddr)
-            elif self.southTrackLinkVal == str(self.loco.dccAddr):
+            elif self.southTrackLinkVal is None:
                 m.setValue(None)
         else:
             m = memories.provideMemory("IMLOCKNORTHTRACKLINK")
             if self.northTrackLink:
                 m.setValue(self.loco.dccAddr)
-            elif self.northTrackLinkVal == str(self.loco.dccAddr):
+            elif self.northTrackLinkVal is None:
                 m.setValue(None)
             m = memories.provideMemory("IMLOCKNORTHSIDINGS")
             if self.northSidings:
                 m.setValue(self.loco.dccAddr)
-            elif self.northSidingsVal == str(self.loco.dccAddr):
+            elif self.northSidingsVal is None:
                 m.setValue(None)
 
     # Returns true if we haven't locked anything (False otherwise)
@@ -160,7 +162,7 @@ class Lock(util.Util):
                 self.southTrackLink = self.southSidings = True
         self.writeMemories()
 
-    def getOldLock(self):
+    def getOldLock(self, end, direction, loc):
         while self.empty():
             self.getOldLockNonBlocking(end, direction, loc)
             if self.empty():
@@ -200,48 +202,48 @@ class Lock(util.Util):
 
     # Return a string describing this lock
     def status(self):
-        str = "Lock status: "
-        str += str(self.loco.dccAddr) + ' '
-        str += "end: "
+        s = "Lock status: "
+        s += str(self.loco.dccAddr) + ' '
+        s += "end: "
         if self.end == NORTH:
-            str += "North "
+            s += "North "
         else:
-            str += "South "
-        str += "dir: "
+            s += "South "
+        s += "dir: "
         if self.direction == SOUTHBOUND:
-            str += "Southbound "
+            s += "Southbound "
         else:
-            str += "Northbound "
+            s += "Northbound "
         if self.empty():
-            str += " EMPTY"
+            s += " EMPTY"
         else:
-            str += " sidings: "
+            s += " sidings: "
             if self.northSidings or self.southSidings:
-                str += " LOCKED "
+                s += " LOCKED "
             else:
-                str += " unlocked "
-            str += " Tracklink: "
+                s += " unlocked "
+            s += " Tracklink: "
             if self.northTrackLink or self.southTrackLink:
-                str += " LOCKED"
+                s += " LOCKED"
             else:
-                str += " unlocked"
+                s += " unlocked"
+        return s
 
 
 
     # Releases all or part of a lock.
     def unlock(self, partial=False):
-        self.readmemories(self.end)
+        self.readMemories()
         if self.end == NORTH:
             if self.northSidings:
-                if self.northSidingsVal != str(self.loco.dccAddr):
-                    raise RuntimeError(
-                        "loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northSidings it does not own")
+                if self.northSidingsVal is not None and self.northSidingsVal != self.loco.dccAddr:
+                    raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northSidings it does not own")
                 elif partial is False:
                     self.northSidings = None
                 elif partial is True and self.direction == SOUTHBOUND:
                     self.northSidings = None
             if self.northTrackLink:
-                if self.northTrackLinkVal != str(self.loco.dccAddr):
+                if self.northTrackLinkVal is not None and self.northTrackLinkVal != self.loco.dccAddr:
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northTrackLink it does not own")
                 elif partial is False:
                     self.northTrackLink = None
@@ -249,20 +251,21 @@ class Lock(util.Util):
                     self.northTrackLink = None
         else:
             if self.southSidings:
-                if self.southSidingsVal != str(self.loco.dccAddr):
-                    raise RuntimeError(
-                        "loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southSidings it does not own")
+                if self.southSidingsVal is not None and self.southSidingsVal != self.loco.dccAddr:
+                    #self.debug("southSidingsVal: " + self.southSidingsVal + " dccAddr: " + str(self.loco.dccAddr))
+                    raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southSidings it does not own")
                 elif partial is False:
                     self.southSidings = None
                 elif partial is True and self.direction == NORTHBOUND:
                     self.southSidings = None
             if self.southTrackLink:
-                if self.southTrackLinkVal != str(self.loco.dccAddr):
+                if self.southTrackLinkVal is not None and self.southTrackLinkVal != self.loco.dccAddr:
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southTracklink it does not own")
                 elif partial is False:
                     self.southTrackLink = None
                 elif partial is True and self.direction == SOUTHBOUND:
                     self.southTrackLink = None
+        self.debug(self.status())
         self.writeMemories()
 
     # Releases part of a lock
