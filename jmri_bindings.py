@@ -27,3 +27,14 @@ INACTIVE = jmri.Sensor.INACTIVE
 OCCUPIED = jmri.Block.OCCUPIED
 CLOSED = jmri.Turnout.CLOSED
 THROWN = jmri.Turnout.THROWN
+
+
+import jmri.SignalHead.DARK        as DARK
+import jmri.SignalHead.RED         as RED
+import jmri.SignalHead.YELLOW      as YELLOW
+import jmri.SignalHead.GREEN       as GREEN
+import jmri.SignalHead.LUNAR       as LUNAR
+import jmri.SignalHead.FLASHRED    as FLASHRED
+import jmri.SignalHead.FLASHYELLOW as FLASHYELLOW
+import jmri.SignalHead.FLASHGREEN  as FLASHGREEN
+import jmri.SignalHead.FLASHLUNAR  as FLASHLUNAR
