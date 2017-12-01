@@ -138,11 +138,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for l in noBlocks:
             self.locos.remove(l)
 
-    # Initialises the tracks[] array, according to information in the myroutes.py file
-    def initTracks(self):
-        for t in TRACKS:
-            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
-            self.tracks.append(tr)
 
     # Returns True if the loco supplied is in the north sidings
     def northSidings(self, loc):
