@@ -136,12 +136,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         return lck
 
     def unlock(self, lck):
-        if lck.end == NORTH:
-            end_s = 'North'
-        else:
-            end_s = 'South'
-        self.debug("unlocking " + end_s + " Link")
-        lck.unlock()
+        if not lck.empty():
+            if lck.end == NORTH:
+                end_s = 'North'
+            else:
+                end_s = 'South'
+            self.debug("unlocking " + end_s + " Link")
+            lck.unlock()
 
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
@@ -173,12 +174,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("setting troublesome turnout " + t.getSystemName() + " to state " + state)
                 t.setCommandedState(s)
 
-    # Initialises the tracks[] array, according to information in the myroutes.py file
-    def initTracks(self):
-        for t in TRACKS:
-            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
-            self.tracks.append(tr)
-            #print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=1):
@@ -354,7 +349,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # unlockOnBlock: (boolean) unlock the supplied lock when the block that is locked goes inactive if True
     # stopIRClear: (Sensor or String) the sensor (or name of the sensor) which will go inactive when it's safe to stop
     # routes: list of Route objects to set (ie. activate)
-    # lock: (String) name of a lock we need to unlock when we're done
+    # lock: (String or Lock) name of a lock we need to unlock when we're done
     # passBlock: (boolean) wait until the endBlock is empty before returning (and don't stop the loco)
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
     # dontSrop: (boolean) if true, don't stop the loco
@@ -439,12 +434,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("my destination block is occupied")
                 if lock:
                     # let another loco have the lock
-                    self.debug("relinquishing lock on " + lock)
-                    if self.checkLock(lock, self.loco):
-                        self.unlock(lock, self.loco)
+                    self.debug("relinquishing lock")
+                    self.unlock(lock)
                 if moving:
                     # stop!
-                    print self.loco.dccAddr, "stopping"
+                    self.debug("stopping loco")
                     self.loco.setSpeedSetting(0)
                 if tries < 40:
                     # wait ...
@@ -455,11 +449,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     # give up.
                     raise RuntimeError("timeout waiting for endblock to be free")
             else:
-                # check if we need to get the lock back
-                if lock:
-                    if not self.checkLock(lock):
-                        self.debug("we relinquished a lock on " + lock + ", getting it back")
-                        self.getLock(lock)
                 ok_to_go = True
 
         # if we are already moving set the new throttle setting
@@ -472,13 +461,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 self.loco.setSpeedSetting(normalSpeed)
 
-        # If we have a lock specified, check we've got it
-        if lock:
-            if not self.checkLock(lock, self.loco):
-                self.debug("lock is supplied but we don't have lock, getting it")
-                lock = self.getLock(lock, self.loco)
-                if lock is False:
-                    raise RuntimeError("lock specified but not held and attempt to get lock failed")
+        # # If we have a lock specified, check we've got it
+        # if lock:
+        #     if not self.checkLock(lock, self.loco):
+        #         self.debug("lock is supplied but we don't have lock, getting it")
+        #         lock = self.getLock(lock, self.loco)
+        #         if lock is False:
+        #             raise RuntimeError("lock specified but not held and attempt to get lock failed")
 
         # Set initial route. It is assumed that only the first route
         # needs to be set before we start moving.
@@ -653,7 +642,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 dir = False
             else:
                 dir = True
-            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes)
             if lock.partial():
                 lock.upgradeLock()
             routes = self.requiredRoutes(siding)
