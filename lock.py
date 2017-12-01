@@ -132,6 +132,9 @@ class Lock(util.Util):
                     pass
                 else:
                     self.southTrackLink = self.southSidings = True
+        # set the signal to green
+        if not self.empty():
+            self.loco.track.exitSignal.setAppearance(GREEN)
         self.writeMemories()
 
     # Calls the above method repeatedly until at least a partial lock
