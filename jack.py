@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-#DCC_ADDRESSES = [5144, 2144, 68, 7405]
-DCC_ADDRESSES = [2144]
+DCC_ADDRESSES = [5144, 2144, 68, 7405]
+#DCC_ADDRESSES = [2144]
 #DCC_ADDRESSES = [6719]
 DEBUG = True
 
