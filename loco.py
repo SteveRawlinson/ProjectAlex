@@ -228,18 +228,15 @@ class Loco(util.Util):
                     pass
                     # self.debug("block " + b + " is occupied")
                 elif mem is not None and mem.getValue() == "selected":
-                    pass
-                    # self.debug("block " + b + " is selected")
-
-                elif mem is not None and mem.getValue() == "selected":
                     self.debug("block " + b + " is already selected")
                 elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
                     if self.willFitInBlock(block):
                         if DEBUG:
                             if sbtf is not None:
                                 pass
-
                         sbtf = block
+                else:
+                    self.debug("block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
             if sbtf is None:
                 self.debug("no available sidings")
                 if time.time() - start > 60 * 5:

@@ -44,11 +44,24 @@ class Lock(util.Util):
             self.northSidingsVal = m.getValue()
             if self.northSidingsVal == "" or self.northSidingsVal == addr:
                 self.northSidingsVal = None
+        self.debug("readMemories: ")
+        self.debug("  southSidingsVal"+ str(self.southSidingsVal))
+        self.debug("  southTrackLinkVal" + str(self.southTrackLinkVal))
+        self.debug("  northSidingsVal" + str(self.northSidingsVal))
+        self.debug("  northTrackLinkVal" + str(self.northTrackLinkVal))
 
     # Write our loco's dcc address into the values of memories we have
     # got a lock on and None into values of memories we haven't, if and
     # only if we had those locks at the time of calling
     def writeMemories(self):
+        self.debug("writeMemories: ")
+        self.debug("  southSidingsVal" + str(self.southSidingsVal))
+        self.debug("  southTrackLinkVal" + str(self.southTrackLinkVal))
+        self.debug("  northSidingsVal" + str(self.northSidingsVal))
+        self.debug("  northTrackLinkVal" + str(self.northTrackLinkVal))
+        self.debug(self.status())
+        # if self.empty():
+        #     return
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
