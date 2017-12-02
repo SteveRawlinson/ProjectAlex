@@ -491,7 +491,9 @@ class Loco(util.Util):
             dir = NORTH
         else:
             dir = SOUTH
-        return lock.Lock().getLock(end=end, direction=dir, loc=self)
+        l = lock.Lock()
+        l.getLock(end=end, direction=dir, loc=self)
+        return l
 
 
 
