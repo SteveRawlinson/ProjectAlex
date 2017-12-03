@@ -8,9 +8,6 @@ from jmri_bindings import *
 from myroutes import *
 
 class SouthReverseLoopToSouthSidings(alex.Alex):
-    def __init__(self, loc):
-        self.loco = loc
-        self.knownLocation = None
 
     def handle(self):
 
@@ -47,9 +44,6 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
 
 
 class SouthSidingsToSouthReverseLoop(alex.Alex):
-    def __init__(self, loc):
-        self.loco = loc
-        self.knownLocation = None
 
     def handle(self):
 
@@ -76,9 +70,6 @@ class SouthSidingsToSouthReverseLoop(alex.Alex):
         return False
 
 class NorthReverseLoopToNorthSidings(alex.Alex):
-    def __init__(self, loc):
-        self.loco = loc
-        self.knownLocation = None
 
     def handle(self):
 
@@ -115,9 +106,6 @@ class NorthReverseLoopToNorthSidings(alex.Alex):
 
 
 class NorthSidingsToNorthReverseLoop(alex.Alex):
-    def __init__(self, loc):
-        self.loco = loc
-        self.knownLocation = None
 
     def handle(self):
 
@@ -144,11 +132,11 @@ class NorthSidingsToNorthReverseLoop(alex.Alex):
         return False
 
 
-#loc = loco.Loco(68)
+loc = loco.Loco(68)
 # loc.setBlock(SOUTH_REVERSE_LOOP)
 # SouthReverseLoopToSouthSidings(loc).start()
-#loc.setBlock("Sth Sidings 2")
-#SouthSidingsToSouthReverseLoop(loc).start()
+loc.setBlock("Sth Sidings 1")
+SouthSidingsToSouthReverseLoop(loc, None, None).start()
 #loc.setBlock(NORTH_REVERSE_LOOP)
 #NorthReverseLoopToNorthSidings(loc).start()
 #loc.setBlock("Nth Sidings 4")
