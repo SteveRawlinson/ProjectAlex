@@ -177,7 +177,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # sets (triggers) a route
     def setRoute(self, route, sleeptime=1):
-        self.debug('setting route' +  str(route))
+        self.debug('setting route ' +  str(route))
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
@@ -615,7 +615,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
             if lock.partial():
                 self.loco.setSpeedSetting(0)
-            lock.upgradeLock()
+                lock.upgradeLock()
+            else:
+                lock.partialUnlock()
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
@@ -645,6 +647,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes)
             if lock.partial():
                 lock.upgradeLock()
+            else:
+                lock.partialUnlock()
             routes = self.requiredRoutes(siding)
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
