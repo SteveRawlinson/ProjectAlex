@@ -67,7 +67,8 @@ class Lock(util.Util):
             elif self.southSidingsVal is None:
                 m.setValue(None)
             else:
-                self.debug("southSidings: " + str(self.southSidings) + " southsidingsVal: " + str(self.southSidingsVal) + ' ' + str(type(self.southSidingsVal)) + ' addr: ' + str(self.loco.dccAddr))
+                pass
+                #self.debug("southSidings: " + str(self.southSidings) + " southsidingsVal: " + str(self.southSidingsVal) + ' ' + str(type(self.southSidingsVal)) + ' addr: ' + str(self.loco.dccAddr))
             m = memories.provideMemory("IMLOCKSOUTHTRACKLINK")
             if self.southTrackLink:
                 m.setValue(self.loco.dccAddr)
