@@ -353,7 +353,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # dontSrop: (boolean) if true, don't stop the loco
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lok=None, passBlock=False, nextBlock=None, dontStop=None):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -392,11 +392,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             slowTime = int(slowTime * 1000)
 
 
-        # if unlockOnBlock is set it means we remove the supplied lok when the block
+        # if unlockOnBlock is set it means we remove the supplied lock when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
         # we need to watch
-        if unlockOnBlock and lok:
-            unlockSensor = layoutblocks.getLayoutBlock(lok.replace(" lok", "")).getBlock().getSensor()
+        if unlockOnBlock and lock:
+            unlockSensor = layoutblocks.getLayoutBlock(lock.replace(" lock", "")).getBlock().getSensor()
         else:
             unlockSensor = None
 
@@ -430,15 +430,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
                 self.debug("my destination block is occupied")
-                if lok:
-                    # let another loco have the lok
-                    if type(lok) == lock.Lock:
-                        if not lok.empty():
+                if lock:
+                    # let another loco have the lock
+                    if type(lock) != str and type(lock) != unicode:
+                        if not lock.empty():
                             self.debug("relinquishing lock")
-                            lok.unlock()
+                            lock.unlock()
                     else:
                         self.debug("relinquishing lock")
-                        self.unlock(lok)
+                        self.unlock(lock)
                 if moving:
                     # stop!
                     self.debug("stopping loco")
@@ -464,15 +464,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 self.loco.setSpeedSetting(normalSpeed)
 
-        # If we have a lok specified, check we've got it
-        if lok:
-            if type(lok) == lock.Lock:
-                if lok.empty():
-                    lok.getLock(lok.end)
+        # If we have a lock specified, check we've got it
+        if lock:
+            if type(lock) != str and type(lock != unicode):
+                if lock.empty():
+                    lock.getLock(lock.end, lock.direction, lock.loco)
             else:
-                if not self.checkLock(lok, self.loco):
-                    self.debug("lok is supplied but we don't have lok, getting it")
-                    lok = self.getLock(lok)
+                if not self.checkLock(lock, self.loco):
+                    self.debug("lock is supplied but we don't have lock, getting it")
+                    lock = self.getLock(lock)
 
         # Set initial route. It is assumed that only the first route
         # needs to be set before we start moving.
@@ -527,7 +527,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
-                self.unlock(lok)
+                self.unlock(lock)
             # check if we have reached the endBlock
             if endBlockSensor in changedList:
                 arrived = True
@@ -540,8 +540,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # if there was a lock specified it means the calling method
         # wants us to release it now (unless passBlock is set)
-        if lok is not None and passBlock == False:
-            self.unlock(lok)
+        if lock is not None and passBlock == False:
+            self.unlock(lock)
 
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
@@ -589,8 +589,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # wait until the endblock is empty
             self.debug("waiting until block " + endBlock.getId() + " is unoccupied")
             self.waitSensorInactive(endBlockSensor)
-            if lok is not None:
-                self.unlock(lok)
+            if lock is not None:
+                self.unlock(lock)
             # set the loco's block to 'nextBlock' which is the block
             # has now moved into (and which has no sensor)
             if nextBlock:
