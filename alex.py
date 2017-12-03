@@ -646,6 +646,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 dir = True
             self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes)
             if lock.partial():
+                self.loco.setSpeedSetting(0)
                 lock.upgradeLock()
             else:
                 lock.partialUnlock()
@@ -662,9 +663,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def moveIntoSouthSidings(self, lock=None):
         routes = [self.track.exitRoute(self.track.northbound())]
         if lock is None:
-            self.getLock('South Link Lock')
+            lock = self.loco.getLock(SOUTH)
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
+            if lock.partial():
+                lock.upgradeLock(keepOldPartial=True)
             # we need a reverse loop and it's available
             for r in routes:
                 self.setRoute(r)
@@ -677,6 +680,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('track to south link', 'medium')
             dir = True
             self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, lock=lock)
+            if lock.partial():
+                self.loco.setSpeedSetting(0)
+                lock.upgradeLock()
             routes = self.requiredRoutes(siding)
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
