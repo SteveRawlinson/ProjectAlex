@@ -54,16 +54,12 @@ class Lock(util.Util):
     # got a lock on and None into values of memories we haven't, if and
     # only if we had those locks at the time of calling
     def writeMemories(self):
-        if self.empty():
-            return
         # self.debug("writeMemories: ")
         # self.debug("  southSidingsVal" + str(self.southSidingsVal))
         # self.debug("  southTrackLinkVal" + str(self.southTrackLinkVal))
         # self.debug("  northSidingsVal" + str(self.northSidingsVal))
         # self.debug("  northTrackLinkVal" + str(self.northTrackLinkVal))
         # self.debug(self.status())
-        # if self.empty():
-        #     return
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
@@ -82,7 +78,6 @@ class Lock(util.Util):
             if self.northTrackLink:
                 m.setValue(self.loco.dccAddr)
             elif self.northTrackLinkVal is None:
-                self.debug("settiong northTrackLink to None")
                 m.setValue(None)
             m = memories.provideMemory("IMLOCKNORTHSIDINGS")
             if self.northSidings:
