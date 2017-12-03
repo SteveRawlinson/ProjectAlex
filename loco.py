@@ -208,9 +208,9 @@ class Loco(util.Util):
     # attribute 'length' in the loco roster.
     def willFitInBlock(self, block):
         if block.getBlock().getLengthCm() > self.trainLength():
-            self.debug("train will fit in block " + block.getId())
+            #self.debug("train will fit in block " + block.getId())
             return True
-        self.debug("train won't fit in block " + block.getId() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
+        #self.debug("train won't fit in block " + block.getId() + ", block is " + str(block.getBlock().getLengthCm()) + " cms long, trains is " + str(self.trainLength()))
         return False
 
     # Takes an array of block names and returns the shortest empty block
@@ -225,8 +225,8 @@ class Loco(util.Util):
                 if block is None:
                     self.debug("no such block: " + b)
                 elif block.getState() == OCCUPIED:
-                    pass
                     # self.debug("block " + b + " is occupied")
+                    pass
                 elif mem is not None and mem.getValue() == "selected":
                     self.debug("block " + b + " is already selected")
                 elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
@@ -236,7 +236,8 @@ class Loco(util.Util):
                                 pass
                         sbtf = block
                 else:
-                    self.debug("block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
+                    # self.debug("block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
+                    pass
             if sbtf is None:
                 self.debug("no available sidings")
                 if time.time() - start > 60 * 5:

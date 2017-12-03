@@ -130,7 +130,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         lck = lock.Lock()
         lck.getOldLockNonBlocking(end, dir, self.loco)
         if lck.empty():
-            debug("failed to get lock")
+            self.debug("failed to get lock")
             return False
         self.debug(lck.status())
         return lck
@@ -147,20 +147,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Returns true if the loco supplied has a lock on the
     # mem supplied, false otherwise
     def checkLock(self, mem, loco=None):
-        return True
-
-        # if loco is None:
-        #     loco = self.loco
-        # memory = memories.getMemory(mem)
-        # if memory is None:
-        #     memory = memories.newMemory(mem)
-        # if memory is None:
-        #     print loco.dccAddr, "could not create memory called", mem, "giving up"
-        #     raise RuntimeError('coulnd not create new memory')
-        # if memory and memory.getValue() == str(loco.dccAddr):
-        #     return True
-        # print loco.dccAddr, "does not have lock on ", mem
-        # return False
+        if loco is None:
+            loco = self.loco
+        memory = memories.getMemory(mem)
+        if memory is None:
+            memory = memories.newMemory(mem)
+        if memory is None:
+            print loco.dccAddr, "could not create memory called", mem, "giving up"
+            raise RuntimeError('coulnd not create new memory')
+        if memory and memory.getValue() == str(loco.dccAddr):
+            return True
+        #print loco.dccAddr, "does not have lock on ", mem
+        return False
 
     def setTroublesomeTurnouts(self, route):
         for i in range(0, route.getNumOutputTurnouts()):
@@ -355,7 +353,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # dontSrop: (boolean) if true, don't stop the loco
     def shortJourney(self, direction, startBlock, endBlock,
                      normalSpeed, slowSpeed=None, slowTime=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
+                     stopIRClear=None, routes=None, lok=None, passBlock=False, nextBlock=None, dontStop=None):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -394,11 +392,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             slowTime = int(slowTime * 1000)
 
 
-        # if unlockOnBlock is set it means we remove the supplied lock when the block
+        # if unlockOnBlock is set it means we remove the supplied lok when the block
         # with a matching name moves from ACTIVE to any other state. Get the sensor
         # we need to watch
-        if unlockOnBlock and lock:
-            unlockSensor = layoutblocks.getLayoutBlock(lock.replace(" Lock", "")).getBlock().getSensor()
+        if unlockOnBlock and lok:
+            unlockSensor = layoutblocks.getLayoutBlock(lok.replace(" lok", "")).getBlock().getSensor()
         else:
             unlockSensor = None
 
@@ -432,10 +430,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
                 self.debug("my destination block is occupied")
-                if lock:
-                    # let another loco have the lock
-                    self.debug("relinquishing lock")
-                    self.unlock(lock)
+                if lok:
+                    # let another loco have the lok
+                    if type(lok) == lock.Lock:
+                        if not lok.empty():
+                            self.debug("relinquishing lock")
+                            lok.unlock()
+                    else:
+                        self.debug("relinquishing lock")
+                        self.unlock(lok)
                 if moving:
                     # stop!
                     self.debug("stopping loco")
@@ -461,13 +464,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 self.loco.setSpeedSetting(normalSpeed)
 
-        # # If we have a lock specified, check we've got it
-        # if lock:
-        #     if not self.checkLock(lock, self.loco):
-        #         self.debug("lock is supplied but we don't have lock, getting it")
-        #         lock = self.getLock(lock, self.loco)
-        #         if lock is False:
-        #             raise RuntimeError("lock specified but not held and attempt to get lock failed")
+        # If we have a lok specified, check we've got it
+        if lok:
+            if type(lok) == lock.Lock:
+                if lok.empty():
+                    lok.getLock(lok.end)
+            else:
+                if not self.checkLock(lok, self.loco):
+                    self.debug("lok is supplied but we don't have lok, getting it")
+                    lok = self.getLock(lok)
 
         # Set initial route. It is assumed that only the first route
         # needs to be set before we start moving.
@@ -522,7 +527,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
-                self.unlock(lock)
+                self.unlock(lok)
             # check if we have reached the endBlock
             if endBlockSensor in changedList:
                 arrived = True
@@ -535,8 +540,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # if there was a lock specified it means the calling method
         # wants us to release it now (unless passBlock is set)
-        if lock is not None and passBlock == False:
-            self.unlock(lock)
+        if lok is not None and passBlock == False:
+            self.unlock(lok)
 
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
@@ -572,7 +577,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 spd = -1  # emergency stop
             else:
                 spd = 0   # normal stop
-                self.debug("being loco to a halt")
+                self.debug("bringing loco to a halt in block " + endBlock.userName)
             self.loco.setSpeedSetting(spd)
         else:
             self.debug("not stopping loco")
@@ -584,8 +589,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # wait until the endblock is empty
             self.debug("waiting until block " + endBlock.getId() + " is unoccupied")
             self.waitSensorInactive(endBlockSensor)
-            if lock is not None:
-                self.unlock(lock)
+            if lok is not None:
+                self.unlock(lok)
             # set the loco's block to 'nextBlock' which is the block
             # has now moved into (and which has no sensor)
             if nextBlock:

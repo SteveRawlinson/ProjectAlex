@@ -270,7 +270,6 @@ class Lock(util.Util):
         else:
             if self.southSidings:
                 if self.southSidingsVal is not None and self.southSidingsVal != self.loco.dccAddr:
-                    #self.debug("southSidingsVal: " + self.southSidingsVal + " dccAddr: " + str(self.loco.dccAddr))
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southSidings it does not own")
                 elif partial is False:
                     self.southSidings = None
