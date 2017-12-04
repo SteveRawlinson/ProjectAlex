@@ -243,8 +243,6 @@ class Loco(util.Util):
                 if time.time() - start > 60 * 5:
                     raise RuntimeError("timeout waiting for a free siding")
                 time.sleep(10)
-            else:
-                self.debug("selected block " + sbtf.getId())
         return sbtf
 
     # Takes an array of block names and returns the shortest empty block
@@ -487,10 +485,14 @@ class Loco(util.Util):
     def getLock(self, end):
         if self.track.northbound():
             dir = NORTH
+            dir_s = 'North'
         else:
             dir = SOUTH
+            dir_s = 'South'
+        self.debug("getting (new) lock on " + dir_s + " link")
         l = lock.Lock()
         l.getLock(end=end, direction=dir, loc=self)
+        self.debug("got lock: " + l.status())
         return l
 
 
