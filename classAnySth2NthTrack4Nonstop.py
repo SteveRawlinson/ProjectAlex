@@ -41,7 +41,7 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         # self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
         # self.shortJourney(True, self.loco.block, "FPK P4", medium, lock=lock, dontStop=True)
 
-        self.leaveSouthSidings('FPK P4')
+        self.leaveSouthSidings('FPK P4', stop=False)
 
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P1", medium, dontStop=True)
