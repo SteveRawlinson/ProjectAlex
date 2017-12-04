@@ -23,7 +23,6 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
 
         fast = self.loco.speed('fast')
         medium = self.loco.speed('medium')
-        slow = self.loco.speed('slow')
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -39,14 +38,16 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         self.loco.status = loco.MOVING
         start = time.time()
 
-        # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock')
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P2')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P2')
-        self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "FPK P2", medium, lock=lock, dontStop=True)
+        # # out of sth sidings to FPK
+        # lock = self.getLock('South Link Lock')
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P2')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P2')
+        # self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
+        # self.shortJourney(True, self.loco.block, "FPK P2", medium, lock=lock, dontStop=True)
+
+        self.leaveSouthSidings("FPK P2")
 
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P3", medium, dontStop=True)

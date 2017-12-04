@@ -26,11 +26,13 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         # get a 'lock' on the south link track
         lock = self.getLock('South Link Lock')
 
-        # Out the sth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        sp = self.loco.speed('south sidings exit', 'medium')
-        self.shortJourney(False, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
-        self.shortJourney(False, self.loco.block, "FPK P8", fullSpeed, lock=lock)
+        # # Out the sth sidings
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
+        # sp = self.loco.speed('south sidings exit', 'medium')
+        # self.shortJourney(False, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        # self.shortJourney(False, self.loco.block, "FPK P8", fullSpeed, lock=lock)
+
+        self.leaveSouthSidings('FPK P8', stop=False)
 
         # All the way to North Fast Outer 2
         self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed, dontStop=True)

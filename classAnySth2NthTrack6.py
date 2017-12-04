@@ -29,17 +29,16 @@ class ClassAnySth2NthTrack6(alex.Alex):
         else:
             dir = True
 
-        # get a 'lock' on the south link track
-        lock = self.getLock('South Link Lock')
+        # # Out the sth sidings
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
+        # self.shortJourney(dir, self.loco.block, "South Link", 'fast', routes=routes, dontStop=True)
+        # if 'Stopping' in type(self).__name__:
+        #     self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', 'slow', lock=lock)
+        #     self.waitAtPlatform()
+        # else:
+        #     self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', lock=lock, dontStop=True)
 
-        # Out the sth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        self.shortJourney(dir, self.loco.block, "South Link", 'fast', routes=routes, dontStop=True)
-        if 'Stopping' in type(self).__name__:
-            self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', 'slow', lock=lock)
-            self.waitAtPlatform()
-        else:
-            self.shortJourney(dir, self.loco.block, "FPK P8", 'medium', lock=lock, dontStop=True)
+        self.leaveSouthSidings('FPK P8', stop=False)
 
         # All the way to North Fast Outer 1
         self.shortJourney(dir, self.loco.block, "Nth Fast Outer 1", 'medium', dontStop=True)

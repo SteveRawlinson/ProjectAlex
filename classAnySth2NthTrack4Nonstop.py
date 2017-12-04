@@ -32,14 +32,16 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         self.loco.status = loco.MOVING
         start = time.time()
 
-        # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock')
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P4')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
-        self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "FPK P4", medium, lock=lock, dontStop=True)
+        # # out of sth sidings to FPK
+        # lock = self.getLock('South Link Lock')
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P4')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
+        # self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
+        # self.shortJourney(True, self.loco.block, "FPK P4", medium, lock=lock, dontStop=True)
+
+        self.leaveSouthSidings('FPK P4')
 
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P1", medium, dontStop=True)

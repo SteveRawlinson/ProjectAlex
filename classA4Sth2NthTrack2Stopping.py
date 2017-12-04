@@ -26,13 +26,15 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         start = time.time()
 
         # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock')
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P2')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P2')
-        self.shortJourney(True, self.loco.block, "FPK P2", 0.5, 0.4, 11000, routes=routes, lock=lock)
-        self.waitAtPlatform()
+        # lock = self.getLock('South Link Lock')
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P2')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P2')
+        # self.shortJourney(True, self.loco.block, "FPK P2", 0.5, 0.4, 11000, routes=routes, lock=lock)
+        # self.waitAtPlatform()
+
+        self.leaveSouthSidings('FPK P2')
 
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P3", 0.5, dontStop=True)
