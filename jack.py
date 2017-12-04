@@ -34,7 +34,7 @@ from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
 #DCC_ADDRESSES = [5144, 2144, 68, 7405]
-DCC_ADDRESSES = [2144, 5144]
+DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 DEBUG = True
@@ -233,16 +233,16 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # enough activity for now, return
             # TODO: turn trains round?
             return
-        if runningCount == 1 and time.time() - self.lastJourneyStartTime < 30.0:
-            # we're just starting up, stagger first two journeys
-            return
+        # if runningCount == 1 and time.time() - self.lastJourneyStartTime < 30.0:
+        #     # we're just starting up, stagger first two journeys
+        #     return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
                 continue
             if loc.active():
                 continue
-            self.debug("found idle loco with rarity 0: " + loc.name())
+            self.debug("found idle loco with rarity 0: " + loc.nameAndAddress())
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
