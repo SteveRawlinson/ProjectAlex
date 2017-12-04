@@ -720,6 +720,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
     def leaveSouthSidings(self, endBlock, stop=True):
+        # determine direction
+        if self.loco.reversible():
+            dir = False
+        else:
+            dir = True
         # get a lock
         lock = self.loco.getLock(SOUTH)
         # determine the routes we need to set to start moving
@@ -733,7 +738,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get the loco speed
         sp = self.loco.speed('south sidings exit', 'fast')
         # off we go
-        self.shortJourney(False, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        if self.loco.layoutBlock.getId() != "FP Siding":
+            self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True)
+            sp = self.loco.speed('back passage to south link', 'fast')
+        self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
         # update the lock
         lock.switch() # stops loco if necessary
         # add later routes if we haven't done so already
@@ -747,10 +755,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         ssp = self.loco.speed('slow')
         # complete the move
         if stop:
-            self.shortJourney(False, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes)
+            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes)
             self.waitAtPlatform()
         else:
-            self.shortJourney(False, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True)
+            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True)
 
 
     def handle(self):
