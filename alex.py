@@ -351,9 +351,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # passBlock: (boolean) wait until the endBlock is empty before returning (and don't stop the loco)
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
     # dontSrop: (boolean) if true, don't stop the loco
-    def shortJourney(self, direction, startBlock, endBlock,
-                     normalSpeed, slowSpeed=None, slowTime=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None):
+    def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -367,6 +366,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 dontStop = False
         if dontStop is False and passBlock is True:
             raise RuntimeError("dontStop can't be false if passBlock is true")
+
+        # Default speed
+        if normalSpeed is None:
+            normalSpeed = self.loco.speed('medium')
+
+        # Default start block
+        if startBlock is None:
+            startBlock = self.loco.block
+
+        # must have endBlock
+        if endBlock is None:
+            raise("must specify endBlock")
 
         # convert string speeds to floats
         origNormalSpeed = 'dunno'
@@ -510,7 +521,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # wait for a sensor to change
         self.debug("waiting for destination block " + endBlock.userName + " to become active")
-        sensorList = [endBlockSensor]
+        if endIRSensor is not None:
+            sensorList = [endIRSensor]
+        else:
+            sensorList = [endBlockSensor]
         if unlockSensor:
             sensorList.append(unlockSensor)
         changedList = []
@@ -529,11 +543,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if unlockSensor and unlockSensor in changedList:
                 self.unlock(lock)
             # check if we have reached the endBlock
-            if endBlockSensor in changedList:
+            if endBlockSensor in changedList or endIRSensor in changedList:
                 arrived = True
 
         arriveTime = time.time()
-        self.debug("destination block " +  endBlock.userName +  " is active, we have arrived")
+        if endIRSensor:
+            self.debug("destination block IR sensor at " + endBlock.userName + " is active, we have arrived")
+        else:
+            self.debug("destination block " + endBlock.userName + " is active, we have arrived")
 
         # set the value in the new occupied block
         self.loco.setBlock(endBlock)
