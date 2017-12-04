@@ -109,7 +109,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             dir = SOUTHBOUND
         else:
             dir = NORTHBOUND
-        self.debug("getting lock on " + end_s + " Link")
+        self.debug("getting (old) lock on " + end_s + " Link")
         lck = lock.Lock()
         lck.getOldLock(end, dir, self.loco)
         self.debug(lck.status())
@@ -408,7 +408,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         #     self.debug("throttle is " + throttle)
         
         # are we moving
-        if throttle.getSpeedSetting() > 0:
+        if self.loco.throttle.getSpeedSetting() > 0:
             startTime = time.time()
             moving = True
         else:
@@ -560,12 +560,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 stopIRClear = sensors.getSensor(stopIRClear)
             # wait till the IR sensor is clear
             if stopIRClear.knownState != ACTIVE:
-                print self.loco.dccAddr, "waiting for IR sensor to be active"
+                self.debug("waiting for IR sensor to be active")
                 self.waitSensorActive(stopIRClear)
-                print self.loco.dccAddr, "IR sensor active..."
-            print self.loco.dccAddr, "waiting for IR sensor to be inactive"
+                self.debug("IR sensor active")
+            self.debug("waiting for IR sensor to be inactive")
             self.waitSensorInactive(stopIRClear)
-            print self.loco.dccAddr, "IR sensor inactive..."
+            self.debug("IR sensor inactive...")
         elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             self.debug(" ********************** waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000) + " **********************************************")
@@ -644,18 +644,19 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(NORTH_SIDINGS)
+            if not lock.partial():
+                routes += self.requiredRoutes(siding)
             speed = self.loco.speed('track to north link', 'medium')
             if self.loco.reversible():
                 dir = False
             else:
                 dir = True
-            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes)
+            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, dontStop=True)
             if lock.partial():
-                self.loco.setSpeedSetting(0)
-                lock.upgradeLock()
+                routes = self.requiredRoutes(siding)
             else:
-                lock.partialUnlock()
-            routes = self.requiredRoutes(siding)
+                routes = None
+            lock.switch()
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
@@ -682,19 +683,44 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
+            if not lock.partial():
+                routes += self.requiredRoutes(siding)
             speed = self.loco.speed('track to south link', 'medium')
             dir = True
-            self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, dontStop=True)
             if lock.partial():
-                self.loco.setSpeedSetting(0)
-                lock.upgradeLock()
-            routes = self.requiredRoutes(siding)
+                routes = self.requiredRoutes(siding)
+            else:
+                routes = None
+            lock.switch()
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         if b:
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         self.loco.status = SIDINGS
+
+    def leaveSouthSidings(self, endBlock, stop=True):
+        # out of sth sidings to FPK
+        lock = self.loco.getLock(SOUTH)
+        routes = self.requiredRoutes(self.loco.block)
+        if not lock.partial():
+            routes += self.requiredRoutes(endBlock)
+        sp = self.loco.speed('south sidings exit', 'fast')
+        self.shortJourney(False, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        lock.switch() # stops loco if necessary
+        if lock.partial():
+            routes = self.requiredRoutes(endBlock)
+        else:
+            routes = None
+        sp = self.loco.speed('south link to layout', 'medium')
+        ssp = self.loco.speed('slow')
+        if stop:
+            self.shortJourney(False, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes)
+            self.waitAtPlatform()
+        else:
+            self.shortJourney(False, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True)
+
 
     def handle(self):
         pass
