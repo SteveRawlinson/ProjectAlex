@@ -380,6 +380,9 @@ class Loco(util.Util):
         else:
             blk = b
         #self.debug("setting " + blk.getUserName() + " block to " + self.name())
+        # remove value on old block
+        self.block.setValue(None)
+        # set new block
         self.block = blk
         if lblk is not None:
             self.layoutBlock = lblk
