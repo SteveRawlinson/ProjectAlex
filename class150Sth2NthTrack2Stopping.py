@@ -27,12 +27,7 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         start = time.time()
         fast, medium, slow = 'fast', 'medium', 'slow'
 
-        # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock')
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('Sth Hertford Outer')
-        self.shortJourney(False, self.loco.block, "South Link", fast, dontStop=True, routes=routes)
-        self.shortJourney(False, self.loco.block, "FPK P2", medium, slowSpeed=slow, lock=lock)
-        self.waitAtPlatform()
+        self.leaveSouthSidings('FPK P2')
 
         # FPK to AAP
         self.shortJourney(False, self.loco.block, "AAP P3", medium, slowSpeed=slow)
@@ -41,8 +36,6 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         # AAP to PAL
         self.shortJourney(False, self.loco.block, "PAL P2", medium, slowSpeed=slow)
         self.waitAtPlatform()
-
-        lock = self.getLock('North Link Lock')
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:

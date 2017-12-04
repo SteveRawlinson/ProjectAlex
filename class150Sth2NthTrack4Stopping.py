@@ -28,11 +28,13 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.loco.status = loco.MOVING
         start = time.time()
 
-        # out of sth sidings to FPK
-        lock = self.getLock('South Link Lock')
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
-        self.shortJourney(False, self.loco.block, "FPK P4", medium, slowSpeed=slow, routes=routes, lock=lock)
-        self.waitAtPlatform()
+        self.leaveSouthSidings('FPK P4')
+
+        # # out of sth sidings to FPK
+        # lock = self.getLock('South Link Lock')
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P4')
+        # self.shortJourney(False, self.loco.block, "FPK P4", medium, slowSpeed=slow, routes=routes, lock=lock)
+        # self.waitAtPlatform()
 
         # FPK to AAP
         self.shortJourney(False, self.loco.block, "AAP P1", medium, slowSpeed=slow)
