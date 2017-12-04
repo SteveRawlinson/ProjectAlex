@@ -341,7 +341,7 @@ class Loco(util.Util):
             self.block = None
         elif len(lblocks) == 1:
             if lblocks[0].getOccupancy() == OCCUPIED:
-                self.block = lblocks[0].getBlock()
+                self.setBlock(lblocks[0].getBlock())
         else:
             # technically a loco can be in more than one block but in
             # practice at startup it's much more likely that multiple
@@ -381,13 +381,16 @@ class Loco(util.Util):
             blk = b
         #self.debug("setting " + blk.getUserName() + " block to " + self.name())
         # remove value on old block
-        self.block.setValue(None)
+        if self.block:
+            self.block.setValue(None)
         # set new block
         self.block = blk
+        self.debug("setting block: " + self.block.getUserName())
         if lblk is not None:
             self.layoutBlock = lblk
         else:
             self.layoutBlock = layoutblocks.getLayoutBlock(blk.getUserName())
+        self.debug("setting layoutblock: " + self.layoutBlock.getId())
         blk.setValue(str(self.dccAddr))
         mem = memories.getMemory("Siding " + blk.getUserName())
         if mem is not None and mem.getValue() == str(self.dccAddr):

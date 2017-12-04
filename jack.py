@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-#DCC_ADDRESSES = [5144, 2144, 68, 7405]
-DCC_ADDRESSES = [5144, 2144]
+DCC_ADDRESSES = [5144, 2144, 68, 7405]
+#DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 DEBUG = True
@@ -364,7 +364,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             addr = JOptionPane.showInputDialog("DCC address of new loco:")
             if addr != "" and addr is not None and int(addr) > 0:
                 loc = self.getNewLoco(int(addr))
-                self.getLocoThrottle(loc)
+                try:
+                    self.getLocoThrottle(loc)
+                except RuntimeError:
+                    # idiot at the keyboard entered wrong dcc addr
+                    del loc
+                    return
                 loc.emergencyStop()
                 b = loc.initBlock()
                 if b is None:

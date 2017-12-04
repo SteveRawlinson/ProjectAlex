@@ -738,7 +738,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get the loco speed
         sp = self.loco.speed('south sidings exit', 'fast')
         # off we go
-        if self.loco.layoutBlock.getId() != "FP Siding":
+        if self.loco.layoutBlock.getId() != "FP sidings" and not self.loco.inReverseLoop():
             self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True)
             sp = self.loco.speed('back passage to south link', 'fast')
         self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)

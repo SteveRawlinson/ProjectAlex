@@ -31,7 +31,7 @@ class Util:
         if sensor.getKnownState() == ACTIVE:
             # see if we know the identity of the loco
             b = block.getBlock()
-            if b.getValue() is not None:
+            if b.getValue() is not None and b.getValue() != '':
  #               self.debug("  returning value: " + b.getValue())
                 return b.getValue()
             else:
