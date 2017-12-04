@@ -117,14 +117,14 @@ class Lock(util.Util):
         self.loco = loc
         self.readMemories()
         if end == NORTH:
-            # North Link, Northbound
+            # North Link, Northbound (leaving the layout)
             if direction == NORTHBOUND:
                 if self.northTrackLinkVal is None:
                     self.northTrackLink = True
-                if self.northSidingsVal is None:
-                    self.northSidings = True
+                    if self.northSidingsVal is None:
+                        self.northSidings = True
             else:
-                # North Link, Southbound
+                # North Link, Southbound (coming out to sidings)
                 if self.northSidingsVal or self.northTrackLinkVal:
                     # no lock available
                     pass
@@ -132,21 +132,30 @@ class Lock(util.Util):
                     # everything is available
                     self.northTrackLink = self.northSidings = True
         else: # end == SOUTH
-            # South Link, Southbound
+            # South Link, Southbound (leaving the layout)
             if direction == SOUTHBOUND:
                 if self.southTrackLinkVal is None:
                     self.southTrackLink = True
+                    if self.southSidingsVal is None:
+                        self.southSidings = True
+            else:
+                # South Link, Northbound (coming out of sidings)
                 if self.southSidingsVal is None:
                     self.southSidings = True
+                    if self.southTrackLinkVal is None:
+                        self.southTrackLink = True
+                # if self.southSidingsVal or self.southTrackLinkVal:
+                #     pass
+                # else:
+                #     self.southTrackLink = self.southSidings = True
+        # set the signal if we're leaving the layout
+        if (end == NORTH and direction == NORTHBOUND) or (end == SOUTH and direction == SOUTHBOUND):
+            if self.empty():
+                if self.loco.track.exitSignal.getAppearance != RED:
+                    self.loco.track.exitSignal.setAppearance(RED)
             else:
-                # South Link, Northbound
-                if self.southSidingsVal or self.southTrackLinkVal:
-                    pass
-                else:
-                    self.southTrackLink = self.southSidings = True
-        # set the signal to green
-        if not self.empty():
-            self.loco.track.exitSignal.setAppearance(GREEN)
+                if self.loco.track.exitSignal.getAppearance != GREEN:
+                    self.loco.track.exitSignal.setAppearance(GREEN)
         self.writeMemories()
 
     # Calls the above method repeatedly until at least a partial lock
@@ -296,6 +305,25 @@ class Lock(util.Util):
             return self.northSidings is not self.northTrackLink
         else:
             return self.southSidings is not self.southTrackLink
+
+    # The method is called when the loco reaches the halfway point covered
+    # by the lock. It needs either to upgrade to a full lock in order
+    # to progress (in the case of it having a partial lock), or it needs
+    # to release the first part of the lock (in the case of having a full
+    # lock).
+    def switch(self):
+        if self.empty():
+            self.debug("****************************** switch called on empty lock ^^^^^^^^^^^^^^^^^^^^^^")
+            return
+        if self.partial():
+            self.debug("upgrading partial lock")
+            if self.loco.throttle.getSpeedSetting() > 0:
+                self.debug("halting loco until lock upgraded")
+                self.loco.setSpeedSetting(0)
+            self.upgradeLock()
+        else:
+            self.debug("partial unlock")
+            self.partialUnlock()
 
 
 
