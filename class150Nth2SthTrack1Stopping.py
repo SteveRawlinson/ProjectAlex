@@ -48,9 +48,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.shortJourney(True, "AAP P4", dest, medium, slowSpeed=slow)
         self.waitAtPlatform()
 
-        # FPK to Sth Sidings
-        lock = self.getLock('South Link Lock')
-
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
