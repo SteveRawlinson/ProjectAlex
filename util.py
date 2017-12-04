@@ -3,13 +3,19 @@ from jmri_bindings import *
 from myroutes import *
 import re
 import track
+import datetime
 
 # This is a mixin
 class Util:
 
     def debug(self, message):
         if DEBUG:
-            print message
+            if hasattr(self, 'loco'):
+                print str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
+            elif hasattr(self, 'dccAddr'):
+                print str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
+            else:
+                print str(datetime.datetime.now()) + ': ' + message
 
 
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
