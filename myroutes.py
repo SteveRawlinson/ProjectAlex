@@ -114,7 +114,7 @@ SLOWTIMEMAP = {
     # class 47
     "class47": {'FPK P7': 10, "NORTH FAST": 13},
     # Mallard
-    "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17 },
+    "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 7 },
     # class 150s
     "class150": {"FPK P2": 4, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 4, "AAP P1": 1, "NSG P2": 3,
                  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
