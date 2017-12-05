@@ -379,10 +379,14 @@ class Loco(util.Util):
             blk = b.getBlock()
         else:
             blk = b
-        #self.debug("setting " + blk.getUserName() + " block to " + self.name())
         # remove value on old block
         if self.block:
             self.block.setValue(None)
+            self.debug("set block " + self.block.getUserName() + " to None. Value now: " + str(self.block.getValue()))
+            mem = memories.getMemory(self.block.getUserName())
+            if mem is not None:
+                mem.setValue(None)
+                self.debug("set memory " + self.block.getUserName() + " to None. Value now: " + str(mem.getValue()))
         # set new block
         self.block = blk
         self.debug("setting block: " + self.block.getUserName())
@@ -438,8 +442,8 @@ class Loco(util.Util):
             if k in SPEEDMAP:
                 if speed in SPEEDMAP[k]:
                     sp = SPEEDMAP[k][speed]
-            if sp is None and fallback in SPEEDMAP[k]:
-                return SPEEDMAP[k][fallback]
+                if sp is None and fallback in SPEEDMAP[k]:
+                    return SPEEDMAP[k][fallback]
         if sp is None and self.dccAddr in SPEEDMAP:
             if fallback in SPEEDMAP[self.dccAddr]:
                 sp = SPEEDMAP[self.dccAddr][fallback]
