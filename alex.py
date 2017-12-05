@@ -350,9 +350,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # lock: (String or Lock) name of a lock we need to unlock when we're done
     # passBlock: (boolean) wait until the endBlock is empty before returning (and don't stop the loco)
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
-    # dontSrop: (boolean) if true, don't stop the loco
+    # dontStop: (boolean) if true, don't stop the loco
+    # endIRSensor: use this sensor to indicate arrival rather than endBlock's sensor
+    # delayLockRelease: wait this many seconds after we would normally release the lock to actually release it
     def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None, delayLockRelease=None):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -558,6 +560,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # if there was a lock specified it means the calling method
         # wants us to release it now (unless passBlock is set)
         if lock is not None and passBlock == False:
+            if startBlockSensor.knownState == ACTIVE:
+                # must be a long train because we're still in the start block
+                self.debug("waiting for start block to be empty before releasing lock")
+                self.waitChange([startBlockSensor])
+            if delayLockRelease is not None:
+                time.sleep(delayLockRelease)
             self.unlock(lock)
 
 
@@ -719,12 +727,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
-    def leaveSouthSidings(self, endBlock, stop=True):
+    def leaveSouthSidings(self, endBlock, stop=None):
         # determine direction
         if self.loco.reversible():
             dir = False
         else:
             dir = True
+        # Set default stop value if not set by caller
+        if stop is None:
+            if 'Stopping' in type(self).__name__:
+                stop = True
+            else:
+                stop = False
         # get a lock
         lock = self.loco.getLock(SOUTH)
         # determine the routes we need to set to start moving
