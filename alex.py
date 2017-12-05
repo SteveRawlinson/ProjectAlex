@@ -352,9 +352,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # nextBlock: the block after endBlock (which is not monitored by an occupancy sensor)
     # dontStop: (boolean) if true, don't stop the loco
     # endIRSensor: use this sensor to indicate arrival rather than endBlock's sensor
-    # delayLockRelease: wait this many seconds after we would normally release the lock to actually release it
+    # lockSensor: wait until this sensor (or the sensor this string indicates) is inactive before releasing supplied lock
     def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
-                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None, delayLockRelease=None):
+                     stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None, lockSensor=None):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -379,7 +379,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # must have endBlock
         if endBlock is None:
-            raise("must specify endBlock")
+            raise RuntimeError("must specify endBlock")
+
+        # convert lockSensor
+        if lockSensor and type(lockSensor) != jmri.Sensor:
+            lockSensor = sensors.getSensor(lockSensor)
 
         # convert string speeds to floats
         origNormalSpeed = 'dunno'
@@ -558,15 +562,16 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.loco.setBlock(endBlock)
 
         # if there was a lock specified it means the calling method
-        # wants us to release it now (unless passBlock is set)
+        # wants us to release it now, unless passBlock is set (which means
+        # wait until we are past the endBlock before releasing lock) or
+        # lockSensor is set (which means wait until that sensor is inactive,
+        # which we do later)
         if lock is not None and passBlock == False:
-            if startBlockSensor.knownState == ACTIVE:
-                # must be a long train because we're still in the start block
-                self.debug("waiting for start block to be empty before releasing lock")
-                self.waitChange([startBlockSensor])
-            if delayLockRelease is not None:
-                time.sleep(delayLockRelease)
-            self.unlock(lock)
+            if lockSensor and lockSensor.getKnownState() == ACTIVE:
+                pass
+            else:
+                self.unlock(lock)
+                lock = None
 
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
@@ -578,6 +583,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 self.debug("setting slowSpeed: " + str(slowSpeed))
                 self.loco.setSpeedSetting(slowSpeed)
+
+        # if we didn't unlock above because the lockSensor was still active,
+        # do it now.
+        if lock and lockSensor:
+            if lockSensor.getKnownState() == ACTIVE:
+                # still active, wait
+                self.waitChange([lockSensor])
+            self.unlock(lock)
 
         if stopIRClear:
             # check if we have a sensor or the name of a sensor
