@@ -210,11 +210,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         elif type(siding) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             siding = siding.getId()
         if siding in ROUTEMAP:
-            self.debug("requiredRoutes for " + siding + ": " + ', '.join(ROUTEMAP[siding]))
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(ROUTEMAP)
             return ROUTEMAP[siding]
-        self.debug("requiredRoutes: can't find entry in ROUTEMAP for " + siding)
         return [siding]
 
 
@@ -726,7 +722,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         routes = [self.track.exitRoute(self.track.northbound())]
         if lock is None:
             lock = self.loco.getLock(SOUTH)
-        elif hasattr(lock, empty) and lock.empty():
+        elif hasattr(lock, 'empty') and lock.empty():
             # we've got a lock but it's empty
             lock.getLock(SOUTH)
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
