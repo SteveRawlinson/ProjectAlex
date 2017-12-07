@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144, 2144, 68, 7405]
-#DCC_ADDRESSES = [5144, 2144]
+#DCC_ADDRESSES = [5144, 2144, 68, 7405]
+DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 DEBUG = True
@@ -272,6 +272,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get a list of candidate locos
         candidates = []
         preferred_loco = None
+        #self.debug("selecting loco from list of " + str(len(self.locos)))
         for loc in self.locos:
             if loc.active():
                 if loc.reversible() is False:
@@ -298,6 +299,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # the reverse loop is occupied and we don't know by what
                 continue
             candidates.append(loc)
+        #self.debug("we have " + str(len(candidates)) + " candidates")
         # if we have a preferred loco, and it's in the candidate list, pick that one
         if preferred_loco is not None and preferred_loco in candidates:
             self.debug("picking preferred loco")
