@@ -38,7 +38,7 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         self.leaveSouthSidings('FPK P2')
 
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P3", 0.5, dontStop=True)
+        self.shortJourney(True, self.loco.block, "AAP P3", 'medium', dontStop=True)
 
         # AAP to PAL
         self.shortJourney(True, self.loco.block, "PAL P2", 'medium', 'slow')
