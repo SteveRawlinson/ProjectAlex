@@ -24,56 +24,54 @@ class ClassA4Nth2SthTrack3Stopping(alex.Alex):
             self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
-        platformWaitTimeMsecs = self.platformWaitTimeMsecs
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
+        # self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, dontStop=True)
+        #
+        # # on to NSG P1
+        # self.shortJourney(True, self.loco.block, "NSG P1", 0.5, dontStop=True, lock=lock)
 
-        # Out the nth sidings
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 0.6, routes=routes, dontStop=True)
-
-        # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", 0.5, dontStop=True, lock=lock)
+        self.leaveNorthSidings('NSG P1', stop=False)
 
         # NSG to AAP
-        self.shortJourney(True, "NSG P1", "AAP P2", 0.5, dontStop=True)
+        self.shortJourney(True, "NSG P1", "AAP P2", 'medium', dontStop=True)
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P2", "FPK P3", 0.5, 0.4, 14000)
-        self.waitMsec(platformWaitTimeMsecs)
+        self.shortJourney(True, "AAP P2", "FPK P3", 'medium', 'slow', 14000)
+        self.waitAtPlatform()
 
-        # FPK to Sth Sidings
-        lock = self.getLock('South Link Lock')
+        # # FPK to Sth Sidings
+        # lock = self.getLock('South Link Lock')
+        #
+        # # see if the reverse loop is free
+        # b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.setRoute("Sth Welwyn Inner")
+        #     self.loco.setSpeedSetting(0.5)
+        #     self.reverseLoop(SOUTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
+        # else:
+        #     # select a siding
+        #     siding = self.loco.selectSiding(SOUTH_SIDINGS)
+        #     if siding.getId() == "FP sidings":
+        #         routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
+        #         self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     else:
+        #         routes = self.requiredRoutes(self.loco.block)
+        #         self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
+        #         routes = self.requiredRoutes(siding)
+        #         self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     self.loco.unselectSiding(siding)
+        #     self.loco.wrongway = True
 
-        # see if the reverse loop is free
-        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
-        if b is not None:
-            self.setRoute("Sth Welwyn Inner")
-            self.loco.setSpeedSetting(0.5)
-            self.reverseLoop(SOUTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
-        else:
-            # select a siding
-            siding = self.loco.selectSiding(SOUTH_SIDINGS)
-            if siding.getId() == "FP sidings":
-                routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.4, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            else:
-                routes = self.requiredRoutes(self.loco.block)
-                self.shortJourney(True, self.loco.block, "South Link", 0.4, routes=routes)
-                routes = self.requiredRoutes(siding)
-                self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            self.loco.wrongway = True
-
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
+        self.moveIntoSouthSidings()
 
         self.loco.status = loco.SIDINGS
 

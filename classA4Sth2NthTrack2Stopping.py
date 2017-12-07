@@ -6,6 +6,7 @@ import alex
 import loco
 from jmri_bindings import *
 from myroutes import *
+import lock
 
 class ClassA4Sth2NthTrack2Stopping(alex.Alex):
 
@@ -39,35 +40,37 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P3", 0.5, dontStop=True)
 
-        # see if we can get a lock but don't wait for one
-        lock = self.getLockNonBlocking('North Link Lock')
-        if lock is False:
-            # we didn't get a lock, stop at the signal
-            self.shortJourney(True, self.loco.block, "PAL P2", 0.5, 0.4, 8000)
-            # now wait for a lock
-            lock = self.getLock('North Link Lock')
-        else:
-            # we got the lock - AAP to PAL
-            routes = self.requiredRoutes("NSG P2")
-            self.shortJourney(True, self.loco.block, "PAL P2", 0.5, routes=routes, dontStop=True)
+        # AAP to PAL
+        self.shortJourney(True, self.loco.block, "PAL P2", 'medium', 'slow')
 
-        # NSG to North sidings
-        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if b is not None:
-            self.setRoute("Hertford Nth Outer")
-            self.loco.setSpeedSetting(0.5)
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-            if lock is not None:
-                self.unlock(lock)
-        else:
-            siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            self.loco.wrongway = True
+        # see if we can get a lock but don't wait for one
+        lck = lock.Lock()
+        lck.getLockNonBlocking(NORTH)
+        if lck.empty():
+            # we didn't get a lock, stop at the signal
+            self.loco.graduallyChangeSpeed('slow')
+            time.sleep(self.getSlowtime('PAL P2'))
+            # now wait for a lock
+
+        # # NSG to North sidings
+        # b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.setRoute("Hertford Nth Outer")
+        #     self.loco.setSpeedSetting(0.5)
+        #     self.reverseLoop(NORTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        #     if lock is not None:
+        #         self.unlock(lock)
+        # else:
+        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+        #     routes = self.requiredRoutes(self.loco.block)
+        #     self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     self.loco.unselectSiding(siding)
+        #     self.loco.wrongway = True
+
+        self.moveIntoNorthSidings(lck)
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
