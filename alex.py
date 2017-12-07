@@ -8,6 +8,7 @@ import util
 import datetime
 import track
 import lock
+import pprint
 
 DEBUG = True
 
@@ -28,7 +29,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.knownLocation = None
         self.memory = memory
         self.track = track
-        self.tracks = self.initTracks()
+        #self.tracks = []
+        #self.initTracks()
 
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
@@ -208,7 +210,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         elif type(siding) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             siding = siding.getId()
         if siding in ROUTEMAP:
+            self.debug("requiredRoutes for " + siding + ": " + ', '.join(ROUTEMAP[siding]))
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(ROUTEMAP)
             return ROUTEMAP[siding]
+        self.debug("requiredRoutes: can't find entry in ROUTEMAP for " + siding)
         return [siding]
 
 
@@ -399,7 +405,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
         endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
 
-        self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName())
+        if routes:
+            self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName() + " routes: " + ', '.join(routes))
+        else:
+            self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName() + " routes: None")
 
         # slowSpeed implies slowTime (if there's no IR sensor involved)
         if slowSpeed is not None and stopIRClear is None:
@@ -684,7 +693,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             if not lock.partial():
-                routes += self.requiredRoutes(siding)
+                routes = routes + self.requiredRoutes(siding)
             speed = self.loco.speed('track to north link', 'medium')
             if self.loco.reversible():
                 dir = False
@@ -723,7 +732,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
             if not lock.partial():
-                routes += self.requiredRoutes(siding)
+                moreRoutes = self.requiredRoutes(siding)
+                self.debug("moveIntoSouthSidings: adding routes: " + ', '.join(moreRoutes))
+                routes = routes + moreRoutes
             speed = self.loco.speed('track to south link', 'medium')
             dir = True
             self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, dontStop=True)
@@ -762,7 +773,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             routes = self.requiredRoutes(self.loco.block)
         # if we have a full lock we can set more routes
         if not lock.partial():
-            routes += self.requiredRoutes(endBlock)
+            routes = routes + self.requiredRoutes(endBlock)
         # get the loco speed
         sp = self.loco.speed('south sidings exit', 'fast')
         # off we go
@@ -800,24 +811,27 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 stop = False
         # get a lock
         lock = self.loco.getLock(NORTH)
-        # determine the routes we need to set to start moving
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]]
+        if self.loco.block.getUserName() != "North Link":
+            # determine the routes we need to set to start moving
+            if self.loco.inReverseLoop():
+                routes = [self.requiredRoutes(self.loco.block)[1]]
+            else:
+                routes = self.requiredRoutes(self.loco.block)
+            # if we have a full lock we can set more routes
+            if not lock.partial():
+                routes = routes + self.requiredRoutes(endBlock)
+            # get the loco speed
+            sp = self.loco.speed('north sidings exit', 'fast')
+            self.shortJourney(dir, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
+            # update the lock
+            lock.switch() # stops loco if necessary
+            # add later routes if we haven't done so already
+            if lock.partial():
+                routes = self.requiredRoutes(endBlock)
+            else:
+                routes = None
         else:
-            routes = self.requiredRoutes(self.loco.block)
-        # if we have a full lock we can set more routes
-        if not lock.partial():
-            routes += self.requiredRoutes(endBlock)
-        # get the loco speed
-        sp = self.loco.speed('north sidings exit', 'fast')
-        self.shortJourney(dir, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
-        # update the lock
-        lock.switch() # stops loco if necessary
-        # add later routes if we haven't done so already
-        if lock.partial():
             routes = self.requiredRoutes(endBlock)
-        else:
-            routes = None
         # get the speed
         sp = self.loco.speed('north link to layout', 'medium')
         # and slowspeed
