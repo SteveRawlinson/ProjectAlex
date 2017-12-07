@@ -28,6 +28,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.knownLocation = None
         self.memory = memory
         self.track = track
+        self.tracks = self.initTracks()
 
     # init() is called exactly once at the beginning to do
     # any necessary configuration.
@@ -638,7 +639,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         finishTime = time.time()
         logStr = self.loco.nameAndAddress() + ',' + startBlock.getUserName() + ',' + endBlock.getUserName() + ',' + str(startTime) + \
                  ',' + str(arriveTime) + ',' + str(finishTime) + ',' + str(arriveTime - startTime) + "\n"
-        logfile = open('startJourney.log', 'a')
+        logfile = open('C:\Users\steve\shortJourney.log', 'a')
         logfile.write(logStr)
         logfile.close()
 
@@ -782,10 +783,51 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         ssp = self.loco.speed('slow')
         # complete the move
         if stop:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes)
+            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes, lockSensor="LS60")
             self.waitAtPlatform()
         else:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True)
+            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True, lockSensor="LS60")
+
+    # Brings a loco out of the south sidings (or reverse loop) onto the
+    # layout.
+    def leaveNorthSidings(self, endBlock, stop=None):
+        dir = True
+        # Set default stop value if not set by caller
+        if stop is None:
+            if 'Stopping' in type(self).__name__:
+                stop = True
+            else:
+                stop = False
+        # get a lock
+        lock = self.loco.getLock(NORTH)
+        # determine the routes we need to set to start moving
+        if self.loco.inReverseLoop():
+            routes = [self.requiredRoutes(self.loco.block)[1]]
+        else:
+            routes = self.requiredRoutes(self.loco.block)
+        # if we have a full lock we can set more routes
+        if not lock.partial():
+            routes += self.requiredRoutes(endBlock)
+        # get the loco speed
+        sp = self.loco.speed('north sidings exit', 'fast')
+        self.shortJourney(dir, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
+        # update the lock
+        lock.switch() # stops loco if necessary
+        # add later routes if we haven't done so already
+        if lock.partial():
+            routes = self.requiredRoutes(endBlock)
+        else:
+            routes = None
+        # get the speed
+        sp = self.loco.speed('north link to layout', 'medium')
+        # and slowspeed
+        ssp = self.loco.speed('slow')
+        # complete the move
+        if stop:
+            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes, lockSensor="LS64")
+            self.waitAtPlatform()
+        else:
+            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True, lockSensor="LS64")
 
 
     def handle(self):
