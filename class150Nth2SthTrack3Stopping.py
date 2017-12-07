@@ -54,7 +54,7 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
             m = memories.provideMemory(self.memory)
             m.setValue(0)
 
-        self.moveIntoSouthSidings(lock)
+        self.moveIntoSouthSidings()
 
         # # select a siding
         # siding = self.loco.selectSiding(SOUTH_SIDINGS)
