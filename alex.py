@@ -657,10 +657,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
         route = self.track.exitRoute(self.track.southbound())
         routes = [route]
         if lock is None:
             lock = self.loco.getLock(NORTH)
+        elif hasattr(lock, 'empty') and lock.empty():
+            lock.getLock(NORTH)
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
@@ -715,9 +720,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoSouthSidings(self, lock=None):
+        if self.memory is not None:
+            m = memories.provideMemory(self.memory)
+            m.setValue(0)
         routes = [self.track.exitRoute(self.track.northbound())]
         if lock is None:
             lock = self.loco.getLock(SOUTH)
+        elif hasattr(lock, empty) and lock.empty():
+            # we've got a lock but it's empty
+            lock.getLock(SOUTH)
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             if lock.partial():
