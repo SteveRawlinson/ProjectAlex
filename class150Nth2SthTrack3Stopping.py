@@ -28,16 +28,18 @@ class Class150Nth2SthTrack3Stopping(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
+        # self.shortJourney(True, self.loco.block, "Nth Fast Link", fast, routes=routes)
+        #
+        # # on to NSG P1
+        # self.shortJourney(True, self.loco.block, "NSG P1", medium, slowSpeed=slow, lock=lock)
+        # self.waitAtPlatform()
 
-        # Out the nth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", fast, routes=routes)
-
-        # on to NSG P1
-        self.shortJourney(True, self.loco.block, "NSG P1", medium, slowSpeed=slow, lock=lock)
-        self.waitAtPlatform()
+        self.leaveNorthSidings('NSG P1')
 
         # PAL to AAP
         self.shortJourney(True, "NSG P1", "AAP P2", medium, slowSpeed=slow)
