@@ -51,7 +51,6 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 
         # see if we can get a lock but don't wait for one
         lock = self.getLockNonBlocking('North Link Lock')
-        routes = self.requiredRoutes(self.loco.block)
         if lock is False:
             # we didn't get a lock, stop at the signal
             self.loco.setSpeedSetting('slow')
@@ -59,14 +58,6 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
             self.loco.setSpeedSetting(0)
             # now wait for a lock
             lock = self.getLock('North Link Lock')
-
-        # one way or another we now have the lock
-        self.shortJourney(True, self.loco.block, 'North Link', medium, routes=routes, dontStop=True)
-
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
 
         self.moveIntoNorthSidings(lock)
 
