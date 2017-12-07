@@ -43,13 +43,13 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
         lock = self.getLockNonBlocking('North Link Lock')
         if lock is False:
             # we didn't get a lock, stop at the signal
-            self.shortJourney(True, self.loco.block, "NSG P2", 0.5, 0.4, 8000)
+            self.shortJourney(True, self.loco.block, "NSG P2", 'medium', 'slow')
             # now wait for a lock
             lock = self.getLock('North Link Lock')
         else:
             # we got the lock - AAP to NSG
             routes = self.requiredRoutes("NSG P2")
-            self.shortJourney(True, self.loco.block, "NSG P2", 0.5, routes=routes, dontStop=True)
+            self.shortJourney(True, self.loco.block, "NSG P2", 'medium', routes=routes, dontStop=True)
 
         # NSG to North sidings
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
