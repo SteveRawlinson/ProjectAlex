@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-#DCC_ADDRESSES = [5144, 2144, 68, 7405]
-DCC_ADDRESSES = [5144, 2144]
+DCC_ADDRESSES = [5144, 2144, 68, 7405]
+#DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 DEBUG = True
@@ -323,8 +323,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         trak = track.Track.preferred_track(loc, self.tracks)
         if trak is None:
             self.debug("no available tracks to run loco " + loc.name())
-            if DEBUG:
-                track.Track.trackReport(self.tracks)
+            # if DEBUG:
+            #     track.Track.trackReport(self.tracks)
             return
         self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
         self.startJourney(loc, trak)
