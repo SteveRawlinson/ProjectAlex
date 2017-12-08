@@ -43,32 +43,32 @@ class ClassAnySth2NthTrack6(alex.Alex):
         # All the way to North Fast Outer 1
         self.shortJourney(dir, self.loco.block, "Nth Fast Outer 1", 'medium', dontStop=True)
 
-        # get a lock on the north link, but if it's not available immediately ...
-        lock = self.getLockNonBlocking('North Link Lock')
-        if lock is False:
-            # stop the train at North Fast Outer 1
-            self.loco.setSpeedSetting('slow')
-            st = self.getSlowTime("NORTH FAST")
-            if st is None:
-                st = 8
-            self.debug("waiting slowtime at NORTH FAST: "+ str(slowTime / 1000))
-            time.sleep(st)
-            self.loco.setSpeedSetting(0)
-            lock = self.getLock('North Link Lock')
+        # # get a lock on the north link, but if it's not available immediately ...
+        # lock = self.getLockNonBlocking('North Link Lock')
+        # if lock is False:
+        #     # stop the train at North Fast Outer 1
+        #     self.loco.setSpeedSetting('slow')
+        #     st = self.getSlowTime("NORTH FAST")
+        #     if st is None:
+        #         st = 8
+        #     self.debug("waiting slowtime at NORTH FAST: "+ str(slowTime / 1000))
+        #     time.sleep(st)
+        #     self.loco.setSpeedSetting(0)
+        #     lock = self.getLock('North Link Lock')
+        #
+        # # we got the lock - set the turnouts for Nth Fast Outer 1
+        # for r in self.requiredRoutes("Nth Fast Outer 1"):
+        #     self.setRoute(r, 0)
+        #
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
+        #
+        # # progress to ...
+        # self.shortJourney(dir, self.loco.block, "Nth Fast Link", 'medium', dontStop=True)
+        # self.shortJourney(dir, self.loco.block, "North Link", 'fast', dontStop=True)
 
-        # we got the lock - set the turnouts for Nth Fast Outer 1
-        for r in self.requiredRoutes("Nth Fast Outer 1"):
-            self.setRoute(r, 0)
-
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
-        # progress to ...
-        self.shortJourney(dir, self.loco.block, "Nth Fast Link", 'medium', dontStop=True)
-        self.shortJourney(dir, self.loco.block, "North Link", 'fast', dontStop=True)
-
-        self.moveIntoNorthSidings(lock)
+        self.moveIntoNorthSidings()
 
         # # select a siding
         # b = None

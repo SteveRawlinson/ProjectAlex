@@ -37,48 +37,53 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
         self.leaveSouthSidings('FPK P4')
 
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P1", 0.5, dontStop=True)
+        self.shortJourney(True, self.loco.block, "AAP P1", 'medium', dontStop=True)
 
-        # see if we can get a lock but don't wait for one
-        lock = self.getLockNonBlocking('North Link Lock')
-        if lock is False:
-            # we didn't get a lock, stop at the signal
-            self.shortJourney(True, self.loco.block, "NSG P2", 'medium', 'slow')
-            # now wait for a lock
-            lock = self.getLock('North Link Lock')
-        else:
-            # we got the lock - AAP to NSG
-            routes = self.requiredRoutes("NSG P2")
-            self.shortJourney(True, self.loco.block, "NSG P2", 'medium', routes=routes, dontStop=True)
+        # AAP to NSG
+        self.shortJourney(True, self.loco.block, "NSG P2", 'medium', dontStop=True)
 
-        # NSG to North sidings
-        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if b is not None:
-            self.setRoute("Welwyn Outer")
-            self.loco.setSpeedSetting(0.5)
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-            if lock is not None:
-                self.unlock(lock)
-        else:
-            siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            self.loco.wrongway = True
+        # # see if we can get a lock but don't wait for one
+        # lock = self.getLockNonBlocking('North Link Lock')
+        # if lock is False:
+        #     # we didn't get a lock, stop at the signal
+        #     self.shortJourney(True, self.loco.block, "NSG P2", 'medium', 'slow')
+        #     # now wait for a lock
+        #     lock = self.getLock('North Link Lock')
+        # else:
+        #     # we got the lock - AAP to NSG
+        #     routes = self.requiredRoutes("NSG P2")
+        #     self.shortJourney(True, self.loco.block, "NSG P2", 'medium', routes=routes, dontStop=True)
+        #
+        # # NSG to North sidings
+        # b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.setRoute("Welwyn Outer")
+        #     self.loco.setSpeedSetting(0.5)
+        #     self.reverseLoop(NORTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        #     if lock is not None:
+        #         self.unlock(lock)
+        # else:
+        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+        #     routes = self.requiredRoutes(self.loco.block)
+        #     self.shortJourney(True, self.loco.block, "North Link", 0.4, routes=routes, lock=lock)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, 0.6, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     self.loco.unselectSiding(siding)
+        #     self.loco.wrongway = True
+
+        self.moveIntoNorthSidings()
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-            self.debug("setting memory " + self.memory + "to zero")
-        else:
-            self.debug("no memory supplied for journey " + type(self).__name__)
+        # # remove the memory - this is how the calling process knows we are done
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
+        #     self.debug("setting memory " + self.memory + "to zero")
+        # else:
+        #     self.debug("no memory supplied for journey " + type(self).__name__)
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')

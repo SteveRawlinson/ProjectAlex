@@ -37,11 +37,10 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         if 'Stopping' in type(self).__name__:
             self.shortJourney(True, self.loco.block, "FPK P7", 'medium', 'slow')
             self.waitAtPlatform()
-            lock = self.getLock('South Link Lock')
         else:
             self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
             # get a lock on the south link, but if it's not available immediately ...
-            lock = self.getLockNonBlocking('South Link Lock')
+            lock = self.loco.getLockNonBlocking(SOUTH)
             if lock is False:
                 # stop the train at FPK 7
                 self.loco.setSpeedSetting('slow')
@@ -50,17 +49,17 @@ class ClassAnyNth2SthTrack5(alex.Alex):
                 time.sleep(st)
                 self.loco.setSpeedSetting(0)
                 # wait for a lock
-                lock = self.getLock('South Link Lock')
+                lock = self.loco.getLock(SOUTH)
 
-        # one way or another we have a lock - set the turnouts for FPK 7
-        for r in self.requiredRoutes("FPK P7"):
-            self.setRoute(r, 0)
-            # progress to south link
-            self.shortJourney(True, self.loco.block, "South Link", 'medium', dontStop=True)
-
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
+        # # one way or another we have a lock - set the turnouts for FPK 7
+        # for r in self.requiredRoutes("FPK P7"):
+        #     self.setRoute(r, 0)
+        #     # progress to south link
+        #     self.shortJourney(True, self.loco.block, "South Link", 'medium', dontStop=True)
+        #
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
 
 
         self.moveIntoSouthSidings(lock)
