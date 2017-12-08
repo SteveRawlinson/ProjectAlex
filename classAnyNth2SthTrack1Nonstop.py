@@ -33,18 +33,20 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('PAL P1')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
+        # self.shortJourney(True, self.loco.block, "Nth Slow Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
+        #
+        # # on to PAL P1
+        # self.shortJourney(True, self.loco.block, "PAL P1", self.loco.speed('medium'), dontStop=True)
 
-        # Out the nth sidings
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('PAL P1')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        self.shortJourney(True, self.loco.block, "Nth Slow Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
-
-        # on to PAL P1
-        self.shortJourney(True, self.loco.block, "PAL P1", self.loco.speed('medium'), dontStop=True)
+        self.leaveNorthSidings('PAL P1')
 
         # NSG to AAP
         self.shortJourney(True, "PAL P1", "AAP P4", self.loco.speed('medium'), dontStop=True)
@@ -52,25 +54,25 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
         # AAP to FPK
         self.shortJourney(True, "AAP P4", "FPK P1", self.loco.speed('medium'), dontStop=True)
 
-        # see if we can get a lock immediately
-        lock = self.getLockNonBlocking("South Link Lock")
-        if lock is False:
-            # nope, we wait
-            self.loco.setSpeedSetting('slow')
-            time.sleep(16)
-            self.loco.setSpeedSetting(0)
-            lock = self.getLock('South Link Lock')
+        # # see if we can get a lock immediately
+        # lock = self.getLockNonBlocking("South Link Lock")
+        # if lock is False:
+        #     # nope, we wait
+        #     self.loco.setSpeedSetting('slow')
+        #     time.sleep(16)
+        #     self.loco.setSpeedSetting(0)
+        #     lock = self.getLock('South Link Lock')
+        #
+        # # remove the memory - this is how the calling process knows we are done
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
+        #
+        # # off the visible layout
+        # routes = self.requiredRoutes(self.loco.block)
+        # self.shortJourney(True, self.loco.block, 'South Link', self.loco.speed('medium'), dontStop=True, routes=routes)
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
-        # off the visible layout
-        routes = self.requiredRoutes(self.loco.block)
-        self.shortJourney(True, self.loco.block, 'South Link', self.loco.speed('medium'), dontStop=True, routes=routes)
-
-        self.moveIntoSouthSidings(lock)
+        self.moveIntoSouthSidings()
 
         # # see if the reverse loop is free
         # b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)

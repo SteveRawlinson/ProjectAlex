@@ -43,14 +43,14 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         # AAP to PAL
         self.shortJourney(True, self.loco.block, "PAL P2", 'medium', 'slow')
 
-        # see if we can get a lock but don't wait for one
-        lck = lock.Lock()
-        lck.getLockNonBlocking(NORTH)
-        if lck.empty():
-            # we didn't get a lock, stop at the signal
-            self.loco.graduallyChangeSpeed('slow')
-            time.sleep(self.getSlowtime('PAL P2'))
-            # now wait for a lock
+        # # see if we can get a lock but don't wait for one
+        # lck = lock.Lock()
+        # lck.getLockNonBlocking(NORTH)
+        # if lck.empty():
+        #     # we didn't get a lock, stop at the signal
+        #     self.loco.graduallyChangeSpeed('slow')
+        #     time.sleep(self.getSlowtime('PAL P2'))
+        #     # now wait for a lock
 
         # # NSG to North sidings
         # b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
@@ -70,7 +70,7 @@ class ClassA4Sth2NthTrack2Stopping(alex.Alex):
         #     self.loco.unselectSiding(siding)
         #     self.loco.wrongway = True
 
-        self.moveIntoNorthSidings(lck)
+        self.moveIntoNorthSidings()
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'

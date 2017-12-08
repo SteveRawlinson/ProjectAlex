@@ -49,25 +49,25 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
         # AAP to FPK
         self.shortJourney(True, self.loco.block, "FPK P3", self.loco.speed('medium'), dontStop=True)
 
-        # see if we can get a lock immediately
-        lock = self.getLockNonBlocking("South Link Lock")
-        if lock is False:
-            # nope, we wait
-            self.loco.setSpeedSetting('slow')
-            time.sleep(14)
-            self.loco.setSpeedSetting(0)
-            lock = self.getLock('South Link Lock')
+        # # see if we can get a lock immediately
+        # lock = self.getLockNonBlocking("South Link Lock")
+        # if lock is False:
+        #     # nope, we wait
+        #     self.loco.setSpeedSetting('slow')
+        #     time.sleep(14)
+        #     self.loco.setSpeedSetting(0)
+        #     lock = self.getLock('South Link Lock')
+        #
+        # # remove the memory - this is how the calling process knows we are done
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
+        #
+        # # off the visible layout
+        # routes = self.requiredRoutes(self.loco.block)
+        # self.shortJourney(True, self.loco.block, 'South Link', self.loco.speed('medium'), dontStop=True, routes=routes)
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
-        # off the visible layout
-        routes = self.requiredRoutes(self.loco.block)
-        self.shortJourney(True, self.loco.block, 'South Link', self.loco.speed('medium'), dontStop=True, routes=routes)
-
-        self.moveIntoSouthSidings(lock)
+        self.moveIntoSouthSidings()
 
         # # see if the reverse loop is free
         # b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)

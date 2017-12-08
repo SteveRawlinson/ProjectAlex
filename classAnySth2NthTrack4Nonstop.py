@@ -49,17 +49,17 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         # AAP to PAL
         self.shortJourney(True, self.loco.block, "NSG P2", medium, dontStop=True)
 
-        # see if we can get a lock but don't wait for one
-        lock = self.getLockNonBlocking('North Link Lock')
-        if lock is False:
-            # we didn't get a lock, stop at the signal
-            self.loco.setSpeedSetting('slow')
-            time.sleep(9)
-            self.loco.setSpeedSetting(0)
-            # now wait for a lock
-            lock = self.getLock('North Link Lock')
+        # # see if we can get a lock but don't wait for one
+        # lock = self.getLockNonBlocking('North Link Lock')
+        # if lock is False:
+        #     # we didn't get a lock, stop at the signal
+        #     self.loco.setSpeedSetting('slow')
+        #     time.sleep(9)
+        #     self.loco.setSpeedSetting(0)
+        #     # now wait for a lock
+        #     lock = self.getLock('North Link Lock')
 
-        self.moveIntoNorthSidings(lock)
+        self.moveIntoNorthSidings()
 
         # # into North sidings
         # b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)

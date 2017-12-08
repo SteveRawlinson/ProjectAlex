@@ -39,17 +39,17 @@ class ClassAnyNth2SthTrack5(alex.Alex):
             self.waitAtPlatform()
         else:
             self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
-            # get a lock on the south link, but if it's not available immediately ...
-            lock = self.loco.getLockNonBlocking(SOUTH)
-            if lock is False:
-                # stop the train at FPK 7
-                self.loco.setSpeedSetting('slow')
-                st = self.getSlowTime("FPK P7") or 8
-                self.debug("waiting slowtime at FPK P7 " + str(slowTime / 1000))
-                time.sleep(st)
-                self.loco.setSpeedSetting(0)
-                # wait for a lock
-                lock = self.loco.getLock(SOUTH)
+            # # get a lock on the south link, but if it's not available immediately ...
+            # lock = self.loco.getLockNonBlocking(SOUTH)
+            # if lock is False:
+            #     # stop the train at FPK 7
+            #     self.loco.setSpeedSetting('slow')
+            #     st = self.getSlowTime("FPK P7") or 8
+            #     self.debug("waiting slowtime at FPK P7 " + str(slowTime / 1000))
+            #     time.sleep(st)
+            #     self.loco.setSpeedSetting(0)
+            #     # wait for a lock
+            #     lock = self.loco.getLock(SOUTH)
 
         # # one way or another we have a lock - set the turnouts for FPK 7
         # for r in self.requiredRoutes("FPK P7"):
@@ -62,7 +62,7 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         #     m.setValue(0)
 
 
-        self.moveIntoSouthSidings(lock)
+        self.moveIntoSouthSidings()
 
         # # select a siding
         # b = None
