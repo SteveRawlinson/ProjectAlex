@@ -17,6 +17,16 @@ class Util:
             else:
                 print str(datetime.datetime.now()) + ': ' + message
 
+    def log(self, message="", filename="jmri.log"):
+        file=open('C:\Users\steve\\' + filename, 'a')
+        if hasattr(self, 'loco'):
+            logstr = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
+        elif hasattr(self, 'dccAddr'):
+            logstr = str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
+        else:
+            logstr = str(datetime.datetime.now()) + ': ' + message
+        file.write(logstr + '\r\n')
+        file.close()
 
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
     # can be a string, a layoutblock, or a block.
