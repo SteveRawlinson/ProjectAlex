@@ -653,9 +653,28 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
+
+        # deal with locking
+        if type(lock) == str or type(lock) == uniode:
+            raise RuntimeError("old style lock used with moveIntoSouthSidings")
+        if lock is None or lock.empty():
+            if self.loco.throttle.getSpeedSetting() > 0:
+                # we need a lock promptly or we must stop
+                lock = self.loco.getLockNonBlocking(NORTH)
+            else:
+                # we are stationary, we can wait for a lock
+                lock = self.loco.getLock(NORTH)
+        if lock.empty():
+            # bring loco to a halt
+            self.loco.graduallyChangeSpeed('slow')
+            time.sleep(self.getSlowtime(self.loco.block.getUserName()))
+            self.loco.setSpeedSetting(0)
+            lock.getLock(NORTH)
+
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+
         route = self.track.exitRoute(self.track.southbound())
         routes = [route]
         if lock is None:
@@ -714,17 +733,33 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.loco.status = SIDINGS
 
 
-    # moves a train from their current block into the north sidings
+    # moves a train from their current block into the south sidings
     def moveIntoSouthSidings(self, lock=None):
+
+        # deal with locking
+        if type(lock) == str or type(lock) == uniode:
+            raise RuntimeError("old style lock used with moveIntoSouthSidings")
+        if lock is None or lock.empty():
+            if self.loco.throttle.getSpeedSetting() > 0:
+                # we need a lock promptly or we must stop
+                lock = self.loco.getLockNonBlocking(SOUTH)
+            else:
+                # we are stationary, we can wait for a lock
+                lock = self.loco.getLock(SOUTH)
+        if lock.empty():
+            # bring loco to a halt
+            self.loco.graduallyChangeSpeed('slow')
+            time.sleep(self.getSlowtime(self.loco.block.getUserName()))
+            self.loco.setSpeedSetting(0)
+            lock.getLock(SOUTH)
+
+        # remove the memory, this journey is finished
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+
+        # we are ready to move
         routes = [self.track.exitRoute(self.track.northbound())]
-        if lock is None:
-            lock = self.loco.getLock(SOUTH)
-        elif hasattr(lock, 'empty') and lock.empty():
-            # we've got a lock but it's empty
-            lock.getLock(SOUTH)
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             if lock.partial():
