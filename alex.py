@@ -655,7 +655,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def moveIntoNorthSidings(self, lock=None):
 
         # deal with locking
-        if type(lock) == str or type(lock) == uniode:
+        if type(lock) == str or type(lock) == unicode:
             raise RuntimeError("old style lock used with moveIntoSouthSidings")
         if lock is None or lock.empty():
             if self.loco.throttle.getSpeedSetting() > 0:
@@ -737,7 +737,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def moveIntoSouthSidings(self, lock=None):
 
         # deal with locking
-        if type(lock) == str or type(lock) == uniode:
+        if type(lock) == str or type(lock) == unicode:
             raise RuntimeError("old style lock used with moveIntoSouthSidings")
         if lock is None or lock.empty():
             if self.loco.throttle.getSpeedSetting() > 0:
