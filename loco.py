@@ -389,12 +389,10 @@ class Loco(util.Util):
                 self.debug("set memory " + self.block.getUserName() + " to None. Value now: " + str(mem.getValue()))
         # set new block
         self.block = blk
-        self.debug("setting block: " + self.block.getUserName())
         if lblk is not None:
             self.layoutBlock = lblk
         else:
             self.layoutBlock = layoutblocks.getLayoutBlock(blk.getUserName())
-        self.debug("setting layoutblock: " + self.layoutBlock.getId())
         blk.setValue(str(self.dccAddr))
         mem = memories.getMemory("Siding " + blk.getUserName())
         if mem is not None and mem.getValue() == str(self.dccAddr):
@@ -489,7 +487,12 @@ class Loco(util.Util):
             dir = NORTH
         else:
             dir = SOUTH
-        return lock.Lock().getLockNonBlocking(end, dir, self)
+        l = lock.Lock()
+        l.getLockNonBlocking(end, dir, self)
+        if l.empty():
+            self.debug("failed to get lock (non-blocking) returning empty lock")
+        self.debug("got lock: " + l.status())
+        return l
 
     # Gets a lock. See lock.py for details
     def getLock(self, end):
