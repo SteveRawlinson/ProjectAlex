@@ -384,7 +384,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
 
     def handle(self):
+
         self.debug("Jack Starting")
+        self.log('Jack Starting')
 
         # set status memory variable
         self.setStatus()
