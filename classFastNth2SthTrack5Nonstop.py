@@ -21,33 +21,32 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
+        # sp = self.loco.speed('north sidings exit', 'slow')
+        # self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
+        # self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, dontStop=True)
+        #
+        # # slower round the bend
+        # self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock, dontStop=True)
 
-        # Out the nth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        sp = self.loco.speed('north sidings exit', 'slow')
-        self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, dontStop=True)
-
-        # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock, dontStop=True)
+        self.leaveNorthSidings("Nth Fast Inner 1")
 
         # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed, dontStop=True)
 
         # get a lock on the North link, but if it's not available immediately we need to know pronto
-        lock = self.getLockNonBlocking('South Link Lock')
-        if lock is False:
+        lock = self.loco.getLockNonBlocking(SOUTH)
+        if lock.empty():
             # stop the train at FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, slowSpeed, 1000)
+            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, slowSpeed)
             # wait for a lock
-            lock = self.getLock('South Link Lock')
-            # now we got the lock, set the exit route
-            for r in self.requiredRoutes("FPK P7"):
-                self.setRoute(r, 0)
+            lock = self.loco.getLock(SOUTH)
 
-        self.moveIntoSouthSidings()
+        self.moveIntoSouthSidings(lock)
 
         # else:
         #     # we got the lock - set the turnouts for FPK 7
