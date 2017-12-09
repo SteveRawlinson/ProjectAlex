@@ -216,41 +216,37 @@ class Loco(util.Util):
     # Takes an array of block names and returns the shortest empty block
     # that the current loco will fit in.
     def shortestBlockTrainFits(self, blocklist):
-        start = time.time()
         sbtf = None
-        while sbtf is None:
-            for b in blocklist:
-                block = layoutblocks.getLayoutBlock(b)
-                mem = memories.getMemory("Siding " + b)
-                if block is None:
-                    self.debug("no such block: " + b)
-                elif block.getState() == OCCUPIED:
-                    # self.debug("block " + b + " is occupied")
-                    pass
-                elif mem is not None and mem.getValue() == "selected":
-                    self.debug("block " + b + " is already selected")
-                elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
-                    if self.willFitInBlock(block):
-                        if DEBUG:
-                            if sbtf is not None:
-                                pass
-                        sbtf = block
+        for b in blocklist:
+            self.log("  considering block " + b)
+            block = layoutblocks.getLayoutBlock(b)
+            mem = memories.getMemory("Siding " + b)
+            if block is None:
+                self.debug("no such block: " + b)
+                self.log("no such block: " + b)
+            elif block.getState() == OCCUPIED:
+                self.log("  block " + b + " is occupied")
+            elif mem is not None and mem.getValue() == "selected":
+                self.log("block " + b + " is already selected by another loco")
+            elif sbtf is None or block.getBlock().getLengthCm() < sbtf.getBlock().getLengthCm():
+                if self.willFitInBlock(block):
+                    self.log("  block is best match thus far")
+                    sbtf = block
                 else:
-                    # self.debug("block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
-                    pass
-            if sbtf is None:
-                self.debug("no available sidings")
-                if time.time() - start > 60 * 5:
-                    raise RuntimeError("timeout waiting for a free siding")
-                time.sleep(10)
+                    self.log("  block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
+        if sbtf is None:
+            self.log("no available sidings")
         return sbtf
 
     # Takes an array of block names and returns the shortest empty block
     # that the current loco will fit in. If no such blocks are available
-    # it waits indefinitely.
+    # it waits for 5 minutes.
     def shortestBlockTrainFitsBlocking(self, blocklist):
+        start = time.time()
         sbtf = self.shortestBlockTrainFits(blocklist)
         while sbtf is None:
+            if time.time() - start > 60 * 5:
+                raise RuntimeError("timeout waiting for a free siding")
             time.sleep(5)
             sbtf = self.shortestBlockTrainFits(blocklist)
         return sbtf
@@ -258,13 +254,14 @@ class Loco(util.Util):
     # Selects a siding from a list and sets a memory value to prevent
     # another loco selecting the same one.
     def selectSiding(self, sidings, blocking=True):
+        self.log("selecting siding")
         if blocking:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
         mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
         mem.setValue("selected")
-        self.debug("selected siding " + siding.getId())
+        self.log("  selected siding " + siding.getId())
         return siding
 
     # Removes the memory which reserves the siding.
@@ -292,11 +289,14 @@ class Loco(util.Util):
         if b is None:
             raise RuntimeError("no such block: " + loop)
         if b.getState() == OCCUPIED:
+            self.log("  reverse loop " + loop + " is occupied")
             return None
         mem = memories.provideMemory("IMLOOP" + loop.upper())
         if mem.getValue() == "selected":
+            self.log("  reverse loop " + loop + " is selected")
             return None
         mem.setValue("selected")
+        self.log("  reverse loop " + loop + " is available")
         return b
 
     def unselectReverseLoop(self, loop):
