@@ -98,7 +98,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             raise RuntimeError("loco", loc.nameAndAddress(), "is in more than one block")
 
     def confirmLocoDirection(self, loc):
-        if loc.reversible() is False:
+        if loc.reversible() is False and loc.inReverseLoop() is False:
             # check it's pointing the right way
             self.debug("getting direction from user")
             b = JOptionPane.showConfirmDialog(None, "Loco " + str(loc.nameAndAddress()) + " is facing the right way?",
@@ -383,6 +383,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sen.setKnownState(INACTIVE)
 
 
+    # ------------------------ Main -----------------------------------
     def handle(self):
 
         self.debug("Jack Starting")
@@ -425,6 +426,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # Initialise tracks
         self.initTracks()
 
+        # check these sensors are not active
+        for s in ["LS60", "LS64"]:
+            sen = sensors.getSensor(s)
+            if sen.knownState == ACTIVE:
+                raise("sensor " + s + " is active")
+
         # Initialise locomotives and get their location.
         cont = self.initLocos()
         if cont is False:
@@ -454,7 +461,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.checkStatus() # see if we should be stopping
             if self.status == ESTOP:
                 # Stop everything immediately
-                self.eStop()
+                self.eStop() # stops all locos
+                time.sleep(0.5)
                 print "Jack exits on ESTOP"
                 powermanager.setPower(jmri.PowerManager.OFF)
                 return False

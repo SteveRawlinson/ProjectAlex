@@ -669,8 +669,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.graduallyChangeSpeed('slow')
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
-            lock.getLock(NORTH)
-
+            lock.getLock(NORTH, NORTHBOUND, self.loco)
+        # remove the memory
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
@@ -684,13 +684,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
-            speed = self.loco.speed('into reverse loop', 'fast')
+            speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
             if lock.partial():
                 self.loco.setSpeedSetting(0)
                 lock.upgradeLock()
             else:
                 lock.partialUnlock()
+            speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
@@ -710,6 +711,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 routes = self.requiredRoutes(siding)
                 self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
+            # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             if not lock.partial():
@@ -751,7 +753,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.graduallyChangeSpeed('slow')
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
-            lock.getLock(SOUTH)
+            lock.getLock(SOUTH, SOUTHBOUND, self.loco)
 
         # remove the memory, this journey is finished
         if self.memory is not None:
@@ -762,16 +764,19 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         routes = [self.track.exitRoute(self.track.northbound())]
         b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
+            # move into reverse loop
+            speed = self.loco.speed('off track south', 'medium')
+            self.shortJourney(True, self.loco.block, 'South Link', speed, dontStop=True, routes=routes)
             if lock.partial():
-                lock.upgradeLock(keepOldPartial=True)
-            # we need a reverse loop and it's available
-            for r in routes:
-                self.setRoute(r)
+                self.loco.setSpeedSetting(0)
+                lock.upgradeLock()
+            else:
+                lock.partialUnlock()
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
         else:
-            # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
+            # 'normal' move into south sidings
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
             if not lock.partial():
                 moreRoutes = self.requiredRoutes(siding)

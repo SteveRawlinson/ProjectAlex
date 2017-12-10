@@ -56,6 +56,8 @@ class Loco(util.Util):
     # the duration. So, if duration is 2 secs then there are 5 steps 0.5
     # seconds apart.
     def graduallyChangeSpeed(self, newSpeed, duration = 2):
+        if not type(newSpeed) == float:
+            newSpeed = self.speed(newSpeed)
         speed = self.throttle.getSpeedSetting()
         gradCount = float(duration) * 2 + 1
         grad = (newSpeed - speed) / gradCount
@@ -497,12 +499,14 @@ class Loco(util.Util):
     # Gets a lock. See lock.py for details
     def getLock(self, end):
         if self.track.northbound():
-            dir = NORTH
-            dir_s = 'North'
+            dir = NORTHBOUND
         else:
-            dir = SOUTH
-            dir_s = 'South'
-        self.debug("getting (new) lock on " + dir_s + " link")
+            dir = SOUTHBOUND
+        if end == NORTH:
+            end_s = 'North'
+        else:
+            end_s = 'South'
+        self.debug("getting (new) lock on " + end_s + " link (end = " + str(end) + ")")
         l = lock.Lock()
         l.getLock(end=end, direction=dir, loc=self)
         self.debug("got lock: " + l.status())
