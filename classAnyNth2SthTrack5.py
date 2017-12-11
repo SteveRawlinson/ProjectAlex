@@ -17,19 +17,21 @@ class ClassAnyNth2SthTrack5(alex.Alex):
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
 
-        self.loco.status = loco.MOVING
+        # self.loco.status = loco.MOVING
+        #
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
+        # sp = self.loco.speed('northSidings') or self.loco.speed('fast')
+        # self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
+        # self.shortJourney(True, self.loco.block, "Nth Fast Link", 'fast', dontStop=True)
+        #
+        # # slower round the bend
+        # self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 'northFastBend', lock=lock, dontStop=True)
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
-
-        # Out the nth sidings
-        routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        sp = self.loco.speed('northSidings') or self.loco.speed('fast')
-        self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", 'fast', dontStop=True)
-
-        # slower round the bend
-        self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", 'northFastBend', lock=lock, dontStop=True)
+        self.leaveNorthSidings('Nth Fast Inner 1')
 
         # off to the other side of the layout
         self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", 'medium', dontStop=True)
