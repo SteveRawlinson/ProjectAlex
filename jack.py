@@ -33,7 +33,7 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [5144, 2144, 68, 7405]
+DCC_ADDRESSES = [2128, 2144, 68, 7405]
 #DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
@@ -464,7 +464,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.eStop() # stops all locos
                 time.sleep(0.5)
                 print "Jack exits on ESTOP"
-                powermanager.setPower(jmri.PowerManager.OFF)
                 return False
             # check for journeys that have completed
             self.checkJourneys()
