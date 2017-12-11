@@ -52,7 +52,7 @@ class Lock(util.Util):
 
     # Write our loco's dcc address into the values of memories we have
     # got a lock on and None into values of memories we haven't, if and
-    # only if we had those locks at the time of calling
+    # only if we had those locks at the time of calling.
     def writeMemories(self):
         # self.debug("writeMemories: ")
         # self.debug("  southSidingsVal" + str(self.southSidingsVal))
@@ -63,7 +63,10 @@ class Lock(util.Util):
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
-                m.setValue(self.loco.dccAddr)
+                if self.southSidings is True:
+                    m.setValue(self.loco.dccAddr)
+                else:
+                    m.setValue(self.southSidings)
             elif self.southSidingsVal is None:
                 m.setValue(None)
             else:
@@ -71,24 +74,33 @@ class Lock(util.Util):
                 #self.debug("southSidings: " + str(self.southSidings) + " southsidingsVal: " + str(self.southSidingsVal) + ' ' + str(type(self.southSidingsVal)) + ' addr: ' + str(self.loco.dccAddr))
             m = memories.provideMemory("IMLOCKSOUTHTRACKLINK")
             if self.southTrackLink:
-                m.setValue(self.loco.dccAddr)
+                if self.southTrackLink is True:
+                    m.setValue(self.loco.dccAddr)
+                else:
+                    m.setValue(self.southTrackLink)
             elif self.southTrackLinkVal is None:
                 m.setValue(None)
         else:
             m = memories.provideMemory("IMLOCKNORTHTRACKLINK")
             if self.northTrackLink:
-                m.setValue(self.loco.dccAddr)
+                if self.northTrackLink is True:
+                    m.setValue(self.loco.dccAddr)
+                else:
+                    m.setValue(self.northTrackLink)
             elif self.northTrackLinkVal is None:
                 m.setValue(None)
             m = memories.provideMemory("IMLOCKNORTHSIDINGS")
             if self.northSidings:
-                m.setValue(self.loco.dccAddr)
+                if self.northSidings is True:
+                    m.setValue(self.loco.dccAddr)
+                else:
+                    m.setValue(self.northSidings)
             elif self.northSidingsVal is None:
                 m.setValue(None)
 
     # Returns true if we haven't locked anything (False otherwise)
     def empty(self):
-        if self.northSidings or self.northTrackLink or self.southTrackLink or self.southSidings:
+        if self.northSidings is True or self.northTrackLink is True or self.southTrackLink is True or self.southSidings is True:
             return False
         return True
 
@@ -259,26 +271,39 @@ class Lock(util.Util):
 
 
 
-    # Releases all or part of a lock.
+    # Releases all or part of a lock. This is considerably more complicated than
+    # you might imagine.
     def unlock(self, partialUnlock=False):
+        # make a note of whether this was a partial lock before we start unlocking bits
+        wasPartial = self.partial()
         self.readMemories()
         if self.end == NORTH:
+            # North Link
             if self.northSidings:
                 # check we actually hold the lock
                 if self.northSidingsVal is not None and self.northSidingsVal != self.loco.dccAddr:
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northSidings it does not own")
                 elif partialUnlock is False:
                     self.northSidings = None
-                elif partial is True and self.direction == SOUTHBOUND:
+                    if self.direction == NORTHBOUND:
+                        if self.northTrackLinkVal is not None:
+                            # see long comment down there vv
+                            self.northSidings = self.northTrackLinkVal
+                elif partialUnlock is True and self.direction == SOUTHBOUND:
                     self.northSidings = None
             if self.northTrackLink:
                 if self.northTrackLinkVal is not None and self.northTrackLinkVal != self.loco.dccAddr:
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northTrackLink it does not own")
                 elif partialUnlock is False:
                     self.northTrackLink = None
-                elif partial is True and self.direction == NORTHBOUND:
+                    if self.direction == SOUTHBOUND:
+                        if self.northSidingsVal is not None:
+                            # see long comment down there
+                            self.northTrackLink = self.northSidingsVal
+                elif partialUnlock is True and self.direction == NORTHBOUND:
                     self.northTrackLink = None
         else:
+            # South Link
             if self.southSidings:
                 # check we actually hold the lock
                 if self.southSidingsVal is not None and self.southSidingsVal != self.loco.dccAddr:
@@ -286,10 +311,17 @@ class Lock(util.Util):
                 elif partialUnlock is False:
                     # partial == False, set everything to None
                     self.southSidings = None
+                    if self.direction == SOUTHBOUND:
+                        # southSidings is the last part of the lock and we've just released it
+                        if self.southTrackLinkVal is not None:
+                            # another loco has the other end of the lock and it must also be moving south.
+                            # Make sure it gets this part now otherwise a northbound loco might get a partial
+                            # lock and we get a deadlock: two partial locks held by locos moving in different
+                            # directions. Neither can move.
+                            self.southSidings = self.southTrackLinkVal
                 elif partialUnlock is True and self.direction == NORTHBOUND:
-                    # partial is True but we can release the sidings part anyway because we're heading out to the layout
+                    # we are doing a partial unlock but we can release the sidings part anyway because we're heading out to the layout
                     self.southSidings = None
-
             if self.southTrackLink:
                 # check we hold the lock
                 if self.southTrackLinkVal is not None and self.southTrackLinkVal != self.loco.dccAddr:
@@ -297,14 +329,19 @@ class Lock(util.Util):
                 elif partialUnlock is False:
                     # full unlock - set everything to None
                     self.southTrackLink = None
+                    if self.direction == NORTHBOUND:
+                        if self.southSidingsVal is not None:
+                            # see long comment up there ^
+                            self.southTrackLink = self.southTrackLinkVal
                 elif partialUnlock is True and self.direction == SOUTHBOUND:
+                    # we are doing a partial unlock and this is the bit that needs to be unlocked
                     self.southTrackLink = None
         self.debug(self.status())
         self.writeMemories()
 
     # Releases part of a lock
     def partialUnlock(self):
-        self.unlock(partial=True)
+        self.unlock(partialUnlock=True)
 
     # Returns true if this lock has part of a link locked
     def partial(self):
