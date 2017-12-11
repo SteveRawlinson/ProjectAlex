@@ -24,7 +24,7 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         start = time.time()
 
         # get a 'lock' on the south link track
-        lock = self.getLock('South Link Lock')
+#        lock = self.getLock('South Link Lock')
 
         # # Out the sth sidings
         # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
@@ -38,12 +38,12 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         self.shortJourney(False, self.loco.block, "Nth Fast Outer 2", fullSpeed, dontStop=True)
 
         # get a lock on the north link, but if it's not available immediately we need to know pronto
-        lock = self.getLockNonBlocking('North Link Lock')
-        if lock is False:
+        lock = self.loco.getLockNonBlocking(NORTH)
+        if lock.empty():
             # stop the train at North Fast Outer 1
             self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", 'fast', 'slow')
             # wait for a lock
-            lock = self.getLock('North Link Lock')
+            lock = self.loco.getLock(NORTH)
 
         self.moveIntoNorthSidings(lock)
 

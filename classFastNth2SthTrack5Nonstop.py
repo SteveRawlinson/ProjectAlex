@@ -68,9 +68,6 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         # self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         self.loco.status = loco.SIDINGS
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
 
         return False
 
