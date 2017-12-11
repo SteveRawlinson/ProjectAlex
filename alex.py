@@ -800,6 +800,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
     def leaveSouthSidings(self, endBlock, stop=None):
+        self.loco.status = MOVING
         # determine direction
         if self.loco.reversible():
             dir = False
@@ -849,6 +850,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
     def leaveNorthSidings(self, endBlock, stop=None):
+        self.loco.status = MOVING
         dir = True
         # Set default stop value if not set by caller
         if stop is None:
