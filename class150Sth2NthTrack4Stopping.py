@@ -44,13 +44,6 @@ class Class150Sth2NthTrack4Stopping(alex.Alex):
         self.shortJourney(False, self.loco.block, "NSG P2", medium, slowSpeed=slow)
         self.waitAtPlatform()
 
-        lock = self.getLock('North Link Lock')
-
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
         self.moveIntoNorthSidings()
 
         # if self.getJackStatus() == NORMAL and self.loco.rarity() == 0:
