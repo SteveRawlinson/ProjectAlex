@@ -275,7 +275,6 @@ class Lock(util.Util):
     # you might imagine.
     def unlock(self, partialUnlock=False):
         # make a note of whether this was a partial lock before we start unlocking bits
-        wasPartial = self.partial()
         self.readMemories()
         if self.end == NORTH:
             # North Link
