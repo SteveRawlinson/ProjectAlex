@@ -235,6 +235,8 @@ class Loco(util.Util):
                     self.log("  block is best match thus far")
                     sbtf = block
                 else:
+                    self.log("  block: " + block.getId())
+                    self.log("  sbtf: " + sbtf.getId())
                     self.log("  block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
         if sbtf is None:
             self.log("no available sidings")
@@ -294,10 +296,10 @@ class Loco(util.Util):
             self.log("  reverse loop " + loop + " is occupied")
             return None
         mem = memories.provideMemory("IMLOOP" + loop.upper())
-        if mem.getValue() == "selected":
-            self.log("  reverse loop " + loop + " is selected")
+        if mem.getValue() is not None:
+            self.log("  reverse loop " + loop + " is selected by " + str(mem.getValue()))
             return None
-        mem.setValue("selected")
+        mem.setValue(self.dccAddr)
         self.log("  reverse loop " + loop + " is available")
         return b
 
