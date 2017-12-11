@@ -21,7 +21,6 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         if not self.loco.reversible() and self.loco.wrongway:
             raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
 
-        fast = self.loco.speed('fast')
         medium = self.loco.speed('medium')
 
         # check we have a throttle
@@ -56,42 +55,39 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         self.shortJourney(True, self.loco.block, "PAL P2", medium, dontStop=True)
 
         # see if we can get a lock but don't wait for one
-        lock = self.getLockNonBlocking('North Link Lock')
-        routes = self.requiredRoutes(self.loco.block)
-        if lock is False:
+        lock = self.loco.getLockNonBlocking(NORTH)
+        if lock.empty():
             # we didn't get a lock, stop at the signal
-            self.loco.setSpeedSetting('slow')
-            time.sleep(8)
+            self.loco.graduallyChangeSpeed('slow')
+            time.sleep(self.getSlowtime("PAL P2"))
             self.loco.setSpeedSetting(0)
-            # now wait for a lock
-            lock = self.getLock('North Link Lock')
 
         # one way or another we now have the lock
-        self.shortJourney(True, self.loco.block, 'North Link', medium, routes=routes, dontStop=True)
+        # self.shortJourney(True, self.loco.block, 'North Link', medium, routes=routes, dontStop=True)
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
-        # into North sidings
-        b = None
-        if not self.loco.reversible():
-            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        if b is not None:
-            self.loco.setSpeedSetting(fast)
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-            if lock:
-                self.unlock(lock)
-        else:
-            siding = self.loco.selectSiding(NORTH_SIDINGS)
-            routes = self.requiredRoutes(self.loco.block)
-            self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
-            routes = self.requiredRoutes(siding)
-            self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            self.loco.unselectSiding(siding)
-            self.loco.wrongway = True
+        # # remove the memory - this is how the calling process knows we are done
+        # if self.memory is not None:
+        #     m = memories.provideMemory(self.memory)
+        #     m.setValue(0)
+        #
+        # # into North sidings
+        # b = None
+        # if not self.loco.reversible():
+        #     b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        # if b is not None:
+        #     self.loco.setSpeedSetting(fast)
+        #     self.reverseLoop(NORTH_REVERSE_LOOP)
+        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
+        #     if lock:
+        #         self.unlock(lock)
+        # else:
+        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+        #     routes = self.requiredRoutes(self.loco.block)
+        #     self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
+        #     routes = self.requiredRoutes(siding)
+        #     self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+        #     self.loco.unselectSiding(siding)
+        #     self.loco.wrongway = True
 
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
