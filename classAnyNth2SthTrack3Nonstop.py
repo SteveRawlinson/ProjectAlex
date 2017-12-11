@@ -30,15 +30,17 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        # get a 'lock' on the north link track
-        lock = self.getLock('North Link Lock')
+        # # get a 'lock' on the north link track
+        # lock = self.getLock('North Link Lock')
+        #
+        # # Out the nth sidings
+        # if self.loco.inReverseLoop():
+        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
+        # else:
+        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
+        # self.shortJourney(True, self.loco.block, "Nth Fast Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
 
-        # Out the nth sidings
-        if self.loco.inReverseLoop():
-            routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('NSG P1')
-        else:
-            routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("NSG P1")
-        self.shortJourney(True, self.loco.block, "Nth Fast Link", self.loco.speed('fast'), routes=routes, lock=lock, dontStop=True)
+        self.leaveNorthSidings('NSG P1')
 
         # on to PAL P1
         self.shortJourney(True, self.loco.block, "NSG P1", self.loco.speed('medium'), dontStop=True)
