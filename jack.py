@@ -77,8 +77,14 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         blist = ['not in use']
         for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]):
             blk = blocks.getBlock(blockName)
-            if blk.getState() == OCCUPIED and (blk.getValue() is None or blk.getValue() == ""):
-                blist.append(blockName)
+            if blk.getState() != OCCUPIED:
+                self.debug(blockName + " is not occupied")
+                continue
+            if blk.getValue() is not None and  blk.getValue() != "":
+                self.debug(blockName + " has a value: " + blk.getValue())
+                continue
+            self.debug("add block " + blockName + " to blist")
+            blist.append(blockName)
         # put up a dropbox for the user to select the block
         self.debug("getting block from user")
         b = JOptionPane.showInputDialog(None,
