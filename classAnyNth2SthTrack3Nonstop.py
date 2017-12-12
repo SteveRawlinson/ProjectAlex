@@ -42,9 +42,6 @@ class ClassAnyNth2SthTrack3Nonstop(alex.Alex):
 
         self.leaveNorthSidings('NSG P1')
 
-        # on to PAL P1
-        self.shortJourney(True, self.loco.block, "NSG P1", self.loco.speed('medium'), dontStop=True)
-
         # NSG to AAP
         self.shortJourney(True, self.loco.block, "AAP P2", self.loco.speed('medium'), dontStop=True)
 

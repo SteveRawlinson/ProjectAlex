@@ -89,6 +89,8 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         #     self.loco.unselectSiding(siding)
         #     self.loco.wrongway = True
 
+        self.moveIntoNorthSidings()
+
         stop = time.time()
         print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
 
