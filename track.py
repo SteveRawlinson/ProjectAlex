@@ -222,3 +222,11 @@ class Track:
     def trackReport(self, tracks):
         for t in tracks:
             print "track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound()
+
+    # sets the exit signal for this track to the colour specified
+    def setExitSignalAppearance(self, appearance):
+        if self.exitSignal is None:
+            return
+        if self.exitSignal.getAppearance == appearance:
+            return
+        self.exitSignal.setAppearance(appearance)

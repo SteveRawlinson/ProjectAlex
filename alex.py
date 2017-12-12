@@ -664,11 +664,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # we are stationary, we can wait for a lock
                 lock = self.loco.getLock(NORTH)
         if lock.empty():
+            self.track.setExitSignalAppearance(RED)
             # bring loco to a halt
             self.loco.graduallyChangeSpeed('slow')
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
             lock.getLock(NORTH, NORTHBOUND, self.loco)
+        self.track.setExitSignalAppearance(RED)
+
         # remove the memory
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
@@ -690,6 +693,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 lock.upgradeLock()
             else:
                 lock.partialUnlock()
+            self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
@@ -727,6 +731,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 routes = None
             lock.switch()
+            self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
@@ -749,11 +754,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # we are stationary, we can wait for a lock
                 lock = self.loco.getLock(SOUTH)
         if lock.empty():
+            # set the signal to red
+            self.track.setExitSignalAppearance(RED)
             # bring loco to a halt
             self.loco.graduallyChangeSpeed('slow')
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
             lock.getLock(SOUTH, SOUTHBOUND, self.loco)
+        # one way or another we now have a lock
+        self.track.setExitSignalAppearance(GREEN)
 
         # remove the memory, this journey is finished
         if self.memory is not None:
@@ -772,6 +781,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 lock.upgradeLock()
             else:
                 lock.partialUnlock()
+            self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
@@ -791,6 +801,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 routes = None
             lock.switch()
+            self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
