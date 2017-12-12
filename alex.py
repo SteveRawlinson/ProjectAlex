@@ -452,7 +452,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         tries = 0
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
-                self.debug("my destination block is occupied")
+                self.debug("my destination block " + endBlock.getId() + " is occupied")
                 if lock:
                     # let another loco have the lock
                     if type(lock) != str and type(lock) != unicode:
@@ -466,10 +466,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     # stop!
                     self.debug("stopping loco")
                     self.loco.setSpeedSetting(0)
-                if tries < 40:
+                if tries < 300:
                     # wait ...
-                    print self.loco.dccAddr, "waiting..."
-                    time.sleep(5)
+                    time.sleep(1)
                     tries += 1
                 else:
                     # give up.
@@ -694,6 +693,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
+            lock.unlock()
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
             # there's no point in going all the way to the sidings because we'll just get
@@ -775,6 +775,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
+            lock.unlock()
         else:
             # 'normal' move into south sidings
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
