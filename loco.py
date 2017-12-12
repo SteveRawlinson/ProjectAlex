@@ -234,9 +234,9 @@ class Loco(util.Util):
                 if self.willFitInBlock(block):
                     self.log("  block is best match thus far")
                     sbtf = block
+                elif sbtf is None:
+                    self.log("  block isn't big enough for train")
                 else:
-                    self.log("  block: " + block.getId())
-                    self.log("  sbtf: " + sbtf.getId())
                     self.log("  block " + b + " is not shorter than selected block (" + str(block.getBlock().getLengthCm()) + " > " + str(sbtf.getBlock().getLengthCm()) + ')')
         if sbtf is None:
             self.log("no available sidings")
@@ -386,11 +386,11 @@ class Loco(util.Util):
         # remove value on old block
         if self.block:
             self.block.setValue(None)
-            self.debug("set block " + self.block.getUserName() + " to None. Value now: " + str(self.block.getValue()))
+            #self.debug("set block " + self.block.getUserName() + " to None. Value now: " + str(self.block.getValue()))
             mem = memories.getMemory(self.block.getUserName())
             if mem is not None:
                 mem.setValue(None)
-                self.debug("set memory " + self.block.getUserName() + " to None. Value now: " + str(mem.getValue()))
+                #self.debug("set memory " + self.block.getUserName() + " to None. Value now: " + str(mem.getValue()))
         # set new block
         self.block = blk
         if lblk is not None:
