@@ -175,6 +175,12 @@ class Lock(util.Util):
     # Calls the above method repeatedly until at least a partial lock
     # is available.
     def getLock(self, end, direction, loc):
+        if DEBUG:
+            if end == NORTH:
+                end_s = 'North'
+            else:
+                end_s = 'South'
+            self.debug("getting (blocking) lock on " + end_s + " link")
         while self.empty():
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
