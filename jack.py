@@ -476,7 +476,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.status == STOPPING:
                 if len(self.memories) == 0:
                     print "All done - exiting"
-                    time.sleep(30)
+                    time.sleep(120)
                     powermanager.setPower(jmri.PowerManager.OFF)
                     return False
                 elif loopcount % 20 == 0:
