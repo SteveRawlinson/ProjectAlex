@@ -670,7 +670,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
             lock.getLock(NORTH, NORTHBOUND, self.loco)
-        self.track.setExitSignalAppearance(RED)
+            self.debug(lock.status)
+        self.track.setExitSignalAppearance(GREEN)
 
         # remove the memory
         if self.memory is not None:
@@ -687,6 +688,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
+            self.debug("moving into North reverse loop")
             speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
             if lock.partial():
@@ -699,15 +701,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
             lock.unlock()
-            self.loco.unselectReverseLoop(b)
+            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
+            self.debug("stopping early")
             if lock.partial():
                 # we need a full lock for stopping early
                 lock.upgradeLock(keepOldPartial=True)
-            self.debug("stopping early")
             speed = self.loco.speed('track to north link', 'medium')
             self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes)
             # check JackStatus hasn't changed in the meantime
@@ -719,6 +721,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
+            self.debug("moving into sidings")
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             if not lock.partial():
                 routes = routes + self.requiredRoutes(siding)
@@ -789,7 +792,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             lock.unlock()
-            self.loco.unselectReverseLoop(b)
+            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
             # 'normal' move into south sidings
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
@@ -896,7 +899,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 routes = None
         else:
+            # we're on the north link having stopped early on the previous journey
             routes = self.requiredRoutes(endBlock)
+            lock.unlock(partialUnlock=True)
         # get the speed
         sp = self.loco.speed('north link to layout', 'medium')
         # and slowspeed
