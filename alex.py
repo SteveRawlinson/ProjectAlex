@@ -699,6 +699,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP)
             lock.unlock()
+            self.loco.unselectReverseLoop(b)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
             # there's no point in going all the way to the sidings because we'll just get
@@ -736,6 +737,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            if not self.loco.reversible():
+                self.loco.wrongway = True
         self.loco.status = SIDINGS
 
 
@@ -786,6 +789,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             lock.unlock()
+            self.loco.unselectReverseLoop(b)
         else:
             # 'normal' move into south sidings
             siding = self.loco.selectSiding(SOUTH_SIDINGS)
@@ -805,6 +809,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            if not self.loco.reversible():
+                self.loco.wrongway = True
         self.loco.status = SIDINGS
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
