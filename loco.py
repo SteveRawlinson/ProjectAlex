@@ -258,6 +258,8 @@ class Loco(util.Util):
     # Selects a siding from a list and sets a memory value to prevent
     # another loco selecting the same one.
     def selectSiding(self, sidings, blocking=True):
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
         self.log("selecting siding")
         if blocking:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
@@ -289,6 +291,8 @@ class Loco(util.Util):
     # or already selected, returns None if so, or the block
     # if it's available
     def selectReverseLoop(self, loop):
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
         b = blocks.getBlock(loop)
         if b is None:
             raise RuntimeError("no such block: " + loop)
