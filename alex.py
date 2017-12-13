@@ -683,7 +683,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             lock = self.loco.getLock(NORTH)
         elif hasattr(lock, 'empty') and lock.empty():
             lock.getLock(NORTH)
-        b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
+        if not self.loco.reversible():
+            b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
             speed = self.loco.speed('off track north', 'medium')
@@ -735,8 +736,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        if b:
-            self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
         self.loco.status = SIDINGS
 
 
@@ -771,7 +770,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # we are ready to move
         routes = [self.track.exitRoute(self.track.northbound())]
-        b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
+        if not self.loco.reversible():
+            b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # move into reverse loop
             speed = self.loco.speed('off track south', 'medium')
@@ -805,8 +805,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        if b:
-            self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         self.loco.status = SIDINGS
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
