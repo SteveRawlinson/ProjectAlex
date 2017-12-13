@@ -85,9 +85,6 @@ class ClassAnySth2NthTrack6(alex.Alex):
         #     routes = self.requiredRoutes(siding)
         #     self.shortJourney(dir, self.loco.block, siding, 'fast', 'slow', stopIRClear=IRSENSORS[siding.getId()],  routes=routes, lock=lock)
 
-        print "route complete."
-        stop = time.time()
-        print "route took", stop - start, 'seconds'
         self.loco.status = loco.SIDINGS
 
         return False

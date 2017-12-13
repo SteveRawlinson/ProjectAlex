@@ -66,9 +66,6 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         # routes = self.requiredRoutes(siding)
         # self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
-        print "route complete."
-        stop = time.time()
-        print "route took", stop - start, 'seconds'
         self.loco.status = loco.SIDINGS
         if self.memory is not None:
             m = memories.provideMemory(self.memory)

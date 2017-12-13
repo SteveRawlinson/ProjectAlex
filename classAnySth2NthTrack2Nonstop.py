@@ -91,8 +91,6 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
 
         self.moveIntoNorthSidings()
 
-        stop = time.time()
-        print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')

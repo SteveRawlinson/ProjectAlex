@@ -74,8 +74,8 @@ class ClassA4Sth2NthTrack4Stopping(alex.Alex):
 
         self.moveIntoNorthSidings()
 
-        stop = time.time()
-        print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
+
+
 
         # # remove the memory - this is how the calling process knows we are done
         # if self.memory is not None:

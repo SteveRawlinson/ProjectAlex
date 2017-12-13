@@ -66,8 +66,8 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         #     routes = self.requiredRoutes(siding)
         #     self.shortJourney(False, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
-        stop = time.time()
-        print self.loco.dccAddr, "route completed in", stop - start, 'seconds'
+
+
 
         # remove the memory - this is how the calling process knows we are done
         if self.memory is not None:
