@@ -112,7 +112,7 @@ SPEEDMAP = {
 
 SLOWTIMEMAP = {
     # class 47
-    "class47": {'FPK P7': 10, "NORTH FAST": 13, "NSG P2": 5 "Nth Fast Outer 1": 5},
+    "class47": {'FPK P7': 10, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 5},
     # Mallard
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 3},
     # class 150s
