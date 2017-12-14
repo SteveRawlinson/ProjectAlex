@@ -670,7 +670,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             time.sleep(self.getSlowtime(self.loco.block.getUserName()))
             self.loco.setSpeedSetting(0)
             lock.getLock(NORTH, NORTHBOUND, self.loco)
-            self.debug(lock.status)
+            self.debug(lock.status())
         self.track.setExitSignalAppearance(GREEN)
 
         # remove the memory
@@ -707,11 +707,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
             self.debug("stopping early")
-            if lock.partial():
-                # we need a full lock for stopping early
-                lock.upgradeLock(keepOldPartial=True)
             speed = self.loco.speed('track to north link', 'medium')
             self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes)
+            if lock.partial():
+                # we should get the full lock straight away
+                lock.upgradeLock(keepOldPartial=True)
             # check JackStatus hasn't changed in the meantime
             if self.getJackStatus() == STOPPING:
                 self.debug("JackStatus is now STOPPING - moving to siding")
