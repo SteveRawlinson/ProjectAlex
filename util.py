@@ -10,7 +10,7 @@ class Util:
 
     def debug(self, message):
         if DEBUG:
-            if hasattr(self, 'loco'):
+            if hasattr(self, 'loco') and self.loco is not None:
                 print str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
             elif hasattr(self, 'dccAddr'):
                 print str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
