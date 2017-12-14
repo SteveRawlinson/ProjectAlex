@@ -44,22 +44,22 @@ class Lock(util.Util):
             self.northSidingsVal = m.getValue()
             if self.northSidingsVal == "" or self.northSidingsVal == addr:
                 self.northSidingsVal = None
-        # self.debug("readMemories: ")
-        # self.debug("  southSidingsVal"+ str(self.southSidingsVal))
-        # self.debug("  southTrackLinkVal" + str(self.southTrackLinkVal))
-        # self.debug("  northSidingsVal" + str(self.northSidingsVal))
-        # self.debug("  northTrackLinkVal" + str(self.northTrackLinkVal))
+        self.log("readMemories: ")
+        self.log("  southSidingsVal"+ str(self.southSidingsVal))
+        self.log("  southTrackLinkVal" + str(self.southTrackLinkVal))
+        self.log("  northSidingsVal" + str(self.northSidingsVal))
+        self.log("  northTrackLinkVal" + str(self.northTrackLinkVal))
 
     # Write our loco's dcc address into the values of memories we have
     # got a lock on and None into values of memories we haven't, if and
     # only if we had those locks at the time of calling.
     def writeMemories(self):
-        # self.debug("writeMemories: ")
-        # self.debug("  southSidingsVal" + str(self.southSidingsVal))
-        # self.debug("  southTrackLinkVal" + str(self.southTrackLinkVal))
-        # self.debug("  northSidingsVal" + str(self.northSidingsVal))
-        # self.debug("  northTrackLinkVal" + str(self.northTrackLinkVal))
-        # self.debug(self.status())
+        self.log("writeMemories: ")
+        self.log("  southSidingsVal" + str(self.southSidingsVal))
+        self.log("  southTrackLinkVal" + str(self.southTrackLinkVal))
+        self.log("  northSidingsVal" + str(self.northSidingsVal))
+        self.log("  northTrackLinkVal" + str(self.northTrackLinkVal))
+        self.log(self.status())
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
@@ -180,7 +180,7 @@ class Lock(util.Util):
                 end_s = 'North'
             else:
                 end_s = 'South'
-            self.debug("getting (blocking) lock on " + end_s + " link")
+            self.debug(str(loc.dccAddr) + " getting (blocking) lock on " + end_s + " link")
         while self.empty():
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
@@ -264,7 +264,7 @@ class Lock(util.Util):
             s += "Northbound "
         if self.empty():
             s += " EMPTY"
-        else:
+        else: # not empty
             s += " sidings: "
             if self.northSidings or self.southSidings:
                 s += " LOCKED "
