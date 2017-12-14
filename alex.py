@@ -307,7 +307,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.waitChange([irSensor])
         if stop:
             self.debug('reverseLoop: stopping loco and returning')
-            self.loco.setSpeedSetting(-1)
+            self.loco.emergencyStop()
             return
         self.debug('reverseLoop: setting exit route and returning')
         self.setRoute(outroute)
