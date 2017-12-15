@@ -43,6 +43,8 @@ class Loco(util.Util):
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
         self.throttle.setSpeedSetting(speed)
+        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+        mem.setValue(speed)
         if float(speed) ==  0.0:
             # make sure the message gets through - wait a bit
             time.sleep(0.1)
