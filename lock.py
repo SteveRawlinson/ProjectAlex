@@ -123,10 +123,15 @@ class Lock(util.Util):
     # a full lock is available.
     #
     # This method returns immediately even if no lock is available.
-    def getLockNonBlocking(self, end, direction, loc):
-        self.end = end
-        self.direction = direction
-        self.loco = loc
+    def getLockNonBlocking(self, end=None, direction=None, loc=None):
+        if end:
+            self.end = end
+        if direction:
+            self.direction = direction
+        if loc:
+            self.loco = loc
+        if not (self.end and self.direction and self.loco):
+            raise RuntimeError("must specify end, direction and loco")
         self.readMemories()
         if DEBUG:
             if end == NORTH:
@@ -185,9 +190,9 @@ class Lock(util.Util):
 
     # Calls the above method repeatedly until at least a partial lock
     # is available.
-    def getLock(self, end, direction, loc):
+    def getLock(self, end=None, direction=None, loc=None):
         if DEBUG:
-            if end == NORTH:
+            if end == NORTH or self.end == NORTH:
                 end_s = 'North'
             else:
                 end_s = 'South'
@@ -409,6 +414,25 @@ class Lock(util.Util):
         else:
             self.debug("partial unlock")
             self.partialUnlock()
+
+    # slows a loco down to 'slow' speed and then tries to get the lock
+    # as it's going slowly until slowtime expires. If it gets the lock
+    # it returns, if the time expires it stops the loco and and then
+    # waits till the lock is got.
+    def getLockOrStopLoco(self, destination):
+        self.loco.setSpeedSetting('slow')
+        slowtime = self.getSlowtime(destination)
+        tn = time.time()
+        while self.empty() and ((time.time() - tn) < slowtime):
+            sleep(0.25)
+            self.getLockNonBlocking()
+        if self.empty():
+            self.loco.setSpeedSetting(0)
+        else:
+            return
+        # wait for a lock
+        self.getLock()
+
 
 
 
