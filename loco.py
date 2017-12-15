@@ -66,6 +66,8 @@ class Loco(util.Util):
         s = speed + grad
         for i in range(int(gradCount)):
             self.throttle.setSpeedSetting(s)
+            m = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+            m.setValue(s)
             s += grad
             if i != gradCount - 1:
                 time.sleep(0.5)
