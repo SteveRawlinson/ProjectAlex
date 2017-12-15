@@ -677,6 +677,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "LOCO")
+        mem.setValue(None)
+        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+        mem.setValue(None)
 
         route = self.track.exitRoute(self.track.southbound())
         routes = [route]
@@ -718,6 +722,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 siding = self.loco.selectSiding(NORTH_SIDINGS)
                 routes = self.requiredRoutes(siding)
                 self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            else:
+                self.debug("stopped early. Jack Status: " + str(self.getJackStatus()))
         else:
             # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
@@ -742,7 +748,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             if not self.loco.reversible():
                 self.loco.wrongway = True
+
         self.loco.status = SIDINGS
+
 
 
     # moves a train from their current block into the south sidings
@@ -773,6 +781,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
+        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "LOCO")
+        mem.setValue(None)
+        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+        mem.setValue(None)
+
 
         # we are ready to move
         routes = [self.track.exitRoute(self.track.northbound())]
