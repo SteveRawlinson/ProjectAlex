@@ -37,6 +37,7 @@ DCC_ADDRESSES = [2128, 2144, 68, 7405]
 #DCC_ADDRESSES = [5144, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
+#DCC_ADDRESSES = [1124, 6719]
 DEBUG = True
 
 
@@ -356,6 +357,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
         # add memory to lisr
         self.memories.append(memory.getSystemName())
+        # set memory for the display
+        m = memories.provideMemory("IMTRACK" + str(trak.nr) + "LOCO")
+        m.setValue(loc.nameAndAddress())
+        m = memories.provideMemory("IMTRACK" + str(trak.nr) + "SPEED")
+        m.setValue(0)
         # kick the journey off
         klass(loc, mem, trak).start()
         loc.status = loco.MOVING
