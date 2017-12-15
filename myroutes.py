@@ -103,7 +103,7 @@ SPEEDMAP = {
     6719: {'fast': 0.4, 'bend': 0.4, 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 0.4, 'track to north link': 0.4, 'north link to sidings': 0.3, 'north sidings entry': 0.2,
            'track to south link': 0.4},
     # class 91 virgin
-    1124: {'fast': 0.4, 'bend': 0.3, 'medium': 0.2, 'slow': 0.1},
+    1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
     # Underground
@@ -114,7 +114,7 @@ SLOWTIMEMAP = {
     # class 47
     "class47": {'FPK P7': 10, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 5},
     # Mallard
-    "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 3},
+    "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 3, "FPK P3": 3},
     # class 150s
     "class150": {"FPK P2": 4, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 4, "AAP P1": 1, "NSG P2": 3,
                  "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
