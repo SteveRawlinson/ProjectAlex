@@ -36,15 +36,13 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.leaveNorthSidings("Nth Fast Inner 1")
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed, dontStop=True)
+        self.shortJourney(True, self.loco.block, "FPK", fullSpeed, dontStop=True)
 
         # get a lock on the North link, but if it's not available immediately we need to know pronto
         lock = self.loco.getLockNonBlocking(SOUTH)
         if lock.empty():
-            # stop the train at FPK 7
-            self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, slowSpeed)
-            # wait for a lock
-            lock = self.loco.getLock(SOUTH)
+            # stop the train at FPK 7 unless we get a lock before slowtime runs out
+            lock.getLockOrStopLoco("FPK P7")
 
         self.moveIntoSouthSidings(lock)
 
