@@ -71,6 +71,9 @@ class Loco(util.Util):
             s += grad
             if i != gradCount - 1:
                 time.sleep(0.5)
+        if float(newSpeed) == 0.0:
+            time.sleep(0.5)
+            self.throttle.setSpeedSetting(-1)
 
     def forward(self):
         self.throttle.setIsForward(True)
