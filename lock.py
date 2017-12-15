@@ -350,7 +350,7 @@ class Lock(util.Util):
                     if self.direction == NORTHBOUND:
                         if self.southSidingsVal is not None:
                             # see long comment up there ^
-                            self.southTrackLink = self.southTrackLinkVal
+                            self.southTrackLink = self.southSidingsVal
                 elif partialUnlock is True and self.direction == SOUTHBOUND:
                     # we are doing a partial unlock and this is the bit that needs to be unlocked
                     self.southTrackLink = None
@@ -379,6 +379,7 @@ class Lock(util.Util):
             return
         if self.partial():
             self.debug("upgrading partial lock")
+            self.log("upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
                 self.debug("halting loco until lock upgraded")
                 self.loco.setSpeedSetting(0)
