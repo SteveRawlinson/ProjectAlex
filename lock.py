@@ -45,20 +45,20 @@ class Lock(util.Util):
             if self.northSidingsVal == "" or self.northSidingsVal == addr:
                 self.northSidingsVal = None
         self.log("readMemories: ")
-        self.log("  southSidingsVal"+ str(self.southSidingsVal))
-        self.log("  southTrackLinkVal" + str(self.southTrackLinkVal))
-        self.log("  northSidingsVal" + str(self.northSidingsVal))
-        self.log("  northTrackLinkVal" + str(self.northTrackLinkVal))
+        self.log("  southSidingsVal: "+ str(self.southSidingsVal))
+        self.log("  southTrackLinkVal: " + str(self.southTrackLinkVal))
+        self.log("  northSidingsVal: " + str(self.northSidingsVal))
+        self.log("  northTrackLinkVal: " + str(self.northTrackLinkVal))
 
     # Write our loco's dcc address into the values of memories we have
     # got a lock on and None into values of memories we haven't, if and
     # only if we had those locks at the time of calling.
     def writeMemories(self):
         self.log("writeMemories: ")
-        self.log("  southSidingsVal" + str(self.southSidingsVal))
-        self.log("  southTrackLinkVal" + str(self.southTrackLinkVal))
-        self.log("  northSidingsVal" + str(self.northSidingsVal))
-        self.log("  northTrackLinkVal" + str(self.northTrackLinkVal))
+        self.log("  southSidings: " + str(self.southSidings))
+        self.log("  southTrackLink: " + str(self.southTrackLink))
+        self.log("  northSidings: " + str(self.northSidings))
+        self.log("  northTrackLink: " + str(self.northTrackLink))
         self.log(self.status())
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
@@ -128,6 +128,16 @@ class Lock(util.Util):
         self.direction = direction
         self.loco = loc
         self.readMemories()
+        if DEBUG:
+            if end == NORTH:
+                end_s = 'North'
+            else:
+                end_s = 'South'
+            if direction == SOUTHBOUND:
+                dir_s = 'Southbound'
+            else:
+                dir_s = 'Northbound'
+            self.log("attempting lock on " + end_s + " Link direction " + dir_s)
         if end == NORTH:
             # North Link, Northbound (leaving the layout)
             if direction == NORTHBOUND:
@@ -171,6 +181,7 @@ class Lock(util.Util):
                     if signal.getAppearance != GREEN:
                         signal.setAppearance(GREEN)
         self.writeMemories()
+        self.log(self.status())
 
     # Calls the above method repeatedly until at least a partial lock
     # is available.
