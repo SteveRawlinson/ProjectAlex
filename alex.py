@@ -177,16 +177,21 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
 
     # sets (triggers) a route
-    def setRoute(self, route, sleeptime=1):
+    def setRoute(self, route, sleeptime=1, waitTillNotBusy=False):
         self.debug('setting route ' +  str(route))
         r = routes.getRoute(route)
         if r is None:
             raise RuntimeError("no such route: " + route)
-        self.setTroublesomeTurnouts(r)
-        r.activateRoute()
+        #self.setTroublesomeTurnouts(r)
+        #r.activateRoute()
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:
             time.sleep(sleeptime)
+        if waitTillNotBusy:
+            self.debug("waiting till route is not busy")
+            while r.isRouteBusy():
+                time.sleep(0.2)
+            self.debug("route not busy")
 
     # # removes a lock
     # def unlock(self, mem, loco=None):
@@ -867,18 +872,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # add later routes if we haven't done so already
         if lock.partial():
             routes = self.requiredRoutes(endBlock)
-        else:
-            routes = None
+            for r in routes:
+                r.setRoute(r, waitTillNotBusy=True)
         # get the speed
         sp = self.loco.speed('south link to layout', 'medium')
         # and slowspeed
         ssp = self.loco.speed('slow')
         # complete the move
         if stop:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes, lockSensor="LS60")
+            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, lockSensor="LS60")
             self.waitAtPlatform()
         else:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True, lockSensor="LS60")
+            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, dontStop=True, lockSensor="LS60")
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
