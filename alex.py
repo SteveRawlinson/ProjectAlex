@@ -859,6 +859,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # off we go
         if self.loco.layoutBlock.getId() != "FP sidings" and not self.loco.inReverseLoop():
             self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True)
+            routes = None
             sp = self.loco.speed('back passage to south link', 'fast')
         self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
         # update the lock
