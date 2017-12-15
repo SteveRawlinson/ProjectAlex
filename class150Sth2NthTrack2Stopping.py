@@ -37,11 +37,6 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
         self.shortJourney(False, self.loco.block, "PAL P2", medium, slowSpeed=slow)
         self.waitAtPlatform()
 
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
-
         self.moveIntoNorthSidings()
 
         # if self.getJackStatus() == NORMAL and self.loco.rarity() == 0:
@@ -68,11 +63,6 @@ class Class150Sth2NthTrack2Stopping(alex.Alex):
 
 
 
-
-        # remove the memory - this is how the calling process knows we are done
-        if self.memory is not None:
-            m = memories.provideMemory(self.memory)
-            m.setValue(0)
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
