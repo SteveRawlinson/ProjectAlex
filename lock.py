@@ -383,6 +383,8 @@ class Lock(util.Util):
             if self.loco.throttle.getSpeedSetting() > 0:
                 self.debug("halting loco until lock upgraded")
                 self.loco.setSpeedSetting(0)
+                time.sleep(0.5)
+                self.loco.emergencyStop()
             self.upgradeLock()
         else:
             self.debug("partial unlock")
