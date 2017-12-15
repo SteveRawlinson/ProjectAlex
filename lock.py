@@ -224,37 +224,40 @@ class Lock(util.Util):
                 time.sleep(0.5)
 
 
+    def upgradeLockNonBlocking(self, keepOldPartial=False):
+        self.readMemories()
+        if self.end == NORTH:
+            if self.direction == NORTHBOUND:
+                if self.northSidingsVal is None:
+                    self.northSidings = True
+                    if not keepOldPartial:
+                        self.northTrackLink = None
+                    return True
+            else:
+                if self.northTrackLinkVal is None:
+                    self.northTrackLink = True
+                    if not keepOldPartial:
+                        self.northSidings = None
+                    return True
+        else:
+            if self.direction == SOUTHBOUND:
+                if self.southSidingsVal is None:
+                    self.southSidings = True
+                    if not keepOldPartial:
+                        self.southTrackLink = None
+                    return True
+            else:
+                if self.southTrackLinkVal is None:
+                    self.southTrackLink = True
+                    if not keepOldPartial:
+                        self.southSidings = None
+                    return True
+        return False
+
     # Upgrades a lock from a partial to a full lock then
     # unlocks the other part (unless keepOldPartial is True)
     def upgradeLock(self, keepOldPartial=False):
-        while True:
-            self.readMemories()
-            if self.end == NORTH:
-                if self.direction == NORTHBOUND:
-                    if self.northSidingsVal is None:
-                        self.northSidings = True
-                        if not keepOldPartial:
-                            self.northTrackLink = None
-                        break
-                else:
-                    if self.northTrackLinkVal is None:
-                        self.northTrackLink = True
-                        if not keepOldPartial:
-                            self.northSidings = None
-                        break
-            else:
-                if self.direction == SOUTHBOUND:
-                    if self.southSidingsVal is None:
-                        self.southSidings = True
-                        if not keepOldPartial:
-                            self.southTrackLink = None
-                        break
-                else:
-                    if self.southTrackLinkVal is None:
-                        self.southTrackLink = True
-                        if not keepOldPartial:
-                            self.southSidings = None
-                        break
+        while self.upgradeLockNonBlocking(keepOldPartial) is False:
             time.sleep(0.5)
         self.writeMemories()
 
@@ -381,10 +384,27 @@ class Lock(util.Util):
             self.debug("upgrading partial lock")
             self.log("upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
-                self.debug("halting loco until lock upgraded")
-                self.loco.setSpeedSetting(0)
-                time.sleep(0.5)
-                self.loco.emergencyStop()
+                # this is a convoluted way of slowing and then stopping the loco while we
+                # upgrade the lock to a full lock
+                if self.upgradeLockNonBlocking() is False:
+                    self.debug("slowing loco while lock upgraded")
+                    self.loco.setSpeedSetting('slow')
+                    tries = 0
+                    while self.upgradeLockNonBlocking() is False and tries < 5:
+                        time.sleep(0.5)
+                        tries += 1
+                    if not self.partial():
+                        return
+                    self.debug("stopping loco until lock upgraded")
+                    self.loco.setSpeedSetting(0)
+                    tries = 0
+                    while self.upgradeLockNonBlocking() is False and tries < 5:
+                        time.sleep(0.5)
+                        tries += 1
+                    if not self.partial():
+                        return
+                    self.loco.emergencyStop()
+                    self.upgradeLock()
             self.upgradeLock()
         else:
             self.debug("partial unlock")
