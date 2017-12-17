@@ -1,3 +1,4 @@
+import jmri
 from myroutes import *
 from jmri_bindings import *
 import loco
@@ -70,8 +71,8 @@ class Lock(util.Util):
             elif self.southSidingsVal is None:
                 m.setValue(None)
             else:
+                # must be false or zero (which is in fact false), leave it alone
                 pass
-                #self.debug("southSidings: " + str(self.southSidings) + " southsidingsVal: " + str(self.southSidingsVal) + ' ' + str(type(self.southSidingsVal)) + ' addr: ' + str(self.loco.dccAddr))
             m = memories.provideMemory("IMLOCKSOUTHTRACKLINK")
             if self.southTrackLink:
                 if self.southTrackLink is True:
@@ -80,7 +81,7 @@ class Lock(util.Util):
                     m.setValue(self.southTrackLink)
             elif self.southTrackLinkVal is None:
                 m.setValue(None)
-        else:
+        else: # NORTH
             m = memories.provideMemory("IMLOCKNORTHTRACKLINK")
             if self.northTrackLink:
                 if self.northTrackLink is True:
@@ -124,14 +125,21 @@ class Lock(util.Util):
     #
     # This method returns immediately even if no lock is available.
     def getLockNonBlocking(self, end=None, direction=None, loc=None):
-        if end:
+        if end is not None:
             self.end = end
-        if direction:
+        if direction is not None:
             self.direction = direction
-        if loc:
+        if loc is not None:
             self.loco = loc
-        if not (self.end and self.direction and self.loco):
+        if self.end is None or self.direction is None or self.loco is None:
+            self.debug("end: " + str(self.end))
+            self.debug("direction: " + str(self.direction))
+            if self.loco:
+                self.debug("loc: " + str(self.loco.dccAddr))
             raise RuntimeError("must specify end, direction and loco")
+        if powermanager.getPower() == jmri.PowerManager.OFF:
+            self.debug('power is off, not getting lock')
+            return
         self.readMemories()
         if DEBUG:
             if end == NORTH:
@@ -230,6 +238,8 @@ class Lock(util.Util):
 
 
     def upgradeLockNonBlocking(self, keepOldPartial=False):
+        if powermanager.getPower() == jmri.PowerManager.OFF:
+            self.debug('power is off, not upgrading lock')
         self.readMemories()
         if self.end == NORTH:
             if self.direction == NORTHBOUND:
@@ -432,6 +442,74 @@ class Lock(util.Util):
             return
         # wait for a lock
         self.getLock()
+
+    # Undoes this lock after checkLock() discovers a discrepancy
+    # between the lock and the actual memory values held by JMRI.
+    # This can happen as a result of a race condition. Setting the
+    # values to None gets the corresponding memory value set to
+    # None whereas setting them to False leaves the value alone
+    # when we call writeMemories(). So
+    def blankMyLockyBits(self):
+        if self.northSidings:
+            self.northSidings = None
+        else:
+            self.northSidings = False
+        if self.northTrackLink:
+            self.northTrackLink = None
+        else:
+            self.northTrackLink = False
+        if self.southSidings:
+            self.southSidings = False
+        if self.southTrackLink:
+            self.southTrackLink = False
+        self.writeMemories()
+        return False
+
+    # Checks this lock against the values of the corresponding memories
+    # held by JMRI. If a difference is found we set our variable to False
+    # which means the other loco's address does not get overwritten
+    # by our writeMemories and after checking everything we call
+    # blankMyLockyBits() which sets whatever we did hold to None.
+    def checkLock(self):
+        self.readMemories()
+        err = False
+        if self.northSidings:
+            if self.northSidingsVal is not None:
+                self.northSidings = False
+                err = True
+        if self.northTrackLink:
+            if self.northTrackLinkVal is not None:
+                self.northTrackLink = False
+                err = True
+        if self.southSidings:
+            if self.southSidingsVal is not None:
+                self.southSidings = False
+                err = True
+        if self.southTrackLink:
+            if self.southTrackLinkVal is not None:
+                self.southTrackLink = False
+                err = True
+        if err:
+            self.blankMyLockyBits()
+            return False
+        return True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
