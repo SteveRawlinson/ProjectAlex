@@ -123,7 +123,10 @@ class Lock(util.Util):
     # A loco which gets a partial lock must wait in the middle until
     # a full lock is available.
     #
-    # This method returns immediately even if no lock is available.
+    # This method returns immediately even if no lock is available. No
+    # race condition checking is done, the calling method must use
+    # checkLock() to do this. In general getLock() should be used
+    # instead which does this checking.
     def getLockNonBlocking(self, end=None, direction=None, loc=None):
         if end is not None:
             self.end = end
@@ -205,12 +208,14 @@ class Lock(util.Util):
             else:
                 end_s = 'South'
             self.debug(str(loc.dccAddr) + " getting (blocking) lock on " + end_s + " link")
-        while self.empty():
+        while self.empty() or self.checkLock() is False:
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
                 time.sleep(0.5)
 
+
     # Get a lock on the whole link, emulating the old style lock
+    # Don't think this is used any more
     def getOldLockNonBlocking(self, end, direction, loc):
         self.end = end
         self.direction = direction
@@ -463,6 +468,8 @@ class Lock(util.Util):
         if self.southTrackLink:
             self.southTrackLink = False
         self.writeMemories()
+        # set lock to empty
+        self.northTrackLink = self.northSidings = self.southTrackLink = self.southSidings = None
         return False
 
     # Checks this lock against the values of the corresponding memories
