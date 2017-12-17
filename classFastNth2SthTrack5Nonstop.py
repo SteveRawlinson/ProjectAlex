@@ -36,7 +36,7 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
         self.leaveNorthSidings("Nth Fast Inner 1")
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "FPK", fullSpeed, dontStop=True)
+        self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
 
         # get a lock on the North link, but if it's not available immediately we need to know pronto
         lock = self.loco.getLockNonBlocking(SOUTH)
