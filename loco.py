@@ -227,9 +227,9 @@ class Loco(util.Util):
     def shortestBlockTrainFits(self, blocklist):
         sbtf = None
         for b in blocklist:
-            self.log("  considering block " + b)
             block = layoutblocks.getLayoutBlock(b)
             mem = memories.getMemory("Siding " + b)
+            self.log("  considering block " + b + " state:" + str(block.getState() + " mem value: " + str(mem.getValue()) ))
             if block is None:
                 self.debug("no such block: " + b)
                 self.log("no such block: " + b)
@@ -513,6 +513,7 @@ class Loco(util.Util):
     def getLock(self, end):
         if self.track.northbound():
             dir = NORTHBOUND
+            self.debug("dir: NORTHBOUND")
         else:
             dir = SOUTHBOUND
         if end == NORTH:
@@ -521,6 +522,7 @@ class Loco(util.Util):
             end_s = 'South'
         self.debug("getting (new) lock on " + end_s + " link (end = " + str(end) + ")")
         l = lock.Lock()
+        self.debug("dir: " + str(dir))
         l.getLock(end=end, direction=dir, loc=self)
         self.debug("got lock: " + l.status())
         return l
