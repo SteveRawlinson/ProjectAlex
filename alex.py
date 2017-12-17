@@ -364,6 +364,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None, lockSensor=None):
 
+        self.log("startJourney called")
+
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
             return RuntimeError("shortJourney called while status is ESTOP")
@@ -729,18 +731,26 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             else:
                 self.debug("stopped early. Jack Status: " + str(self.getJackStatus()))
+            # final check of jack status after we have stopped
+            if self.getJackStatus() == STOPPING:
+                self.debug("JackStatus is now STOPPING - moving to siding")
+                siding = self.loco.selectSiding(NORTH_SIDINGS)
+                routes = self.requiredRoutes(siding)
+                self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
         else:
             # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             self.debug("moving into sidings")
             siding = self.loco.selectSiding(NORTH_SIDINGS)
             if not lock.partial():
+                # full lock - might as well set all the routes
                 routes = routes + self.requiredRoutes(siding)
             speed = self.loco.speed('track to north link', 'medium')
             if self.loco.reversible():
                 dir = False
             else:
                 dir = True
+            self.debug("calling shortJourney")
             self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, dontStop=True)
             if lock.partial():
                 routes = self.requiredRoutes(siding)
@@ -873,7 +883,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if lock.partial():
             routes = self.requiredRoutes(endBlock)
             for r in routes:
-                r.setRoute(r, waitTillNotBusy=True)
+                self.setRoute(r, waitTillNotBusy=True)
         # get the speed
         sp = self.loco.speed('south link to layout', 'medium')
         # and slowspeed
