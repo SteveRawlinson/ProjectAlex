@@ -482,6 +482,20 @@ class Loco(util.Util):
             return SLOWTIMEMAP[k]
         return None
 
+    # Gets the slowtime - the number of seconds to
+    # move at slowSpeed before coming to a halt at a platform.
+    # Slowtimes are defined in myroutes. If there is no
+    # slowtime defined for the loco at the destination
+    # it returns a default of 1.
+    def getSlowtime(self, destination):
+        st = self.slowTimes()
+        if st is not None:
+            if destination in st:
+                return st[destination]
+        self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
+        return 1
+
+
     # String representation of my direction, ie Nth2Sth or Sth2Nth
     def dir(self):
         if self.track is None:
