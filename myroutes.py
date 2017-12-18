@@ -122,7 +122,7 @@ SLOWTIMEMAP = {
     1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 13, "PAL P1": 8, "AAP P4": 7, "FPK P1": 15, "FPK P4": 5, "AAP P1": 5, "NSG P2": 1, "FPK P2": 8,
            "AAP P3": 7, "PAL P2": 5, "North Link": 4},
     # Javelin
-    5004: {'North Link': 5, 'FPK P7': 5},
+    5004: {'North Link': 5, 'FPK P7': 5, "Nth fast Outer 1": 5},
     # Ave Talgo
     6719: {'Nth Fast Outer 1': 3}
 }
