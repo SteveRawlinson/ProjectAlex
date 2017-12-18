@@ -478,6 +478,7 @@ class Lock(util.Util):
     # by our writeMemories and after checking everything we call
     # blankMyLockyBits() which sets whatever we did hold to None.
     def checkLock(self):
+        self.log("checking lock")
         self.readMemories()
         err = False
         if self.northSidings:
@@ -497,6 +498,7 @@ class Lock(util.Util):
                 self.southTrackLink = False
                 err = True
         if err:
+            self.debug("race condition detected, releasing my lock")
             self.blankMyLockyBits()
             return False
         return True
