@@ -319,28 +319,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.loco.unselectReverseLoop(loop)
         return
 
-    # Checks two places to get the slowtime - the number of seconds to
-    # move at slowSpeed before coming to a halt at a platform. It first
-    # calls the loco.getSlowTimes() method which returns a hash defined in
-    # myroutes.py. If that does't work it tries
-    #  to find a method called getSlowTimes() defined in the journey
-    # class (ie. the class that is the child of this class) which returns a hash
-    # (or whatever they're called in python).
+    # Gets the slowtime - the number of seconds to
+    # move at slowSpeed before coming to a halt at a platform.
+    # Slowtimes are defined in myroutes. If there is no
+    # slowtime defined for the loco at the destination
+    # it returns a default of 1.
     def getSlowtime(self, destination):
-        st = self.loco.slowTimes()
-        if st is not None:
-            if destination in st:
-                return st[destination]
-        try:
-            callable(self.getSlowTimes)
-        except AttributeError, e:
-            self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
-            return 1
-        st = self.getSlowTimes()
-        if st[destination] is not None:
-            return st[destination]
-        self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
-        return 1
+        return self.loco.getSlowtime(destination)
 
     # Gets a train from startBlock to endBlock and optionally slows it down
     # and stops it there. Tries to update block occupancy values.
@@ -610,12 +595,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 stopIRClear = sensors.getSensor(stopIRClear)
             # wait till the IR sensor is clear
             if stopIRClear.knownState != ACTIVE:
-                self.debug("waiting for IR sensor to be active")
+                self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + "to be active")
                 self.waitSensorActive(stopIRClear)
                 self.debug("IR sensor active")
-            self.debug("waiting for IR sensor to be inactive")
+            self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + "to be inactive")
             self.waitSensorInactive(stopIRClear)
-            self.debug("IR sensor inactive...")
+            self.debug("IR sensor " + stopIRClear.getDisplayName() + "inactive...")
         elif slowTime and slowTime > 0:
             # there is no IR sensor to wait for, wait the specified time
             self.debug(" ********************** waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000) + " **********************************************")
