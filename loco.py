@@ -228,8 +228,11 @@ class Loco(util.Util):
         sbtf = None
         for b in blocklist:
             block = layoutblocks.getLayoutBlock(b)
-            mem = memories.getMemory("Siding " + b)
-            self.log("  considering block " + b + " state:" + str(block.getState() + " mem value: " + str(mem.getValue()) ))
+            mem = memories.getMemory("IMSIDING" + b.upper())
+            if mem is None:
+                self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
+            else:
+                self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: " + str(mem.getValue()))
             if block is None:
                 self.debug("no such block: " + b)
                 self.log("no such block: " + b)
