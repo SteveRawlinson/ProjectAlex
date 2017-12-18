@@ -436,7 +436,7 @@ class Lock(util.Util):
     # waits till the lock is got.
     def getLockOrStopLoco(self, destination):
         self.loco.setSpeedSetting('slow')
-        slowtime = self.getSlowtime(destination)
+        slowtime = self.loco.getSlowtime(destination)
         tn = time.time()
         while self.empty() and ((time.time() - tn) < slowtime):
             sleep(0.25)
