@@ -33,8 +33,8 @@ from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
 # DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
-DCC_ADDRESSES = [2128, 2144, 68, 7405, 1124, 1087, 6719]
-#DCC_ADDRESSES = [5144, 2144]
+#DCC_ADDRESSES = [2128, 2144, 68, 7405, 1124, 1087, 6719]
+DCC_ADDRESSES = [2128, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [1124]
@@ -426,7 +426,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         loco.Loco.unselectReverseLoops([NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP])
 
         # clear display memories
-        for i in range(1,6):
+        for i in range(1,7):
             m = memories.provideMemory("IMTRACK" + str(i) + "LOCO")
             m.setValue(None)
             m = memories.provideMemory("IMTRACK" + str(i) + "SPEED")
