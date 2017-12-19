@@ -1,8 +1,12 @@
 TODO
 don't bring a non-reversible loco out unless the other one has a track available
 implement three-way lock for south sidings?
-don't wait for target block to be free if there's a lock and it5's a link
+JMRI: 'hide in throttle dropdown' option
+make moveIntoNorthSiding use different speeds for layout -> fast/slow link
+if there are no available tracks to run a class 150 on the north link get it out the way
 
+++ slow to a halt in reverse loops
+++ don't wait for target block to be free if there's a lock and it5's a link
 
 LS65 is dicky
 LS19 is fine (and not used)
