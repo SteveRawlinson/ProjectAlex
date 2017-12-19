@@ -541,7 +541,6 @@ class Loco(util.Util):
     def getLock(self, end):
         if self.track.northbound():
             dir = NORTHBOUND
-            self.debug("dir: NORTHBOUND")
         else:
             dir = SOUTHBOUND
         if end == NORTH:
@@ -550,7 +549,6 @@ class Loco(util.Util):
             end_s = 'South'
         self.debug("getting (new) lock on " + end_s + " link (end = " + str(end) + ")")
         l = lock.Lock()
-        self.debug("dir: " + str(dir))
         l.getLock(end=end, direction=dir, loc=self)
         self.debug("got lock: " + l.status())
         return l
