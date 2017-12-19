@@ -101,7 +101,7 @@ SPEEDMAP = {
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 0.4, 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 0.4, 'track to north link': 0.4, 'north link to sidings': 0.3, 'north sidings entry': 0.2,
-           'track to south link': 0.4},
+           'track to south link': 0.4, 'south sidings exit': 0.3},
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2},
     # class 47
