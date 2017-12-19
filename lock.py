@@ -21,6 +21,7 @@ class Lock(util.Util):
         self.southTrackLinkVal = None
         self.northTrackLinkVal = None
         self.northSidingsVal = None
+        self.loggedPowerOff = 0.0
 
 
     # Read the appropriate memory values indicating whether bits of track
@@ -141,7 +142,9 @@ class Lock(util.Util):
                 self.debug("loc: " + str(self.loco.dccAddr))
             raise RuntimeError("must specify end, direction and loco")
         if powermanager.getPower() == jmri.PowerManager.OFF:
-            self.debug('power is off, not getting lock')
+            if time.time() - self.loggedPowerOff > 60:
+                self.debug('power is off, not getting lock')
+                self.loggedPowerOff = time.time()
             return
         self.readMemories()
         if DEBUG:
@@ -244,7 +247,9 @@ class Lock(util.Util):
 
     def upgradeLockNonBlocking(self, keepOldPartial=False):
         if powermanager.getPower() == jmri.PowerManager.OFF:
-            self.debug('power is off, not upgrading lock')
+            if time.time() - self.loggedPowerOff > 60:
+                self.debug('power is off, not upgrading lock')
+                self.loggedPowerOff = time.time()
         self.readMemories()
         if self.end == NORTH:
             if self.direction == NORTHBOUND:
@@ -439,7 +444,7 @@ class Lock(util.Util):
         slowtime = self.loco.getSlowtime(destination)
         tn = time.time()
         while self.empty() and ((time.time() - tn) < slowtime):
-            sleep(0.25)
+            time.sleep(0.25)
             self.getLockNonBlocking()
         if self.empty():
             self.loco.setSpeedSetting(0)
