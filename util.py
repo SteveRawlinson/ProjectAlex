@@ -102,6 +102,15 @@ class Util:
         v = mem.getValue()
         return v
 
+    def sidingMemoryName(self, siding):
+        if type(siding) == str:
+            return "IMSIDING" + siding.upper()
+        elif type(siding) == jmri.Block:
+            return"IMSIDING" + siding.getUserName().upper()
+        else:
+            # layoutblock
+            return "IMSIDING" + siding.getId().upper()
+
 
 
 
