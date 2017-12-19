@@ -21,51 +21,23 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-        # # get a 'lock' on the north link track
-        # lock = self.getLock('North Link Lock')
-        #
-        # # Out the nth sidings
-        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("Nth Fast Inner 1")
-        # sp = self.loco.speed('north sidings exit', 'slow')
-        # self.shortJourney(True, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
-        # self.shortJourney(True, self.loco.block, "Nth Fast Link", fullSpeed, dontStop=True)
-        #
-        # # slower round the bend
-        # self.shortJourney(True, self.loco.block, "Nth Fast Inner 1", bendSpeed, lock=lock, dontStop=True)
-
         self.leaveNorthSidings("Nth Fast Inner 1")
 
         # off to the other side of the layout
-        self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
+        self.shortJourney(True, self.loco.block, "Sth Fast Inner 2", fullSpeed, dontStop=True)
 
         # get a lock on the North link, but if it's not available immediately we need to know pronto
         lock = self.loco.getLockNonBlocking(SOUTH)
         if lock.empty():
-            # stop the train at FPK 7 unless we get a lock before slowtime runs out
-            lock.getLockOrStopLoco("FPK P7")
+            # slow down till we get to FPK P7
+            self.shortJourney(True, self.loco.block, "FPK P7", 'medium', dontStop=True)
+            # try to get the lock again
+            lock = self.loco.getLockNonBlocking(SOUTH)
+            if lock.empty():
+                # stop the train at FPK 7 unless we get a lock before slowtime runs out
+                lock.getLockOrStopLoco("FPK P7")
 
         self.moveIntoSouthSidings(lock)
-
-        # else:
-        #     # we got the lock - set the turnouts for FPK 7
-        #     for r in self.requiredRoutes("FPK P7"):
-        #         self.setRoute(r, 0)
-        #     # progress to FPK 7
-        #     self.shortJourney(True, self.loco.block, "FPK P7", fullSpeed, dontStop=True)
-        #     # check we still have the lock
-        #     rc = self.checkLock(lock)
-        #     if rc is False :
-        #         # we lost it, abort!
-        #         self.throttle.setSpeedSetting(0)
-        #         print loco, "race conditions on South Link Lock?"
-        #         return False
-        #
-        # # select a siding
-        # siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        # routes = self.requiredRoutes(siding)
-        # self.shortJourney(True, self.loco.block, siding, 0.3, 0.2, 0, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-
-        self.loco.status = loco.SIDINGS
 
         return False
 
