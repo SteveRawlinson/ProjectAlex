@@ -32,9 +32,9 @@ from classAnySth2NthTrack4Nonstop import *
 from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 
-# DCC_ADDRESSES = [68, 5144, 2144, 6022, 3213, 1087]
+DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
 #DCC_ADDRESSES = [2128, 2144, 68, 7405, 1124, 1087, 6719]
-DCC_ADDRESSES = [2128, 2144]
+#DCC_ADDRESSES = [2128, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [1124]
@@ -59,9 +59,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getLocoThrottle(self, loc):
         throttleAttempts = 0
         while throttleAttempts < 2 and loc.throttle is None:
-            time.sleep(5)
             loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr())
-            throttleAttempts += 1
+            if loc.throttle is None:
+                throttleAttempts += 1
+                time.sleep(5)
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
 
