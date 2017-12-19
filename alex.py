@@ -522,7 +522,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     continue
                 self.setRoute(r)
 
-        # wait for a sensor to change
+        #
+        #  ----------------  wait for a sensor to change  ------------------------------------------
+        #
         self.debug("waiting for destination block " + endBlock.userName + " to become active")
         if endIRSensor is not None:
             sensorList = [endIRSensor]
@@ -534,14 +536,24 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         arrived = False
         slowJourneyStart = time.time()
         while not arrived:
+            repeatedSpeed = False
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
+                # wait up to5 seconds for sensors to change
                 self.waitChange(sensorList, 5000)
                 if self.getJackStatus() == ESTOP:
+                    # abort
+                    self.loco.emergencyStop()
                     return False
-                if time.time() - slowJourneyStart > 30 * 60.0: # 30 minute timeout
+                if repeatedSpeed is False:
+                    # send a gentle reminder of the speed
+                    self.loco.repeatSpeedMessage(normalSpeed)
+                if time.time() - slowJourneyStart > 30 * 60.0:
+                    # 30 minute timeout
                     raise RuntimeError("shortJourney took too long")
-                changedList = self.changedSensors(sensorList) # get a list of sensors whose state has changed
+                # get a list of sensors whose state has changed (might be empty)
+                changedList = self.changedSensors(sensorList)
+            # a sensor has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
                 self.unlock(lock)
@@ -549,6 +561,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if endBlockSensor in changedList or endIRSensor in changedList:
                 arrived = True
 
+        # we have arrived
         arriveTime = time.time()
         if endIRSensor:
             self.debug("destination block IR sensor at " + endBlock.userName + " is active, we have arrived")
