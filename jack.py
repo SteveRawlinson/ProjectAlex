@@ -476,6 +476,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if poweredOn:
             time.sleep(5)
 
+        # clear block values in unoccupied blocks
+        for name in blocks.getSystemNameList():
+            b = blocks.getBlock(name)
+            if b.getState() != OCCUPIED:
+                b.setValue(None)
+
         # final status check before we hit main loop
         if self.checkStatus() != NORMAL:
             self.debug("exiting on non-normal status")
