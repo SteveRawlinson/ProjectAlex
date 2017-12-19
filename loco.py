@@ -81,7 +81,7 @@ class Loco(util.Util):
         for i in range(int(gradCount)):
             self.throttle.setSpeedSetting(s)
             m = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
-            m.setValue(s)
+            m.setValue(str(round(s, 2)))
             s += grad
             if i != gradCount - 1:
                 time.sleep(0.5)
@@ -289,6 +289,8 @@ class Loco(util.Util):
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
+            if siding is None:
+                return None
         mem = memories.provideMemory(self.sidingMemoryName(siding))
         mem.setValue("selected")
         self.log("  selected siding " + siding.getId() + "memory: " + mem.getSystemName())
