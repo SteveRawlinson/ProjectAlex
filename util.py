@@ -111,6 +111,15 @@ class Util:
             # layoutblock
             return "IMSIDING" + siding.getId().upper()
 
+    def freeSidingCount(self, sidings):
+        count = 0
+        for s in sidings:
+            b = blocks.getBlock(s)
+            if b.getState() != OCCUPIED:
+                count += 1
+        return count
+
+
 
 
 
