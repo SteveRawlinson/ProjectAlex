@@ -1,0 +1,8 @@
+TODO
+don't bring a non-reversible loco out unless the other one has a track available
+implement three-way lock for south sidings?
+don't wait for target block to be free if there's a lock and it5's a link
+
+
+LS65 is dicky
+LS19 is fine (and not used)
