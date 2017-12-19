@@ -216,11 +216,15 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # Makes a guess at the class name that should describe the
     # journey for this loco on this track.
-    def constructClassName(self, loco, track):
+    def constructClassName(self, loco, track=None, ending=None):
         if loco.brclass() is not None:
             train = 'Class' + str(loco.brclass())
         else:
             train = 'Loco' + str(loco.dccAddr)
+        if ending:
+            return train + ending
+        if track is None:
+            raise RuntimeError("track must be specified if ending is None")
         dir = track.dir()
         tracknr = 'Track' + str(track.nr)
         if loco.passenger():
@@ -259,6 +263,13 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 return
             else:
                 self.debug("no available tracks to run loco " + loc.name())
+                # if this loco has stopped early on North Link we need to move it to
+                # sidings to get it out the way
+                if loc.block.getUserName() == 'North Link':
+                    self.debug("moving looo off North Link into sidings")
+                    klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
+                    self.startJourney(loc, None, klassName=klassName)
+                    return
         if time.time() - self.lastJourneyStartTime < 10.0:
             # too soon since last journey started
             # TODO: turn trains around?
@@ -267,9 +278,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if runningCount < 3:
             prob = 1.0
         elif runningCount == 3:
-            prob = 0.5
+            prob = 0.2
         else:
-            prob = 0.3
+            prob = 0.1
         if random.random() > prob:
             #self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
             return
@@ -342,9 +353,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
 
     # Actually kick off a new journey using the loco and track supplied
-    def startJourney(self, loc, trak):
-        # get the appropriate classname
-        klassName = self.constructClassName(loc, trak)
+    def startJourney(self, loc, trak, klassName=None):
+        if klassName is None:
+            # get the appropriate classname
+            klassName = self.constructClassName(loc, trak)
         self.debug("classname: " + klassName)
         # get the class
         klass = globals()[klassName]
@@ -356,7 +368,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         memory = memories.provideMemory(mem)
         memory.setValue(1)
         memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
-        # add memory to lisr
+        # add memory to list
         self.memories.append(memory.getSystemName())
         # set memory for the display
         m = memories.provideMemory("IMTRACK" + str(trak.nr) + "LOCO")
@@ -366,9 +378,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # kick the journey off
         klass(loc, mem, trak).start()
         loc.status = loco.MOVING
-        loc.track = trak
-        trak.occupancy += 1
-        self.lastJourneyStartTime = time.time()
+        if trak:
+            loc.track = trak
+            trak.occupancy += 1
+            self.lastJourneyStartTime = time.time()
 
 
     # Checks a memory for a value, if there is one, adds a loco
