@@ -608,10 +608,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 stopIRClear = sensors.getSensor(stopIRClear)
             # wait till the IR sensor is clear
             if stopIRClear.knownState != ACTIVE:
-                self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + "to be active")
+                self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + " to be active")
                 self.waitSensorActive(stopIRClear)
                 self.debug("IR sensor active")
-            self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + "to be inactive")
+            self.debug("waiting for IR sensor " + stopIRClear.getDisplayName() + " to be inactive")
             self.waitSensorInactive(stopIRClear)
             self.debug("IR sensor " + stopIRClear.getDisplayName() + "inactive...")
         elif slowTime and slowTime > 0:
@@ -759,6 +759,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
 
@@ -838,6 +839,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
         self.loco.status = SIDINGS
