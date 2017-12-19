@@ -54,6 +54,20 @@ class Loco(util.Util):
             time.sleep(0.05)
             self.throttle.setSpeedSetting(speed)
 
+    # returns the smallest number that will actually have any impact on
+    # the speed if it's used to change the speed. Differs depending on
+    # the number of speed steps the chip will handle
+    def minimumSpeedIncrement(self):
+        return self.throttle.getSpeedIncrement()
+
+    # send a reminder of the speed the loco is supposed to be doing
+    def repeatSpeedMessage(self, speed):
+        if type(speed) == str or type(speed) == unicode:
+            speed = self.speed(speed)
+        self.throttle.setSpeedSetting(speed - self.minimumSpeedIncrement())
+        time.sleep(0.2)
+        self.throttle.setSpeedSetting(speed)
+
     # Changes the loco's speed setting in 0.5 second steps over
     # the duration. So, if duration is 2 secs then there are 5 steps 0.5
     # seconds apart.
@@ -275,19 +289,16 @@ class Loco(util.Util):
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
             siding = self.shortestBlockTrainFits(sidings)
-        mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
+        mem = memories.provideMemory(self.sidingMemoryName(siding))
         mem.setValue("selected")
-        self.log("  selected siding " + siding.getId())
+        self.log("  selected siding " + siding.getId() + "memory: " + mem.getSystemName())
         return siding
 
     # Removes the memory which reserves the siding.
     def unselectSiding(self, siding):
-        if  type(siding) == str:
-            mem = memories.provideMemory("IMSIDING" + siding.upper())
-        elif type(siding) == jmri.Block:
-            mem = memories.provideMemory("IMSIDING" + siding.getUserName().upper())
-        else:
-            mem = memories.provideMemory("IMSIDING" + siding.getId().upper())
+        mem = memories.provideMemory(self.sidingMemoryName(siding))
+        self.debug("unselecting siding " + mem.getSystemName())
+        self.log("unselecting siding " + mem.getSystemName())
         mem.setValue(None)
 
     # unselect a bunch of sidings
@@ -363,7 +374,7 @@ class Loco(util.Util):
         else:
             # technically a loco can be in more than one block but in
             # practice at startup it's much more likely that multiple
-            # blocks means there's nan error. Reset all block values.
+            # blocks means there's an error. Reset all block values.
             self.block = None
             for lb in lblocks:
                 b = lb.getBlock()
@@ -492,7 +503,7 @@ class Loco(util.Util):
         if st is not None:
             if destination in st:
                 return st[destination]
-        self.debug("**************************** can't find slowtime for " + self.loco.nameAndAddress() + " at " + destination + "******************************")
+        self.debug("**************************** can't find slowtime for " + self.nameAndAddress() + " at " + destination + "******************************")
         return 1
 
 
