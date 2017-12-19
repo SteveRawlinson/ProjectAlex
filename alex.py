@@ -747,6 +747,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
             self.debug("moving into sidings")
+            siding = None
             while siding is None:
                 siding = self.loco.selectSiding(NORTH_SIDINGS, blocking=False)
                 if siding is None:
@@ -846,6 +847,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
             # 'normal' move into south sidings
+            siding = None
             while siding is None:
                 # pick a siding
                 siding = self.loco.selectSiding(SOUTH_SIDINGS, blocking=False)
