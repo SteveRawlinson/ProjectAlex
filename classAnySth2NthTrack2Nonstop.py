@@ -35,16 +35,6 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
 
 
         self.loco.status = loco.MOVING
-        start = time.time()
-
-        # # out of sth sidings to FPK
-        # lock = self.getLock('South Link Lock')
-        # if self.loco.inReverseLoop():
-        #     routes = [self.requiredRoutes(self.loco.block)[1]] + self.requiredRoutes('FPK P2')
-        # else:
-        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes('FPK P2')
-        # self.shortJourney(True, self.loco.block, "South Link", fast, routes=routes, dontStop=True)
-        # self.shortJourney(True, self.loco.block, "FPK P2", medium, lock=lock, dontStop=True)
 
         self.leaveSouthSidings("FPK P2")
 
@@ -65,32 +55,8 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         # one way or another we now have the lock
         # self.shortJourney(True, self.loco.block, 'North Link', medium, routes=routes, dontStop=True)
 
-        # # remove the memory - this is how the calling process knows we are done
-        # if self.memory is not None:
-        #     m = memories.provideMemory(self.memory)
-        #     m.setValue(0)
-        #
-        # # into North sidings
-        # b = None
-        # if not self.loco.reversible():
-        #     b = self.loco.selectReverseLoop(NORTH_REVERSE_LOOP)
-        # if b is not None:
-        #     self.loco.setSpeedSetting(fast)
-        #     self.reverseLoop(NORTH_REVERSE_LOOP)
-        #     self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-        #     if lock:
-        #         self.unlock(lock)
-        # else:
-        #     siding = self.loco.selectSiding(NORTH_SIDINGS)
-        #     routes = self.requiredRoutes(self.loco.block)
-        #     self.shortJourney(True, self.loco.block, "North Link", medium, routes=routes, lock=lock)
-        #     routes = self.requiredRoutes(siding)
-        #     self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        #     self.loco.unselectSiding(siding)
-        #     self.loco.wrongway = True
 
         self.moveIntoNorthSidings()
-
 
         self.loco.status = loco.SIDINGS
         self.debug(type(self).__name__ + ' finished')
@@ -99,6 +65,9 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
 class Class47Sth2NthTrack2Nonstop(ClassAnySth2NthTrack2Nonstop):
     pass
 
-# loc = loco.Loco(7405)
+class Loco3213Sth2NthTrack2Nonstop(ClassAnySth2NthTrack2Nonstop):
+    pass
+
+        # loc = loco.Loco(7405)
 # loc.setBlock(SOUTH_REVERSE_LOOP)
 # Class47Sth2NthTrack2Nonstop(loc, None, None).start()
