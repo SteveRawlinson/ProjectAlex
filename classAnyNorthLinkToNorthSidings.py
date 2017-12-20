@@ -4,6 +4,7 @@ import sys
 sys.path.append('C:\\Users\\steve\\JMRI\\jython')
 import alex
 import loco
+import lock
 from jmri_bindings import *
 from myroutes import *
 
@@ -11,7 +12,12 @@ class ClassAnyNorthLinkToNorthSidings(alex.Alex):
 
     def handle(self):
         siding = self.loco.selectSiding(NORTH_SIDINGS)
-        self.shortJourney(False, endBlock=siding, endIRSensor=IRSENSORS[siding])
+        lok = lock.Lock()
+        lok.getLock(NORTH, NORTHBOUND, self.loco)
+        if lok.empty():
+            raise RuntimeError("ruh roh")
+        routes = self.requiredRoutes(siding)
+        self.shortJourney(False, normalSpeed='fast', slowSpeed='fast', endBlock=siding, stopIRClear=IRSENSORS[siding.getId()], lock=lok, routes=routes)
 
-class Class150NorthLinkToNorthSidinga(ClassAnyNorthLinkToNorthSidings):
+class Class150NorthLinkToNorthSidings(ClassAnyNorthLinkToNorthSidings):
     pass
