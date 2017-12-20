@@ -191,14 +191,15 @@ class Lock(util.Util):
                 #     self.southTrackLink = self.southSidings = True
         # set the signal if we're leaving the layout
         if (end == NORTH and direction == NORTHBOUND) or (end == SOUTH and direction == SOUTHBOUND):
-            signal = self.loco.track.exitSignal
-            if signal is not None:
-                if self.empty():
-                    if signal.getAppearance != RED:
-                        signal.setAppearance(RED)
-                else:
-                    if signal.getAppearance != GREEN:
-                        signal.setAppearance(GREEN)
+            if self.loco.track:
+                signal = self.loco.track.exitSignal
+                if signal is not None:
+                    if self.empty():
+                        if signal.getAppearance != RED:
+                            signal.setAppearance(RED)
+                    else:
+                        if signal.getAppearance != GREEN:
+                            signal.setAppearance(GREEN)
         self.writeMemories()
         self.log(self.status())
 
