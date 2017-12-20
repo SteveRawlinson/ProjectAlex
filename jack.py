@@ -31,13 +31,14 @@ from classAnyNth2SthTrack3Nonstop import *
 from classAnySth2NthTrack4Nonstop import *
 from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
+from classAnyNorthLinkToNorthSidings import *
 
-DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
+#DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
 #DCC_ADDRESSES = [2128, 2144, 68, 7405, 1124, 1087, 6719]
 #DCC_ADDRESSES = [2128, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-#DCC_ADDRESSES = [1124]
+DCC_ADDRESSES = [2128]
 DEBUG = True
 
 
@@ -77,7 +78,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getBlockOccupiedByLocoFromUser(self, loc):
         # get a list of occupied blocks with no values
         blist = ['not in use']
-        for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]):
+        for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP, 'North Link']):
             blk = blocks.getBlock(blockName)
             if blk.getState() != OCCUPIED:
                 self.debug(blockName + " is not occupied")
@@ -266,7 +267,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # if this loco has stopped early on North Link we need to move it to
                 # sidings to get it out the way
                 if loc.block.getUserName() == 'North Link':
-                    self.debug("moving looo off North Link into sidings")
+                    self.debug("moving loco off North Link into sidings")
                     klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
                     self.startJourney(loc, None, klassName=klassName)
                     return
@@ -360,21 +361,23 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.debug("classname: " + klassName)
         # get the class
         klass = globals()[klassName]
-        # set the memory name
-        mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
-        self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track "
-                   + str(trak.nr) + " (occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + " score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
-        # set the memory value
-        memory = memories.provideMemory(mem)
-        memory.setValue(1)
-        memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
-        # add memory to list
-        self.memories.append(memory.getSystemName())
-        # set memory for the display
-        m = memories.provideMemory("IMTRACK" + str(trak.nr) + "LOCO")
-        m.setValue(loc.nameAndAddress())
-        m = memories.provideMemory("IMTRACK" + str(trak.nr) + "SPEED")
-        m.setValue(0)
+        if trak:
+            # set the memory name
+            mem = 'IM' + '-'.join(['journey', str(loc.dccAddr), str(trak.nr), trak.dir()]).upper()
+            self.debug("startJourney: starting new journey: " + str(loc.dccAddr) + " heading " + trak.dir() + " on track " + str(trak.nr) + " (occupancy: " + str(trak.occupancy) + " busy: " + str(trak.busy()) + " score: " + str(trak.score(loc)) + ") classname: " + klassName + " mem: " + mem)
+            # set the memory value
+            memory = memories.provideMemory(mem)
+            memory.setValue(1)
+            memory.setUserName("Journey " + str(loc.dccAddr) + ' ' + trak.dir() + " on track " + str(trak.nr))
+            # add memory to list
+            self.memories.append(memory.getSystemName())
+            # set memory for the display
+            m = memories.provideMemory("IMTRACK" + str(trak.nr) + "LOCO")
+            m.setValue(loc.nameAndAddress())
+            m = memories.provideMemory("IMTRACK" + str(trak.nr) + "SPEED")
+            m.setValue(0)
+        else:
+            mem = None
         # kick the journey off
         klass(loc, mem, trak).start()
         loc.status = loco.MOVING
