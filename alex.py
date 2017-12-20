@@ -920,6 +920,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             routes = None
             sp = self.loco.speed('back passage to south link', 'fast')
         self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        # wait till the whole train is past the IR sensor just after the reverse loop points
+        irs = sensors.getSensor("LSXX")
+        if irs.knownState == ACTIVE:
+            self.waitChange([irs])
         # update the lock
         lock.switch() # stops loco if necessary
         # add later routes if we haven't done so already
