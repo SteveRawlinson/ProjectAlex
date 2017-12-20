@@ -107,7 +107,7 @@ SPEEDMAP = {
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
     # Underground
-    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2}
+    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3}
 }
 
 SLOWTIMEMAP = {
