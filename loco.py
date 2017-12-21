@@ -300,7 +300,6 @@ class Loco(util.Util):
     # Removes the memory which reserves the siding.
     def unselectSiding(self, siding):
         mem = memories.provideMemory(self.sidingMemoryName(siding))
-        self.debug("unselecting siding " + mem.getSystemName())
         self.log("unselecting siding " + mem.getSystemName())
         mem.setValue(None)
 
