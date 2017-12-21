@@ -420,10 +420,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # set the throttle
         throttle = self.loco.throttle
 
-        # self.debug("throttle is type " + type(throttle).__name__)
-        # if type(throttle) == str:
-        #     self.debug("throttle is " + throttle)
-        
+        # turn lights on
+        self.loco.throttle.setF0(True)
+
         # are we moving
         if self.loco.throttle.getSpeedSetting() > 0:
             startTime = time.time()
@@ -708,12 +707,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # we need a reverse loop and it's available
             self.debug("moving into North reverse loop")
             speed = self.loco.speed('off track north', 'medium')
+            self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
+            speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
-            if lock.partial():
-                self.loco.setSpeedSetting(0)
-                lock.upgradeLock()
-            else:
-                lock.partialUnlock()
+            lock.switch()
             self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
@@ -725,8 +722,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
             self.debug("stopping early")
-            speed = self.loco.speed('track to north link', 'medium')
-            self.shortJourney(False, self.loco.block, "North Link", speed, slowSpeed=speed, routes=routes, eStop=True)
+            speed = self.loco.speed('off track north', 'medium')
+            self.shortJourney(False, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
+            speed = self.loco.speed('north interlink northbound', 'medium')
+            self.shortJourney(False, self.loco.block, 'North Link', speed, routes=[route], eStop=True)
             if lock.partial():
                 # we should get the full lock straight away
                 lock.upgradeLock(keepOldPartial=True)
@@ -771,13 +770,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if not lock.partial():
                 # full lock - might as well set all the routes
                 routes = routes + self.requiredRoutes(siding)
-            speed = self.loco.speed('track to north link', 'medium')
             if self.loco.reversible():
                 dir = False
             else:
                 dir = True
             self.debug("calling shortJourney")
-            self.shortJourney(dir, self.loco.block, "North Link", speed, routes=routes, dontStop=True)
+            speed = self.loco.speed('off track north', 'medium')
+            self.shortJourney(dir, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=routes)
+            speed = self.loco.speed('north interlink northbound', 'medium')
+            self.shortJourney(dir, self.loco.block, 'North Link', speed, dontStop=True)
             if lock.partial():
                 routes = self.requiredRoutes(siding)
             else:
@@ -837,11 +838,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # move into reverse loop
             speed = self.loco.speed('off track south', 'medium')
             self.shortJourney(True, self.loco.block, 'South Link', speed, dontStop=True, routes=routes)
-            if lock.partial():
-                self.loco.setSpeedSetting(0)
-                lock.upgradeLock()
-            else:
-                lock.partialUnlock()
+            lock.switch() # slows/stops loco if necessary
             self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
