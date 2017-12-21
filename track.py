@@ -135,18 +135,21 @@ class Track:
 
     # Returns the next monitored block on this track northbound
     # from the block supplied (which must be a jmri.Block),
-    # or North Link if the supplied block is the northernmost
+    # or North Slow/Fast Link if the supplied block is the northernmost
     # on this track.
     def nextBlockNorth(self, block):
         for b in self.blocks:
             if b == block.getUserName(): # this is the block we're in
                 i = self.blocks.index(b) + 1
                 if len(self.blocks) <= i:
-                    nb = 'South Link'
+                    if self.nr < 3:
+                        nb = "North Slow Link"
+                    else:
+                        nb = 'North Fast Link'
                 else:
                     nb = self.blocks[i]
                 return blocks.getBlock(nb)
-        # the block supplied is on on this track
+        # the block supplied is not on this track
         self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
