@@ -38,7 +38,9 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [2128, 2144]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-DCC_ADDRESSES = [2128]
+#DCC_ADDRESSES = [2128]
+DCC_ADDRESSES = [7405]
+
 DEBUG = True
 
 
@@ -432,11 +434,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("power is on")
 
         # clear locks
-        for lock in ['North Link Lock', 'South Link Lock', 'IMLOCKNORTHSIDINGS', 'IMLOCKNORTHTRACKLINK', 'IMLOCKSOUTHSIDINGS', 'IMLOCKSOUTHTRACKLINK']:
-            self.debug('unlocking ' + lock)
-            mem = memories.getMemory(lock)
-            if mem is not None:
-                mem.setValue(None)
+        # for lock in ['North Link Lock', 'South Link Lock', 'IMLOCKNORTHSIDINGS', 'IMLOCKNORTHTRACKLINK', 'IMLOCKSOUTHSIDINGS', 'IMLOCKSOUTHTRACKLINK']:
+        #     self.debug('unlocking ' + lock)
+        #     mem = memories.getMemory(lock)
+        #     if mem is not None:
+        #         mem.setValue(None)
 
         # unselect all sidings
         loco.Loco.unselectSidings(NORTH_SIDINGS + SOUTH_SIDINGS)
@@ -481,9 +483,18 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # clear block values in unoccupied blocks
         for name in blocks.getSystemNameList():
+            self.debug("checking block " + name)
             b = blocks.getBlock(name)
             if b.getState() != OCCUPIED:
+                self.debug("setting value of block " + name + " to None")
                 b.setValue(None)
+                if b.getUserName() is not None:
+                    self.debug("getting memory for " + b.getUserName())
+                    m = memories.getMemory(b.getUserName())
+                    if m is not None:
+                        self.debug("setting memory")
+                        m.setValue(None)
+
 
         # final status check before we hit main loop
         if self.checkStatus() != NORMAL:
