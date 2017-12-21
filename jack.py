@@ -434,11 +434,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("power is on")
 
         # clear locks
-        # for lock in ['North Link Lock', 'South Link Lock', 'IMLOCKNORTHSIDINGS', 'IMLOCKNORTHTRACKLINK', 'IMLOCKSOUTHSIDINGS', 'IMLOCKSOUTHTRACKLINK']:
-        #     self.debug('unlocking ' + lock)
-        #     mem = memories.getMemory(lock)
-        #     if mem is not None:
-        #         mem.setValue(None)
+        for lock in ['North Link Lock', 'South Link Lock', 'IMLOCKNORTHSIDINGS', 'IMLOCKNORTHTRACKLINK', 'IMLOCKSOUTHSIDINGS', 'IMLOCKSOUTHTRACKLINK']:
+            self.debug('unlocking ' + lock)
+            mem = memories.getMemory(lock)
+            if mem is not None:
+                mem.setValue(None)
 
         # unselect all sidings
         loco.Loco.unselectSidings(NORTH_SIDINGS + SOUTH_SIDINGS)
