@@ -2,15 +2,14 @@ TODO
 don't bring a non-reversible loco out unless the other one has a track available
 implement three-way lock for south sidings?
 JMRI: 'hide in throttle dropdown' option
-make moveIntoNorthSiding use different speeds for layout -> fast/slow link
-if there are no available tracks to run a class 150 on the north link get it out the way
 if all the sidings are full move a loco
 graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever it is
-turn lights on
 get the virgin running on slow
 prioritise locking depending on how full the layout is
-alex.py:840 is this the most efficient lock handling for reverse loops?
 
+-- make moveIntoNorthSiding use different speeds for layout -> fast/slow link
+-- alex.py:840 is this the most efficient lock handling for reverse loops?
+-- turn lights on
 -- make sure loco is past IR sensor before part releasing lock when northbound on south linkz
 -- don't wait for target block to be free if there's a lock and it's a link
 
@@ -23,6 +22,6 @@ LS40 is dicky
 
 
 
-
+++ if there are no available tracks to run a class 150 on the north link get it out the way
 ++ remove block values on non-occupied block on startup
 ++ slow to a halt in reverse loops
