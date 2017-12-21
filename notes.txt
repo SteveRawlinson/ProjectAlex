@@ -9,13 +9,14 @@ graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever i
 turn lights on
 get the virgin running on slow
 prioritise locking depending on how full the layout is
-make sure loco is past IR sensor before part releasing lock when northbound on south linkz
+alex.py:840 is this the most efficient lock handling for reverse loops?
 
--- remove block values on non-occupied block on startup
--- don't wait for target block to be free if there's a lock and it5's a link
+-- make sure loco is past IR sensor before part releasing lock when northbound on south linkz
+-- don't wait for target block to be free if there's a lock and it's a link
 
 LS65 is dicky
 LS19 is fine (and not used)
+LS40 is dicky
 
 
 
@@ -23,6 +24,5 @@ LS19 is fine (and not used)
 
 
 
-
-
+++ remove block values on non-occupied block on startup
 ++ slow to a halt in reverse loops
