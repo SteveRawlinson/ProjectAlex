@@ -16,12 +16,12 @@ class HistoricJourney:
         self.durations = []
 
     def dccAddr(self):
-       s = re.sub("^[^\(]*\(", "", self.nameAndAddress)
+       s = re.sub("^[^(]*\(", "", self.nameAndAddress)
        s2 = re.sub("\).*$", "", s)
        return s2
 
     def id(self):
-        return self.nameAndAddress + '-' + self.startblock + '-' + self.endblock
+        return self.dccAddr() + '-' + self.startblock + '-' + self.endblock
 
 
     def calc(self):
