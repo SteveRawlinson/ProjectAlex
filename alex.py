@@ -349,7 +349,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # eStop: issue an emergency stop rather than an idle command when stopping the loco
     def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None,
-                     lockSensor=None, eStop=False):
+                     lockSensor=None, eStop=False, ignoreOccupiedEndBlock=False):
 
         self.log("startJourney called")
 
@@ -442,14 +442,20 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # check we are ok to start moving (ie. the target block is free)
         ok_to_go = False
+        arrived = False
         tries = 0
         while not ok_to_go:
             if endBlockSensor.knownState == ACTIVE:
                 if lock and not lock.empty() and 'ink' in endBlock.getId():
                     # The block is a link and we have a lock so
                     # we can safely ignore the occupied block
-                    self.debug("ignoring occupied endblock")
-                    pass
+                    self.debug("ignoring occupied endblock: it's a link and we have a lock")
+                    ok_to_go = True
+                if ignoreOccupiedEndBlock:
+                    # calling method specifically says don't bother with this check
+                    self.debug("ignoring occupied endBlock: flag set")
+                    ok_to_go = True
+                    arrived = True
                 else:
                     self.debug("my destination block " + endBlock.getId() + " is occupied")
                     if lock:
@@ -530,7 +536,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.setRoute(r)
 
         #
-        #  ----------------  wait for a sensor to change  ------------------------------------------
+        #  ----------------  wait for a sensor to change  (unless we've arrived) ------------------------------------------
         #
         self.debug("waiting for destination block " + endBlock.userName + " to become active")
         if endIRSensor is not None:
@@ -540,7 +546,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if unlockSensor:
             sensorList.append(unlockSensor)
         changedList = []
-        arrived = False
         slowJourneyStart = time.time()
         while not arrived:
             repeatedSpeed = False
@@ -948,6 +953,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.setRoute(r, waitTillNotBusy=True)
         # get the speed
         sp = self.loco.speed('south link to layout', 'medium')
+        # do this now because it can be a while before we call shortJourney
+        self.loco.setSpeedSetting(sp)
         # and slowspeed
         ssp = self.loco.speed('slow')
         if irs.knownState == ACTIVE:
@@ -956,12 +963,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.loco.setSpeedSetting(sp)
             self.waitChange([irs])
             lock.unlock(partialUnlock=True)
+        # check if we are already in the endblock, this can happen with long trains
+        b, s = self.convertToLayoutBlockAndSensor(endBlock)
+        if b.getBlock().getState() == OCCUPIED:
+            ignoreOccupiedEndlock = True
+        else:
+            ignoreOccupiedEndlock = False
         # complete the move
         if stop:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, lockSensor="LS60")
+            self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, lockSensor="LS60", ignoreOccupiedEndBlock=ignoreOccupiedEndlock)
             self.waitAtPlatform()
         else:
-            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, dontStop=True, lockSensor="LS60")
+            self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, dontStop=True, lockSensor="LS60", ignoreOccupiedEndBlock=ignoreOccupiedEndlock)
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
