@@ -407,8 +407,8 @@ class Lock(util.Util):
             self.debug("****************************** switch called on empty lock ^^^^^^^^^^^^^^^^^^^^^^")
             return
         if self.partial():
-            self.debug("upgrading partial lock")
-            self.log("upgrading partial lock")
+            self.debug("switch: upgrading partial lock")
+            self.log("switch: upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
                 # this is a convoluted way of slowing and then stopping the loco while we
                 # upgrade the lock to a full lock
@@ -433,7 +433,7 @@ class Lock(util.Util):
                     self.upgradeLock()
             self.upgradeLock()
         else:
-            self.debug("partial unlock")
+            self.debug("switch: partial unlock")
             self.partialUnlock()
 
     # slows a loco down to 'slow' speed and then tries to get the lock
