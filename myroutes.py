@@ -94,7 +94,7 @@ SPEEDMAP = {
     # Mallard
     68: {'fast': 0.7, 'medium': 0.5, 'slow': 0.35},
     # class 150s
-    "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
+    "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6},
     # Javelin
     5004: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1},
     # Eurostar
