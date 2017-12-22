@@ -42,6 +42,7 @@ class Loco(util.Util):
             print "***************************** Throttle for loco ", self.nameAndAddress(), "has no slot ***********************************"
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
+        self.debug("setSpeedSetting: " + str(speed))
         self.throttle.setSpeedSetting(speed)
         if self.track:
             mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
@@ -460,8 +461,18 @@ class Loco(util.Util):
     # Returns a floating point number between 0 and 1 which it looks
     # up in the SPEEDMAP constant. It first looks for the dcc address
     # as the key, and then for the class. If it doesn't find it in
-    # either place it then looks for the 'fallback' option instead
+    # either place it then looks for the 'fallback' option instead.
+    # If it gets a string it searches again using the string as the
+    # key.
     def speed(self, speed, fallback = 'medium'):
+        sp = speed
+        while type(sp) != float:
+            sp = self.getSpeed(sp, fallback)
+        self.debug("getting speed: " + speed + ":  " + str(sp))
+        return sp
+
+    # does the donkey work for self.speed()
+    def getSpeed(self, speed, fallback = 'medium'):
         sp = None
         if self.dccAddr in SPEEDMAP:
             if speed in SPEEDMAP[self.dccAddr]:
@@ -481,7 +492,7 @@ class Loco(util.Util):
             if k in SPEEDMAP:
                 if fallback in SPEEDMAP[k]:
                     sp = SPEEDMAP[k][fallback]
-        if sp is not None and sp > 1.0:
+        if type(sp) == float and sp > 1.0:
             self.emergencyStop()
             raise RuntimeError("speed " + str(sp) + " is too high")
         return sp
