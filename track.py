@@ -143,9 +143,9 @@ class Track:
                 i = self.blocks.index(b) + 1
                 if len(self.blocks) <= i:
                     if self.nr < 3:
-                        nb = "North Slow Link"
+                        nb = "Nth Slow Link"
                     else:
-                        nb = 'North Fast Link'
+                        nb = 'Nth Fast Link'
                 else:
                     nb = self.blocks[i]
                 return blocks.getBlock(nb)
