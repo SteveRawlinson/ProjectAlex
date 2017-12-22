@@ -177,7 +177,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
 
     # sets (triggers) a route
-    def setRoute(self, route, sleeptime=1, waitTillNotBusy=False):
+    def setRoute(self, route, sleeptime=None, waitTillNotBusy=False):
         self.debug('setting route ' +  str(route))
         r = routes.getRoute(route)
         if r is None:
@@ -187,7 +187,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         r.setRoute()
         if sleeptime is not None and sleeptime > 0:
             time.sleep(sleeptime)
-        if waitTillNotBusy:
+        if waitTillNotBusy and r.isRouteBusy():
             self.debug("waiting till route is not busy")
             while r.isRouteBusy():
                 time.sleep(0.2)
@@ -561,6 +561,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if repeatedSpeed is False:
                     # send a gentle reminder of the speed
                     self.loco.repeatSpeedMessage(normalSpeed)
+                    repeatedSpeed = True
                 if time.time() - slowJourneyStart > 30 * 60.0:
                     # 30 minute timeout
                     raise RuntimeError("shortJourney took too long")
@@ -730,7 +731,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(False, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
-            self.shortJourney(False, self.loco.block, 'North Link', speed, routes=[route], eStop=True)
+            self.shortJourney(False, self.loco.block, 'North Link', normalSpeed=speed, slowSpeed=speed, routes=[route], eStop=True)
             if lock.partial():
                 # we should get the full lock straight away
                 lock.upgradeLock(keepOldPartial=True)
@@ -929,31 +930,47 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
         # wait till the whole train is past the IR sensor just after the reverse loop points
         irs = sensors.getSensor("LS59")
+        routeSleepTime = 0
         if irs.knownState == ACTIVE:
             self.debug("south link IR sensor is active")
             if lock.partial():
                 # we can't switch the lock because our tail is still overhanging the sidings exit
-                self.debug("attempting non-bloccing lock upgrade")
+                self.debug("attempting non-blocking lock upgrade")
                 if lock.upgradeLockNonBlocking(keepOldPartial=True) is False:
-                    self.debug("didn't get lock, stopping")
                     # we can't upgrade the lock immediately, stop
+                    self.debug("didn't get lock, stopping")
                     self.loco.setSpeedSetting(0)
                     # now wait for a lock
                     lock.upgradeLock(keepOldPartial=True)
                 else:
+                    # slow the loco down: there are routes we haven't set
+                    # yet and they take a while, meanwhile the loco hasn't stopped
+                    sp = self.loco.speed('south link wait for route', 'slow')
                     self.debug("got lock upgrade")
+                    self.debug('****************************************** slowing loco to ' + str(sp))
+                    self.loco.setSpeedSetting(sp)
                     self.debug(lock.status())
+                    routeSleepTime = 5
         else:
             # update the lock
             lock.switch() # stops loco if necessary
         # add later routes if we haven't done so already
         if not allRoutesSet:
+            self.debug("setting additional routes if necessary")
             routes = self.requiredRoutes(endBlock)
+            if routeSleepTime and routeSleepTime > 0:
+                w = False
+            else:
+                w = True
             for r in routes:
-                self.setRoute(r, waitTillNotBusy=True)
+                self.setRoute(r, waitTillNotBusy=w)
+                if routeSleepTime:
+                    self.debug("sleeping for routeSleepTime (" + str(routeSleepTime) +') secs')
+                    time.sleep(routeSleepTime)
         # get the speed
         sp = self.loco.speed('south link to layout', 'medium')
         # do this now because it can be a while before we call shortJourney
+        self.debug('setting speed early before calling shortJourney: new speed: ' + str(sp))
         self.loco.setSpeedSetting(sp)
         # and slowspeed
         ssp = self.loco.speed('slow')
@@ -1013,10 +1030,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             routes = self.requiredRoutes(endBlock)
             lock.unlock(partialUnlock=True)
         # get the speed
+        sp = self.loco.speed('north interlink southbound', 'medium')
+        # move to the fast/slow link
+        self.shortJourney(dir, self.loco.block, endBlock, sp, routes=routes, dontStop=True)
+        # new speed
         sp = self.loco.speed('north link to layout', 'medium')
         # and slowspeed
         ssp = self.loco.speed('slow')
         # complete the move
+        routes = [] # experimental
         if stop:
             self.shortJourney(dir, self.loco.block, endBlock, sp, slowSpeed=ssp, lock=lock, routes=routes, lockSensor="LS64")
             self.waitAtPlatform()
