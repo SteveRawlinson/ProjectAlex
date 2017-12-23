@@ -29,6 +29,7 @@ class Loco(util.Util):
         self.track = None
         self._canGoFast = None
         self._freight = None
+        self.stopTime = time.time()
 
     def emergencyStop(self):
         self.throttle.setSpeedSetting(-1)
@@ -36,6 +37,7 @@ class Loco(util.Util):
         self.throttle.setSpeedSetting(0)
         time.sleep(0.1)
         self.throttle.setSpeedSetting(-1)
+        self.stopTime = time.time()
 
     def setSpeedSetting(self, speed):
         if self.throttle.getLocoNetSlot() is None:
@@ -55,6 +57,12 @@ class Loco(util.Util):
             # set zero again
             time.sleep(0.05)
             self.throttle.setSpeedSetting(speed)
+            self.stopTime = time.time()
+
+    def timeStopped(self):
+        if self.throttle.getSpeedSetting() != 0.0:
+            return 0
+        return time.time() - self.stopTime
 
     # returns the smallest number that will actually have any impact on
     # the speed if it's used to change the speed. Differs depending on
@@ -245,10 +253,13 @@ class Loco(util.Util):
         for b in blocklist:
             block = layoutblocks.getLayoutBlock(b)
             mem = memories.getMemory("IMSIDING" + b.upper())
+            sens = block.getOccupancySensor()
+
             if mem is None:
                 self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
             else:
-                self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: " + str(mem.getValue()))
+                self.log("  considering block " + b + " state:" + str(block.getState()) + "sensor: " + sens.getDisplayName() + "sensor state: " + str(sens.getKnownState()) +
+                         " mem value: " + str(mem.getValue()))
             if block is None:
                 self.debug("no such block: " + b)
                 self.log("no such block: " + b)
@@ -295,7 +306,7 @@ class Loco(util.Util):
                 return None
         mem = memories.provideMemory(self.sidingMemoryName(siding))
         mem.setValue("selected")
-        self.log("  selected siding " + siding.getId() + "memory: " + mem.getSystemName())
+        self.log("  selected siding " + siding.getId() + " memory: " + mem.getSystemName())
         return siding
 
     # Removes the memory which reserves the siding.
