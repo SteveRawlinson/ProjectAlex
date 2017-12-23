@@ -402,11 +402,19 @@ class Lock(util.Util):
     # to progress (in the case of it having a partial lock), or it needs
     # to release the first part of the lock (in the case of having a full
     # lock).
-    def switch(self):
+    def switch(self, slowOnPartial=None, slowSpeed='slow'):
         if self.empty():
             self.debug("****************************** switch called on empty lock ^^^^^^^^^^^^^^^^^^^^^^")
             return
+        if slowOnPartial is None:
+            if self.end == SOUTH and self.direction == NORTHBOUND:
+                slowOnPartial = True
+            else:
+                slowOnPartial = False
         if self.partial():
+            if slowOnPartial:
+                self.debug("switch: slowing loco because partial and slowOnPartial")
+                self.loco.throttle.setSpeedSetting(slowSpeed)
             self.debug("switch: upgrading partial lock")
             self.log("switch: upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
@@ -414,7 +422,9 @@ class Lock(util.Util):
                 # upgrade the lock to a full lock
                 if self.upgradeLockNonBlocking() is False:
                     self.debug("slowing loco while lock upgraded")
-                    self.loco.setSpeedSetting('slow')
+                    if not slowOnPartial:
+                        # if slowOnPartial is true, we already did this
+                        self.loco.setSpeedSetting('slow')
                     tries = 0
                     while self.upgradeLockNonBlocking() is False and tries < 5:
                         time.sleep(0.5)
