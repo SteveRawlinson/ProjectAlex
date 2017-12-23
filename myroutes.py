@@ -96,14 +96,14 @@ SPEEDMAP = {
     # class 150s
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6},
     # Javelin
-    5004: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast'},
+    5004: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast'},
     # Eurostar
-    3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast'},
+    3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast'},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3, 'north sidings entry': 0.2,
-           'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast'},
+           'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast'},
     # class 91 virgin
-    1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast'},
+    1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast'},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
     # Underground
@@ -117,7 +117,7 @@ SLOWTIMEMAP = {
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 2, "FPK P3": 3},
     # class 150s
     "class150": {"FPK P2": 3, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 2, "AAP P1": 1, "NSG P2": 3,
-                 "FPK P3": 8, "AAP P2": 3, "NSG P1": 6},
+                 "FPK P3": 8, "AAP P2": 3, "NSG P1": 5},
     # Underground
     1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 8, "PAL P1": 6, "AAP P4": 7, "FPK P1": 13, "FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "FPK P2": 8,
            "AAP P3": 7, "PAL P2": 5, "North Link": 4},
