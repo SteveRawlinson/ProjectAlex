@@ -932,16 +932,22 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         irs = sensors.getSensor("LS59")
         routeSleepTime = 0
         if irs.knownState == ACTIVE:
-            self.debug("south link IR sensor is active")
+            self.debug("south link clear IR sensor is active")
             if lock.partial():
-                # we can't switch the lock because our tail is still overhanging the sidings exit
+                # we can't switch the lock because our tail is still overhanging the sidings exit,
+                # upgrade to full lock instead
                 self.debug("attempting non-blocking lock upgrade")
                 if lock.upgradeLockNonBlocking(keepOldPartial=True) is False:
                     # we can't upgrade the lock immediately, stop
                     self.debug("didn't get lock, stopping")
                     self.loco.setSpeedSetting(0)
                     # now wait for a lock
+                    self.debug('waiting for lock')
                     lock.upgradeLock(keepOldPartial=True)
+                    self.debug('got lock')
+                    timeStopped = self.loco.timeStopped()
+                    if timeStopped < 5:
+                        routeSleepTime = 5 - timeStopped
                 else:
                     # slow the loco down: there are routes we haven't set
                     # yet and they take a while, meanwhile the loco hasn't stopped
@@ -952,8 +958,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug(lock.status())
                     routeSleepTime = 5
         else:
+            self.debug('south link clear IR sensor is not active')
+            # if the lock is partial we need extra time toset routes
+            if lock.partial():
+                routeSleepTime = 5
             # update the lock
-            lock.switch() # stops loco if necessary
+            lock.switch() # slows/stops loco if necessary
         # add later routes if we haven't done so already
         if not allRoutesSet:
             self.debug("setting additional routes if necessary")
@@ -977,8 +987,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if irs.knownState == ACTIVE:
             self.debug("waiting for south link clear IR sensor to go inactive before partially releasing lock")
             if self.loco.throttle.getSpeedSetting() == 0:
+                self.debug('get loco moving (currently stationary)')
                 self.loco.setSpeedSetting(sp)
             self.waitChange([irs])
+            self.debug('IR sensor clear, partially releasing lock')
             lock.unlock(partialUnlock=True)
         # check if we are already in the endblock, this can happen with long trains
         b, s = self.convertToLayoutBlockAndSensor(endBlock)
@@ -992,6 +1004,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.waitAtPlatform()
         else:
             self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, dontStop=True, lockSensor="LS60", ignoreOccupiedEndBlock=ignoreOccupiedEndlock)
+        self.debug('leaveSouthSidings done')
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
@@ -1032,7 +1045,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get the speed
         sp = self.loco.speed('north interlink southbound', 'medium')
         # move to the fast/slow link
-        self.shortJourney(dir, self.loco.block, endBlock, sp, routes=routes, dontStop=True)
+        if self.loco.track.nr > 2:
+            eb = "Nth Fast Link"
+        else:
+            eb = "Nth Slow Link"
+        self.shortJourney(dir, self.loco.block, eb, sp, routes=routes, dontStop=True)
         # new speed
         sp = self.loco.speed('north link to layout', 'medium')
         # and slowspeed
@@ -1044,7 +1061,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.waitAtPlatform()
         else:
             self.shortJourney(dir, self.loco.block, endBlock, sp, lock=lock, routes=routes, dontStop=True, lockSensor="LS64")
-
+        self.debug('leaveNorthSidings done')
 
     def handle(self):
         pass
