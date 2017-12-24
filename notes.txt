@@ -16,6 +16,7 @@ prioritise locking depending on how full the layout is
 LS65 is dicky
 LS19 is fine (and not used)
 LS40 is dicky
+LS5 is dicky
 
 
 
