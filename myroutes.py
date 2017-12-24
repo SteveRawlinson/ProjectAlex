@@ -103,7 +103,8 @@ SPEEDMAP = {
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3, 'north sidings entry': 0.2,
            'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast'},
     # class 91 virgin
-    1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast'},
+    1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
+           'north interlink northbound': 0.5, 'track to south link:': 0.5},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25},
     # Underground
