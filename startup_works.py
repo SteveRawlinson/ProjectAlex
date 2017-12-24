@@ -71,6 +71,13 @@ class SetStartupSensors:
             name = 'IS' + str(s)
             sen = sensors.getSensor(name)
             sen.setKnownState(INACTIVE)
+        # clear display memories
+        for i in range(1,7):
+            m = memories.provideMemory("IMTRACK" + str(i) + "LOCO")
+            m.setValue(None)
+            m = memories.provideMemory("IMTRACK" + str(i) + "SPEED")
+            m.setValue(None)
+
 
 SetStartupSensors(lssensorlist, issensorlist).do()
 
