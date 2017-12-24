@@ -207,11 +207,13 @@ class Lock(util.Util):
     # is available.
     def getLock(self, end=None, direction=None, loc=None):
         if DEBUG:
+            if loc is not None:
+                self.loco = loc
             if end == NORTH or self.end == NORTH:
                 end_s = 'North'
             else:
                 end_s = 'South'
-            self.debug(str(loc.dccAddr) + " getting (blocking) lock on " + end_s + " link")
+            self.debug(str(self.loco.dccAddr) + " getting (blocking) lock on " + end_s + " link")
         while self.empty() or self.checkLock() is False:
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
