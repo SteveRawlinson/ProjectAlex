@@ -22,6 +22,22 @@ class HistoricJourney:
     def id:
         return self.nameAndAddress + '-' + self.startblock + '-' + self.endblock
 
+    def calcs(self):
+        count = 0
+        tot = Deceimal('0.0')
+        for d in self.durations:
+            if self.min is None or self.min > d:
+                self.min = d
+            if self.max is None or self.max < d:
+                self.max = d
+            tot =+ d
+            count += 1
+        self.average = tot / count
+
+    def to_s(self):
+        return "loco: " + self.nameAndAddress + " start: " + self.startblock + " end: " + self.endblock + " avg: " + str(self.average)
+
+
 
 
 
@@ -36,6 +52,9 @@ with open('C:\Users\steve\shortJourney.log', 'r') as fp:
         j.durations.append(Decimal(duration))
 
 
-
+for k in journeys:
+    j = journeys[k]
+    j.calcs()
+    print j.to_s()
 
 
