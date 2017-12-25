@@ -35,10 +35,13 @@ from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
 #DCC_ADDRESSES = [2128, 2144, 68, 7405, 1124, 1087, 6719]
-#DCC_ADDRESSES = [2128, 2144]
+DCC_ADDRESSES = [2128, 2144, 1124]
+#DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-DCC_ADDRESSES = [2128]
+#DCC_ADDRESSES = [2128]
+#DCC_ADDRESSES = [7405]
+
 DEBUG = True
 
 
@@ -462,7 +465,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # Initialise tracks
         self.initTracks()
 
-        # check these sensors are not active
+        # check these sensors are not active, they control lock release
         for s in ["LS60", "LS64"]:
             sen = sensors.getSensor(s)
             if sen.knownState == ACTIVE:
@@ -479,11 +482,25 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if poweredOn:
             time.sleep(5)
 
+        # log sensor status
+        for n in sensors.getSystemNameList():
+            s = sensors.getSensor(n)
+            self.log("sensor: " + str(s.getDisplayName()) + " state: " + str(s.state))
+
         # clear block values in unoccupied blocks
         for name in blocks.getSystemNameList():
+            self.debug("checking block " + name)
             b = blocks.getBlock(name)
             if b.getState() != OCCUPIED:
+                self.debug("setting value of block " + name + " to None")
                 b.setValue(None)
+                if b.getUserName() is not None:
+                    self.debug("getting memory for " + b.getUserName())
+                    m = memories.getMemory(b.getUserName())
+                    if m is not None:
+                        self.debug("setting memory")
+                        m.setValue(None)
+
 
         # final status check before we hit main loop
         if self.checkStatus() != NORMAL:

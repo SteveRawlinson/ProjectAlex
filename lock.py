@@ -207,11 +207,13 @@ class Lock(util.Util):
     # is available.
     def getLock(self, end=None, direction=None, loc=None):
         if DEBUG:
+            if loc is not None:
+                self.loco = loc
             if end == NORTH or self.end == NORTH:
                 end_s = 'North'
             else:
                 end_s = 'South'
-            self.debug(str(loc.dccAddr) + " getting (blocking) lock on " + end_s + " link")
+            self.debug(str(self.loco.dccAddr) + " getting (blocking) lock on " + end_s + " link")
         while self.empty() or self.checkLock() is False:
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
@@ -402,19 +404,29 @@ class Lock(util.Util):
     # to progress (in the case of it having a partial lock), or it needs
     # to release the first part of the lock (in the case of having a full
     # lock).
-    def switch(self):
+    def switch(self, slowOnPartial=None, slowSpeed='slow'):
         if self.empty():
             self.debug("****************************** switch called on empty lock ^^^^^^^^^^^^^^^^^^^^^^")
             return
+        if slowOnPartial is None:
+            if self.end == SOUTH and self.direction == NORTHBOUND:
+                slowOnPartial = True
+            else:
+                slowOnPartial = False
         if self.partial():
-            self.debug("upgrading partial lock")
-            self.log("upgrading partial lock")
+            if slowOnPartial:
+                self.debug("switch: slowing loco because partial and slowOnPartial")
+                self.loco.throttle.setSpeedSetting(slowSpeed)
+            self.debug("switch: upgrading partial lock")
+            self.log("switch: upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
                 # this is a convoluted way of slowing and then stopping the loco while we
                 # upgrade the lock to a full lock
                 if self.upgradeLockNonBlocking() is False:
                     self.debug("slowing loco while lock upgraded")
-                    self.loco.setSpeedSetting('slow')
+                    if not slowOnPartial:
+                        # if slowOnPartial is true, we already did this
+                        self.loco.setSpeedSetting('slow')
                     tries = 0
                     while self.upgradeLockNonBlocking() is False and tries < 5:
                         time.sleep(0.5)
@@ -433,7 +445,7 @@ class Lock(util.Util):
                     self.upgradeLock()
             self.upgradeLock()
         else:
-            self.debug("partial unlock")
+            self.debug("switch: partial unlock")
             self.partialUnlock()
 
     # slows a loco down to 'slow' speed and then tries to get the lock

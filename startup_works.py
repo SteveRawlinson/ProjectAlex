@@ -55,7 +55,7 @@ from jmri_bindings import *
 #
 #         print "StartUp done."
 
-lssensorlist = [112, 113, 114, 115, 116, 117, 105, 106, 107, 108, 109, 110, 101, 102, 103, 119, 122, 123]
+lssensorlist = [112, 113, 114, 115, 116, 117, 105, 106, 107, 108, 109, 110, 101, 102, 103, 119, 120, 122, 123]
 issensorlist = [18, 19, 20, 21, 22, 28, 29, 33, 34, 'IS32']
 class SetStartupSensors:
     def __init__(self, lssensorlist, issensorlist):
@@ -71,6 +71,13 @@ class SetStartupSensors:
             name = 'IS' + str(s)
             sen = sensors.getSensor(name)
             sen.setKnownState(INACTIVE)
+        # clear display memories
+        for i in range(1,7):
+            m = memories.provideMemory("IMTRACK" + str(i) + "LOCO")
+            m.setValue(None)
+            m = memories.provideMemory("IMTRACK" + str(i) + "SPEED")
+            m.setValue(None)
+
 
 SetStartupSensors(lssensorlist, issensorlist).do()
 
