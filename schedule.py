@@ -49,9 +49,6 @@ class HistoricJourney:
             self.count += 1
         self.average = tot / self.count
 
-    def to_s(self):
-        return self.nameAndAddress + ' ' + self.startblock + ' ' + self.endblock + ' ' + str(self.average) + ' ' + str(self.count)
-
 
 print "schedule"
 journeys = {}
