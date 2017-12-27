@@ -276,9 +276,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         return changedList
 
     def waitAtPlatform(self):
+        if self.getJackStatus() == STOPPING:
+            wt = self.platformWaitTimeMsecs / 2
+        else:
+            wt = self.platformWaitTimeMsecs
         self.debug("waiting at platform for " + str(self.platformWaitTimeMsecs / 1000) + " secs")
-        waitTimeMsecs = int(self.platformWaitTimeMsecs + (random.random() * (self.platformWaitTimeMsecs / 2)))
-        self.waitMsec(waitTimeMsecs)
+        self.waitMsec(wt)
 
     # Gets a DCC throttle for the loco supplied
     def getLocoThrottle(self, loc):
