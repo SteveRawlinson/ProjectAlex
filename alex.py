@@ -795,6 +795,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 else:
                     if lock and lock.empty():
                         lock.getLock()
+            self.debug("selected siding: " + siding.getId())
             if not lock.partial():
                 # full lock - might as well set all the routes
                 routes = routes + self.requiredRoutes(siding)
@@ -898,6 +899,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 else:
                     if lock and lock.empty():
                         lock.getLock()
+            self.debug("selected siding " + siding.getId())
             if not lock.partial():
                 moreRoutes = self.requiredRoutes(siding)
                 self.debug("moveIntoSouthSidings: adding routes: " + ', '.join(moreRoutes))
