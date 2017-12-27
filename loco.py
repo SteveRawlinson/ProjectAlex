@@ -247,14 +247,13 @@ class Loco(util.Util):
         return False
 
     # Takes an array of block names and returns the shortest empty block
-    # that the current loco will fit in.
+    # that the current loco will fit in. Returns a LayoutBlock.
     def shortestBlockTrainFits(self, blocklist):
         sbtf = None
         for b in blocklist:
             block = layoutblocks.getLayoutBlock(b)
             mem = memories.getMemory("IMSIDING" + b.upper())
             sens = block.getOccupancySensor()
-
             if mem is None:
                 self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
             else:
@@ -293,7 +292,8 @@ class Loco(util.Util):
         return sbtf
 
     # Selects a siding from a list and sets a memory value to prevent
-    # another loco selecting the same one.
+    # another loco selecting the same one. The object returned is type
+    # LayoutBlock
     def selectSiding(self, sidings, blocking=True):
         while powermanager.getPower() == jmri.PowerManager.OFF:
             time.sleep(1)
@@ -562,7 +562,7 @@ class Loco(util.Util):
         return l
 
     # Gets a lock. See lock.py for details
-    def getLock(self, end):
+    def getLock(self, end, sleepTime=None):
         if self.track.northbound():
             dir = NORTHBOUND
         else:
@@ -573,7 +573,7 @@ class Loco(util.Util):
             end_s = 'South'
         self.debug("getting (new) lock on " + end_s + " link (end = " + str(end) + ")")
         l = lock.Lock()
-        l.getLock(end=end, direction=dir, loc=self)
+        l.getLock(end=end, direction=dir, loc=self, sleepTime=sleepTime)
         self.debug("got lock: " + l.status())
         return l
 
