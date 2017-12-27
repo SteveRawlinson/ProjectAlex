@@ -442,12 +442,14 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 except:
                     self.debug("no roster entry for address " + str(addr))
                     # incorrect dcc addr
+                    self.locos.remove(loc)
                     del loc
                     return
                 try:
                     self.getLocoThrottle(loc)
                 except RuntimeError:
                     # idiot at the keyboard entered wrong dcc addr
+                    self.locos.remove(loc)
                     del loc
                     return
                 loc.emergencyStop()
