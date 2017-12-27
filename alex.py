@@ -38,7 +38,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # any necessary configuration.
     def init(self):
         self.sensorStates = None
-        self.platformWaitTimeMsecs = 10000
+        self.platformWaitTimeMsecs = 30000
         return
 
     def debug(self, message):
