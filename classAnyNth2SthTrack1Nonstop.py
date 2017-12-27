@@ -28,7 +28,7 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
             self.getLocoThrottle(self.loco)
 
         # check we have a track
-        if self.track in None:
+        if self.track is None:
             self.track = self.tracks[0]
 
         self.loco.status = loco.MOVING
