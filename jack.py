@@ -38,7 +38,7 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
-DCC_ADDRESSES = [7405, 68]
+DCC_ADDRESSES = [7405, 68, 2144, 2128]
 #DCC_ADDRESSES = [2128]
 #DCC_ADDRESSES = [7405]
 
@@ -273,6 +273,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("moving loco off North Link into sidings")
                     klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
                     self.startJourney(loc, None, klassName=klassName)
+                    loc.status = loco.SIDINGS
                     return
         if time.time() - self.lastJourneyStartTime < 10.0:
             # too soon since last journey started
