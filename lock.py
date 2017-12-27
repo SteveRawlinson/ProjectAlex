@@ -430,7 +430,7 @@ class Lock(util.Util):
         if self.partial():
             if slowOnPartial:
                 self.debug("switch: slowing loco because partial and slowOnPartial")
-                self.loco.throttle.setSpeedSetting(slowSpeed)
+                self.loco.setSpeedSetting(slowSpeed)
             self.debug("switch: upgrading partial lock")
             self.log("switch: upgrading partial lock")
             if self.loco.throttle.getSpeedSetting() > 0:
