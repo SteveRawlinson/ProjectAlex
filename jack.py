@@ -34,11 +34,11 @@ from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
-DCC_ADDRESSES = [2144]
+#DCC_ADDRESSES = [2144]
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
-#DCC_ADDRESSES = [7405]
+DCC_ADDRESSES = [7405, 68]
 #DCC_ADDRESSES = [2128]
 #DCC_ADDRESSES = [7405]
 
@@ -295,8 +295,18 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get a list of candidate locos
         candidates = []
         preferred_loco = None
-        #self.debug("selecting loco from list of " + str(len(self.locos)))
+        self.log("selecting loco from list of " + str(len(self.locos)))
+        # check if we have any locos in sidings - useful later
+        locosInNorthSidings = False
+        if self.locoCountInSidings(self.locos, NORTH_SIDINGS) > 0:
+            self.log("we have locos in North Sidings")
+            locosInNorthSidings = True
+        locosInSouthSidings = False
+        if self.locoCountInSidings(self.locos, SOUTH_SIDINGS) > 0:
+            self.log("we have locos in South Sidings")
+            locosInSouthSidings = True
         for loc in self.locos:
+            self.log("considering " + loc.nameAndAddress() + " in " + loc.block.getUserName())
             if loc.active():
                 if loc.reversible() is False:
                     # check if non-reversible loco is heading towards occupied reverse loop
@@ -308,34 +318,47 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     if addr is not False and addr is not True:
                         # must be the address of the loco in the loop, remember it for later
                         preferred_loco = loco.Loco.getLocoByAddr(addr, self.locos)
+                        self.log("  setting preferred loco to " + preferred_loco.nameAndAddress())
                 continue
             # don't run non-reversible locos in sidings facing the wrong way
             if loc.wrongway is True:
+                self.log("  wrongway is true")
                 continue
             # don't run locos with no free tracks
             if loc.northSidings() and track.Track.southboundTracksFree(self.tracks) == 0:
+                self.log("  there are no free southbound tracks")
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
+                self.log("  there are no free northbound tracks")
                 continue
-            # don't pick a loco if there are no free sidings on the other side (pick one from that side)
-            if (loc.northSidings() or loc.inReverseLoop()) and self.freeSidingCount(SOUTH_SIDINGS) == 0:
+            # don't pick a loco if there are no free sidings on the other side (pick one from that side instead)
+            if (loc.northSidings() or loc.inReverseLoop()) and self.freeSidingCount(SOUTH_SIDINGS) == 0 and locosInSouthSidings:
+                self.log("  there are no free sidings in South Sidings")
                 continue
-            if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) == 0:
+            if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) == 0 and locosInNorthSidings:
+                self.log("  there are no free sidings in North Sidings")
                 continue
             # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
             if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
+                self.log("  an unknown loco is in South Reverse Loop")
                 continue
             if loc.reversible() is False and loc.southSidings() and self.isBlockOccupied(NORTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
+                self.log("  an unknown loco is in North Reverse Loop")
                 continue
             # If there are no tracks available for this loco, don't pick it
             if track.Track.preferred_track(loc, self.tracks) is None:
+                self.log("  there are no tracks available")
                 continue
             # add this loco to the list of candidates
+            self.log("  adding loco to candidates")
             candidates.append(loc)
 
-        #self.debug("we have " + str(len(candidates)) + " candidates")
+        self.log("we have " + str(len(candidates)) + " candidates")
+        if len(candidates) == 0:
+            self.log("no cancdidates, returning")
+            return
         # if we have a preferred loco, and it's in the candidate list, pick that one
         if preferred_loco is not None and preferred_loco in candidates:
             self.debug("picking preferred loco")
@@ -355,14 +378,17 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     loc = c
                     break
         self.debug("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
+        self.log("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
         # pick a track
         trak = track.Track.preferred_track(loc, self.tracks)
         if trak is None:
             self.debug("no available tracks to run loco " + loc.name())
+            self.log("no available tracks to run loco " + loc.name())
             # if DEBUG:
             #     track.Track.trackReport(self.tracks)
             return
         self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+        self.log("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
         self.startJourney(loc, trak)
 
 
@@ -411,6 +437,13 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             addr = JOptionPane.showInputDialog("DCC address of new loco:")
             if addr != "" and addr is not None and int(addr) > 0:
                 loc = self.getNewLoco(int(addr))
+                try:
+                    loc.rosterEntry()
+                except:
+                    self.debug("no roster entry for address " + str(addr))
+                    # incorrect dcc addr
+                    del loc
+                    return
                 try:
                     self.getLocoThrottle(loc)
                 except RuntimeError:
