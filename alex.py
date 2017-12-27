@@ -699,7 +699,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 lock = self.loco.getLockNonBlocking(NORTH)
             else:
                 # we are stationary, we can wait for a lock
-                lock = self.loco.getLock(NORTH)
+                if self.loco.rarity() == 0.0:
+                    sleepTime = 5 # no hurry for the lock
+                else:
+                    sleepTime = None # get getLock() decide
+                lock = self.loco.getLock(NORTH, sleepTime=sleepTime)
         if lock.empty():
             self.track.setExitSignalAppearance(RED)
             # bring loco to a halt
@@ -832,7 +836,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 lock = self.loco.getLockNonBlocking(SOUTH)
             else:
                 # we are stationary, we can wait for a lock
-                lock = self.loco.getLock(SOUTH)
+                if self.loco.rarity() == 0.0:
+                    sleepTime = 5 # no hurry for the lock
+                else:
+                    sleepTime = None # get getLock() decide
+                lock = self.loco.getLock(SOUTH, sleepTime=sleepTime)
         if lock.empty():
             # set the signal to red
             self.track.setExitSignalAppearance(RED)
