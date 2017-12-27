@@ -36,6 +36,9 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             if lock.empty():
                 # stop the train at FPK 7 unless we get a lock before slowtime runs out
                 lock.getLockOrStopLoco("FPK P7")
+        else:
+            routes = self.requiredRoutes("FPK P7")
+            self.shortJourney(True, endBlock="FPK P7", normalSpeed=fullSpeed, dontStop=True, routes=routes)
 
         self.moveIntoSouthSidings(lock)
 
