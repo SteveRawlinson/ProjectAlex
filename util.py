@@ -100,7 +100,7 @@ class Util:
     def getJackStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
         v = mem.getValue()
-        return v
+        return int(v)
 
     def sidingMemoryName(self, siding):
         if type(siding) == str:
