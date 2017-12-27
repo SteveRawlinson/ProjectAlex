@@ -205,7 +205,7 @@ class Lock(util.Util):
 
     # Calls the above method repeatedly until at least a partial lock
     # is available.
-    def getLock(self, end=None, direction=None, loc=None):
+    def getLock(self, end=None, direction=None, loc=None, sleepTime=None):
         if DEBUG:
             if loc is not None:
                 self.loco = loc
@@ -214,10 +214,18 @@ class Lock(util.Util):
             else:
                 end_s = 'South'
             self.debug(str(self.loco.dccAddr) + " getting (blocking) lock on " + end_s + " link")
+        if sleepTime is None:
+            # give priority to locos entering the layout
+            if end == NORTH and direction == SOUTHBOUND or (end == SOUTH and direction == NORTHBOUND):
+                sleepTime = 0.5
+            else:
+                sleepTime = 1.0
+        if sleepTime < 0.2:
+            sleepTime = 0.2
         while self.empty() or self.checkLock() is False:
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
-                time.sleep(0.5)
+                time.sleep(sleepTime)
 
 
     # Get a lock on the whole link, emulating the old style lock
