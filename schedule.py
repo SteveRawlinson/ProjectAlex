@@ -23,6 +23,22 @@ class HistoricJourney:
     def id(self):
         return self.dccAddr() + '-' + self.startblock + '-' + self.endblock
 
+    def calcs(self):
+        count = 0
+        tot = Deceimal('0.0')
+        for d in self.durations:
+            if self.min is None or self.min > d:
+                self.min = d
+            if self.max is None or self.max < d:
+                self.max = d
+            tot =+ d
+            count += 1
+        self.average = tot / count
+
+    def to_s(self):
+        return "loco: " + self.nameAndAddress + " start: " + self.startblock + " end: " + self.endblock + " avg: " + str(self.average)
+
+
 
     def calc(self):
         tot = Decimal(0.0)
@@ -32,9 +48,6 @@ class HistoricJourney:
             tot += d
             self.count += 1
         self.average = tot / self.count
-
-    def to_s(self):
-        return self.nameAndAddress + ' ' + self.startblock + ' ' + self.endblock + ' ' + str(self.average) + ' ' + str(self.count)
 
 
 print "schedule"
@@ -56,6 +69,9 @@ for k in sorted(journeys.iterkeys()):
     j.calc()
     print j.to_s()
 
-
+for k in journeys:
+    j = journeys[k]
+    j.calcs()
+    print j.to_s()
 
 

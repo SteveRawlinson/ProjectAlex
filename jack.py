@@ -309,19 +309,32 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                         # must be the address of the loco in the loop, remember it for later
                         preferred_loco = loco.Loco.getLocoByAddr(addr, self.locos)
                 continue
+            # don't run non-reversible locos in sidings facing the wrong way
             if loc.wrongway is True:
                 continue
+            # don't run locos with no free tracks
             if loc.northSidings() and track.Track.southboundTracksFree(self.tracks) == 0:
                 continue
             if loc.southSidings() and track.Track.northboundTracksFree(self.tracks) == 0:
                 continue
+            # don't pick a loco if there are no free sidings on the other side (pick one from that side)
+            if (loc.northSidings() or loc.inReverseLoop()) and self.freeSidingCount(SOUTH_SIDINGS) == 0:
+                continue
+            if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) == 0:
+                continue
+            # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
             if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
                 continue
             if loc.reversible() is False and loc.southSidings() and self.isBlockOccupied(NORTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what
                 continue
+            # If there are no tracks available for this loco, don't pick it
+            if track.Track.preferred_track(loc, self.tracks) is None:
+                continue
+            # add this loco to the list of candidates
             candidates.append(loc)
+
         #self.debug("we have " + str(len(candidates)) + " candidates")
         # if we have a preferred loco, and it's in the candidate list, pick that one
         if preferred_loco is not None and preferred_loco in candidates:
