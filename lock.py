@@ -249,6 +249,8 @@ class Lock(util.Util):
 
 
     def upgradeLockNonBlocking(self, keepOldPartial=False):
+        self.log("upgradeLockNonBlocking called")
+        rv = False # return value
         if powermanager.getPower() == jmri.PowerManager.OFF:
             if time.time() - self.loggedPowerOff > 60:
                 self.debug('power is off, not upgrading lock')
@@ -260,31 +262,35 @@ class Lock(util.Util):
                     self.northSidings = True
                     if not keepOldPartial:
                         self.northTrackLink = None
-                    return True
+                    rv = True
             else:
                 if self.northTrackLinkVal is None:
                     self.northTrackLink = True
                     if not keepOldPartial:
                         self.northSidings = None
-                    return True
+                    rv = True
         else:
             if self.direction == SOUTHBOUND:
                 if self.southSidingsVal is None:
                     self.southSidings = True
                     if not keepOldPartial:
                         self.southTrackLink = None
-                    return True
+                    rv = True
             else:
                 if self.southTrackLinkVal is None:
                     self.southTrackLink = True
                     if not keepOldPartial:
                         self.southSidings = None
-                    return True
-        return False
+                    rv = True
+        if rv:
+            self.writeMemories()
+        self.log("upgradeLockNonBlocking returning " + str(rv))
+        return rv
 
     # Upgrades a lock from a partial to a full lock then
     # unlocks the other part (unless keepOldPartial is True)
     def upgradeLock(self, keepOldPartial=False):
+        self.log("upgrade lock called")
         while self.upgradeLockNonBlocking(keepOldPartial) is False:
             time.sleep(0.5)
         self.writeMemories()
