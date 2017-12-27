@@ -295,7 +295,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Returns the value of the JACKSTATUS memory
     def getJackStatus(self):
         mem = memories.provideMemory('IMJACKSTATUS')
-        return mem.getValue()
+        return int(mem.getValue())
 
     # The loco should be moving towards the loop already. This
     # method puts the loco into the loop and either stops it (if
@@ -562,6 +562,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("aborting shortJourney, ESTOP status detected")
                     self.loco.emergencyStop()
                     return False
+                # else:
+                    # self.debug("getJackStatus(): " + str(self.getJackStatus()) + " " + type(self.getJackStatus()).__name__ + "ESTOP: " + str(ESTOP) + ' ' + type(ESTOP).__name__  + " don't match")
                 if repeatedSpeed is False and time.time() - shortJourneyStart > 3.0:
                     # send a gentle reminder of the speed after 3 seconds
                     self.loco.repeatSpeedMessage(normalSpeed)
@@ -573,7 +575,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # upgrade sooner rather than later to give any additional routes time
                 # to fire without having to slow the loco down
                 if lockToUpgrade and lockToUpgrade.partial():
-                    if lockToUpgrade.upgradeLockNonBlocking():
+                    if lockToUpgrade.upgradeLockNonBlocking(keepOldPartial=True):
+                        lockToUpgrade.writeMemories()
                         self.debug("lock upgrade successful")
                         if upgradeLockRoutes is not None:
                             self.debug("setting additional routes")
@@ -935,33 +938,45 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         else:
             routes = self.requiredRoutes(self.loco.block)
 
+        # extra routes we will need eventually
+        moreRoutes = self.requiredRoutes(endBlock)
+
         # if we have a full lock we can set more routes
         self.allRoutesSet = False
         if not lock.partial():
-            routes = routes + self.requiredRoutes(endBlock)
+            self.debug("we have a full lock, adding routes for endblock")
+            routes = routes + moreRoutes
             self.allRoutesSet = True
 
         # off we go
+        sp = self.loco.speed('south sidings exit', 'fast')
         if self.loco.layoutBlock.getId() != "FP sidings" and not self.loco.inReverseLoop():
-            # we're in one of the normal sidings, move out to
-            sp = self.loco.speed('south sidings exit', 'fast')
-            if self.allRoutesSet:
+            self.debug("we're not in FP sidings or a reverse loop")
+            # we're in one of the normal sidings, move out to back pasaage
+            if self.allRoutesSet: # implies a full lock
                 self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True)
             else:
-                routes = self.requiredRoutes(endBlock)
-                self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True, lockToUpgrade=lock, upgradeLockRoutes=routes)
+                self.shortJourney(dir, self.loco.block, "Back Passage", sp, routes=routes, dontStop=True, lockToUpgrade=lock, upgradeLockRoutes=moreRoutes)
             routes = None
             # set the speed for the next bit
             sp = self.loco.speed('back passage to south link', 'fast')
 
-        # we are now either in back passage, fp sidings, or south reverse loop, next stop south link
+        # we are now either in back passage, fp sidings, or south reverse loop, next stop: south link
         if lock.partial() and self.loco.fast():
             # slow down a bit
             self.debug("slowing down as we don't have a full lock yet")
             sp = sp / 2.0
 
         # move to south link
-        self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        if self.allRoutesSet:
+            self.debug("all routes are set (or in routes), calling shortJourney")
+            self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
+        elif lock.partial():
+            self.debug("exit routes not set, partial lock, calling shortJourney with lockToUpgrade")
+            self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True, lockToUpgrade=lock, upgradeLockRoutes=moreRoutes)
+        else:
+            self.debug("exit routes not set, full lock. How did that happen?")
+            self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
 
         # we are now at South Link
 
