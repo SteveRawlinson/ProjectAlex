@@ -790,6 +790,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     if lock and not lock.empty():
                         # nothing can move out of a siding while I hold the lock
                         self.debug("no sidings available, releasing lock and waiting")
+                        self.loco.setSpeedSetting(0)
                         lock.unlock()
                         time.sleep(20)
                     else:
@@ -894,6 +895,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     if lock and not lock.empty():
                         # nothing can move out of a siding while I hold the lock
                         self.debug("no sidings available, releasing lock and waiting")
+                        self.loco.setSpeedSetting(0)
                         lock.unlock()
                         time.sleep(20)
                     else:
