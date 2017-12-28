@@ -820,7 +820,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('north link to sidings', 'fast')
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
-            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes)
+            lock.unlock()
             self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
@@ -920,7 +921,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('south link to sidings', 'fast')
             slowSpeed = self.loco.speed('south sidings entry', 'medium')
-            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes)
+            lock.unlock()
             self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
