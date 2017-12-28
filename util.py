@@ -102,6 +102,7 @@ class Util:
         v = mem.getValue()
         return int(v)
 
+    # Get the name for the memory associated with this siding
     def sidingMemoryName(self, siding):
         if type(siding) == str:
             return "IMSIDING" + siding.upper()
@@ -111,6 +112,7 @@ class Util:
             # layoutblock
             return "IMSIDING" + siding.getId().upper()
 
+    # Returns the number of sidings that are unoccupied
     def freeSidingCount(self, sidings):
         count = 0
         for s in sidings:
@@ -118,6 +120,16 @@ class Util:
             if b.getState() != OCCUPIED:
                 count += 1
         return count
+
+    # Returns the number of locos from the list supplied which are
+    # currently in the sidings supplied
+    def locoCountInSidings(self, locos, sidings):
+        count = 0
+        for l in locos:
+            if l.block.getUserName() in sidings:
+                count += 1
+        return count
+
 
 
 
