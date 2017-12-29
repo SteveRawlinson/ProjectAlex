@@ -32,6 +32,7 @@ class Loco(util.Util):
         self.stopTime = time.time()
 
     def emergencyStop(self):
+        self.debug("emergency stop")
         self.throttle.setSpeedSetting(-1)
         time.sleep(0.1)
         self.throttle.setSpeedSetting(0)
@@ -255,9 +256,9 @@ class Loco(util.Util):
             mem = memories.getMemory("IMSIDING" + b.upper())
             sens = block.getOccupancySensor()
             if mem is None:
-                self.log("  considering block " + b + " state:" + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
+                self.log("  considering block " + b + " state: " + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
             else:
-                self.log("  considering block " + b + " state:" + str(block.getState()) + "sensor: " + sens.getDisplayName() + "sensor state: " + str(sens.getKnownState()) +
+                self.log("  considering block " + b + " state: " + str(block.getState()) + " sensor: " + sens.getDisplayName() + " sensor state: " + str(sens.getKnownState()) +
                          " mem value: " + str(mem.getValue()))
             if block is None:
                 self.debug("no such block: " + b)
