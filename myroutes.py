@@ -111,7 +111,7 @@ SPEEDMAP = {
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink southbound': 'fast'},
     # Underground
-    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3, 'north sidings exit': 0.7, 'north interlink southbound': 0.7}
+    1087: {'fast': 0.7, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3, 'north sidings exit': 0.7, 'north interlink southbound': 0.7}
 }
 
 SLOWTIMEMAP = {
@@ -123,16 +123,16 @@ SLOWTIMEMAP = {
     "class150": {"FPK P2": 3, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 2, "AAP P1": 1, "NSG P2": 3,
                  "FPK P3": 8, "AAP P2": 3, "NSG P1": 5},
     # Underground
-    1087: {"FPK P3": 11, "AAP P2": 4, "NSG P1": 8, "PAL P1": 6, "AAP P4": 7, "FPK P1": 13, "FPK P4": 5, "AAP P1": 5, "NSG P2": 3, "FPK P2": 8,
-           "AAP P3": 7, "PAL P2": 5, "North Link": 4},
+    1087: {"FPK P3": 9, "AAP P2": 4, "NSG P1": 8, "PAL P1": 5, "AAP P4": 5, "FPK P1": 11, "FPK P4": 3, "AAP P1": 3, "NSG P2": 1, "FPK P2": 6,
+           "AAP P3": 5, "PAL P2": 5, "North Link": 4},
     # Javelin
     5004: {'North Link': 5, 'FPK P7': 5, "Nth Fast Outer 1": 5},
     # Ave Talgo
-    6719: {'Nth Fast Outer 1': 3},
+    6719: {'Nth Fast Outer 1': 3, "FPK P7": 4},
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 3},
     # Virgin class 91
-    1124: {"FPK P7": 5, "Nth Fast Outer 1": 3},
+    1124: {"FPK P7": 6, "Nth Fast Outer 1": 3},
 }
 
 TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
