@@ -39,9 +39,10 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405, 68, 2144, 2128]
-#DCC_ADDRESSES = [2128]
+#DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [3213]
-DCC_ADDRESSES = [5004, 1124, 3213, 6719]
+DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087]
+#DCC_ADDRESSES = [1087]
 
 DEBUG = True
 
@@ -375,17 +376,25 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if len(candidates) == 0:
                 #self.debug("no locos available to start a new journey")
                 return
-            tot = 0.0
-            for c in candidates:
-                tot += (1 - c.rarity())
-            n = tot * random.random()
-            for c in candidates:
-                n -= (1 - c.rarity())
-                if n < 0.0:
-                    loc = c
-                    break
+            if len(candidates) == 1:
+                loc = candidates[0]
+            else:
+                list = []
+                for c in candidates:
+                    list.append([c, 1 - c.rarity()])
+                loc = self.weighted_choice(list)
+
+        #     tot = 0.0
+        #     for c in candidates:
+        #         tot += (1 - c.rarity())
+        #     n = tot * random.random()
+        #     for c in candidates:
+        #         n -= (1 - c.rarity())
+        #         if n < 0.0:
+        #             loc = c
+        #             break
         self.debug("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
-        self.log("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
+        #self.log("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
         # pick a track
         trak = track.Track.preferred_track(loc, self.tracks)
         if trak is None:
