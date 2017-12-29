@@ -1,3 +1,4 @@
+import sys
 import jmri
 import time
 import random
@@ -43,7 +44,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     def debug(self, message):
         if DEBUG:
-            print str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
+            calling_method = sys._getframe(1).f_code.co_name
+            s = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + calling_method + ': ' + message
+            print s
+            self.log(message)
 
     # # Get's a 'lock' on a memory variable. It sets the variable
     # # to the loco number but only if the value is blank. If
@@ -513,6 +517,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if routes is not None and len(routes) > 0:
             self.debug("setting initial route")
             self.setRoute(routes[0])
+            if "idings" in startBlock.getId() and not moving:
+                # sidings have a lot of points to move
+                time.sleep(3)
 
         # If we are stationary, and the current direction is different
         # from the direction requested, set direction
@@ -657,11 +664,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if dontStop is False:
             # stop the train
             if stopIRClear is not None or eStop is True:
-                spd = -1  # emergency stop
+                self.loco.emergencyStop()
             else:
-                spd = 0   # normal stop
+                self.loco.setSpeedSetting(0)
                 self.debug("bringing loco to a halt in block " + endBlock.userName)
-            self.loco.setSpeedSetting(spd)
+
         else:
             self.debug("not stopping loco")
 
