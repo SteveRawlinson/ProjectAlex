@@ -38,12 +38,16 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
-DCC_ADDRESSES = [7405, 68, 2144, 2128]
+#DCC_ADDRESSES = [7405, 68, 2144, 2128]
 #DCC_ADDRESSES = [2128]
-#DCC_ADDRESSES = [7405]
+#DCC_ADDRESSES = [3213]
+DCC_ADDRESSES = [5004, 1124, 3213, 6719]
 
 DEBUG = True
 
+
+# This is the class that does the orchestration of the whole automated
+# process.
 
 class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     
@@ -56,8 +60,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.status = NORMAL
 
     def debug(self, message):
+        calling_method = sys._getframe(1).f_code.co_name
         if DEBUG:
-            print str(datetime.datetime.now()) + ' ' + "Jack:", message
+            print str(datetime.datetime.now()) + ' ' + "Jack: " + calling_method + ': ' + message
+            self.log(message)
 
     # Gets a DCC throttle for the loco supplied
     def getLocoThrottle(self, loc):
@@ -358,7 +364,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         self.log("we have " + str(len(candidates)) + " candidates")
         if len(candidates) == 0:
-            self.log("no cancdidates, returning")
+            self.log("no candidates, returning")
             return
         # if we have a preferred loco, and it's in the candidate list, pick that one
         if preferred_loco is not None and preferred_loco in candidates:
@@ -421,13 +427,16 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             m.setValue(0)
         else:
             mem = None
+        if trak:
+            self.debug("setting loco " + loc.nameAndAddress() + " to track " + str(trak.nr))
+            loc.track = trak
+            trak.occupancy += 1
+        else:
+            self.debug("no track supplied, not setting")
         # kick the journey off
         klass(loc, mem, trak).start()
         loc.status = loco.MOVING
-        if trak:
-            loc.track = trak
-            trak.occupancy += 1
-            self.lastJourneyStartTime = time.time()
+        self.lastJourneyStartTime = time.time()
 
 
     # Checks a memory for a value, if there is one, adds a loco
