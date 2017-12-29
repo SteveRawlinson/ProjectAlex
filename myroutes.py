@@ -100,18 +100,18 @@ SPEEDMAP = {
            'track to south link': 'fast'},
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'south sidings entry': 'slow'},
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3, 'north sidings entry': 0.2,
            'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
            'north link to layout': 'fast'},
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
-           'north interlink northbound': 0.5, 'track to south link:': 0.5},
+           'north interlink northbound': 0.5, 'track to south link:': 0.5, 'north sidings entry': 0.1, 'north link to sidings': 'slow'},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink southbound': 'fast'},
     # Underground
-    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3}
+    1087: {'fast': 0.5, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3, 'north sidings exit': 0.7, 'north interlink southbound': 0.7}
 }
 
 SLOWTIMEMAP = {
