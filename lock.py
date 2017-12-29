@@ -136,6 +136,7 @@ class Lock(util.Util):
         if loc is not None:
             self.loco = loc
         if self.end is None or self.direction is None or self.loco is None:
+            # something is wrong, report stuff and blow up
             self.debug("end: " + str(self.end))
             self.debug("direction: " + str(self.direction))
             if self.loco:
@@ -146,18 +147,18 @@ class Lock(util.Util):
                 self.debug('power is off, not getting lock')
                 self.loggedPowerOff = time.time()
             return
-        self.readMemories()
         if DEBUG:
-            if end == NORTH:
+            if self.end == NORTH:
                 end_s = 'North'
             else:
                 end_s = 'South'
-            if direction == SOUTHBOUND:
+            if self.direction == SOUTHBOUND:
                 dir_s = 'Southbound'
             else:
                 dir_s = 'Northbound'
             self.log("attempting lock on " + end_s + " Link direction " + dir_s)
-        if end == NORTH:
+        self.readMemories()
+        if self.end == NORTH:
             # North Link, Northbound (leaving the layout)
             if direction == NORTHBOUND:
                 if self.northTrackLinkVal is None:
@@ -165,7 +166,7 @@ class Lock(util.Util):
                     if self.northSidingsVal is None:
                         self.northSidings = True
             else:
-                # North Link, Southbound (coming out to sidings)
+                # North Link, Southbound (coming out of sidings)
                 if self.northSidingsVal or self.northTrackLinkVal:
                     # no lock available
                     pass
@@ -173,8 +174,8 @@ class Lock(util.Util):
                     # everything is available
                     self.northTrackLink = self.northSidings = True
         else: # end == SOUTH
-            # South Link, Southbound (leaving the layout)
-            if direction == SOUTHBOUND:
+            if self.direction == SOUTHBOUND:
+                # South Link, Southbound (leaving the layout)
                 if self.southTrackLinkVal is None:
                     self.southTrackLink = True
                     if self.southSidingsVal is None:
@@ -315,9 +316,9 @@ class Lock(util.Util):
             s += "South "
         s += "dir: "
         if self.direction == SOUTHBOUND:
-            s += "Southbound "
+            s += "Southbound (" + str(self.direction) + ")"
         else:
-            s += "Northbound "
+            s += "Northbound ("  + str(self.direction) + ")"
         if self.empty():
             s += " EMPTY"
         else: # not empty
@@ -467,17 +468,22 @@ class Lock(util.Util):
     # it returns, if the time expires it stops the loco and and then
     # waits till the lock is got.
     def getLockOrStopLoco(self, destination):
+        self.log("getLockOrStopLoco called: lock status: " + self.status())
         self.loco.setSpeedSetting('slow')
         slowtime = self.loco.getSlowtime(destination)
         tn = time.time()
         while self.empty() and ((time.time() - tn) < slowtime):
             time.sleep(0.25)
+            self.log("getLockOrStopLoco: slowtime not elapsed, attempting lock again: " + self.status())
             self.getLockNonBlocking()
         if self.empty():
+            self.debug("getLockOrStopLoco: ran out of time, stopping loco")
             self.loco.setSpeedSetting(0)
         else:
+            self.debug("getLockOrStopLoco: got lock, returning")
             return
         # wait for a lock
+        self.debug("getLockOrStopLoco: waiting for a blocking lock")
         self.getLock()
 
     # Undoes this lock after checkLock() discovers a discrepancy
