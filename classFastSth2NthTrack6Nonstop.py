@@ -21,16 +21,6 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
             self.getLocoThrottle(self.loco)
 
         self.loco.status = loco.MOVING
-        start = time.time()
-
-        # get a 'lock' on the south link track
-#        lock = self.getLock('South Link Lock')
-
-        # # Out the sth sidings
-        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("FPK P8")
-        # sp = self.loco.speed('south sidings exit', 'medium')
-        # self.shortJourney(False, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
-        # self.shortJourney(False, self.loco.block, "FPK P8", fullSpeed, lock=lock)
 
         self.leaveSouthSidings('FPK P8', stop=False)
 
@@ -46,25 +36,6 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
             lock = self.loco.getLock(NORTH)
 
         self.moveIntoNorthSidings(lock)
-
-        # else:
-        #     # we got the lock - set the turnouts for Nth Fast Outer 1
-        #     for r in self.requiredRoutes("Nth Fast Outer 1"):
-        #         self.setRoute(r, 0)
-        #     # progress to ...
-        #     self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", fullSpeed, dontStop=True)
-        #     # check we still have the lock
-        #     rc = self.checkLock(lock)
-        #     if rc is False :
-        #         # we lost it, abort!
-        #         self.throttle.setSpeedSetting(0)
-        #         print loco, "race conditions on South Link Lock? Exiting"
-        #         return False
-        #
-        # # select a siding
-        # siding = self.loco.selectSiding(NORTH_SIDINGS)
-        # routes = self.requiredRoutes(siding)
-        # self.shortJourney(False, self.loco.block, siding, bendSpeed, slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         self.loco.status = loco.SIDINGS
         if self.memory is not None:
