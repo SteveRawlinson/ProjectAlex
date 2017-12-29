@@ -96,12 +96,15 @@ SPEEDMAP = {
     # class 150s
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6},
     # Javelin
-    5004: {'fast': 0.35, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast'},
+    5004: {'fast': 0.35, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'track to south link': 'fast'},
     # Eurostar
-    3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast'},
+    3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'south sidings entry': 'slow'},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3, 'north sidings entry': 0.2,
-           'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southboung': 0.4},
+           'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
+           'north link to layout': 'fast'},
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
            'north interlink northbound': 0.5, 'track to south link:': 0.5},
@@ -125,7 +128,11 @@ SLOWTIMEMAP = {
     # Javelin
     5004: {'North Link': 5, 'FPK P7': 5, "Nth Fast Outer 1": 5},
     # Ave Talgo
-    6719: {'Nth Fast Outer 1': 3}
+    6719: {'Nth Fast Outer 1': 3},
+    # Eurostar
+    3213: {"FPK P7": 5, "Nth Fast Outer 1": 3},
+    # Virgin class 91
+    1124: {"FPK P7": 5, "Nth Fast Outer 1": 3},
 }
 
 TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
