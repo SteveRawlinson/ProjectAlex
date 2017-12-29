@@ -468,9 +468,11 @@ class Lock(util.Util):
     # it returns, if the time expires it stops the loco and and then
     # waits till the lock is got.
     def getLockOrStopLoco(self, destination):
+        stoptime = None
         self.log("getLockOrStopLoco called: lock status: " + self.status())
         self.loco.setSpeedSetting('slow')
         slowtime = self.loco.getSlowtime(destination)
+        self.debug("getLockOrStopLoco: slowtime: " + str(slowtime))
         tn = time.time()
         while self.empty() and ((time.time() - tn) < slowtime):
             time.sleep(0.25)
@@ -479,12 +481,30 @@ class Lock(util.Util):
         if self.empty():
             self.debug("getLockOrStopLoco: ran out of time, stopping loco")
             self.loco.setSpeedSetting(0)
+            stoptime = time.time()
         else:
-            self.debug("getLockOrStopLoco: got lock, returning")
-            return
+            # got the lock
+            timeItTook = time.time() - tn
+            slowtimeLeft = slowtime - timeItTook
+            self.debug("getLockOrStopLoco: slowtimeLeft: " + str(slowtimeLeft))
+            if slowtimeLeft < 3.0:
+                self.debug("nearly ran out of time, stopping loco for " + str(slowtimeLeft) + " secs")
+                # it took too long to return now, sleep for the remainder of slowtime
+                time.sleep(slowtimeLeft)
+                # stop loco then return
+                self.loco.setSpeedSetting(0)
+                stoptime = time.time()
+                return
+            else:
+                self.debug("getLockOrStopLoco: got lock, returning")
+                return
         # wait for a lock
         self.debug("getLockOrStopLoco: waiting for a blocking lock")
         self.getLock()
+        if stoptime and time.time() - stoptime < 2.0:
+            self.debug("getLockOrStopLoco: sleeping to allow loco to actually stop")
+            # let the loco actually stop
+            time.sleep(2)
 
     # Undoes this lock after checkLock() discovers a discrepancy
     # between the lock and the actual memory values held by JMRI.
