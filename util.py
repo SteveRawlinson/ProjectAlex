@@ -1,3 +1,4 @@
+import sys
 import jmri
 from jmri_bindings import *
 from myroutes import *
@@ -16,6 +17,7 @@ class Util:
                 print str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
             else:
                 print str(datetime.datetime.now()) + ': ' + message
+            self.log(message)
 
     def log(self, message="", filename="jmri.log"):
         file=open('C:\Users\steve\\' + filename, 'a')
