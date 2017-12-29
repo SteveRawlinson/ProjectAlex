@@ -53,10 +53,12 @@ class Loco(util.Util):
         if float(speed) ==  0.0:
             # make sure the message gets through - wait a bit
             time.sleep(0.1)
-            # set the speed to the minimum above zero
-            self.throttle.setSpeedSetting(self.throttle.getSpeedIncrement())
+#            # set the speed to the minimum above zero
+#            self.throttle.setSpeedSetting(self.throttle.getSpeedIncrement())
             # set zero again
-            time.sleep(0.05)
+#            time.sleep(0.05)
+            self.throttle.setSpeedSetting(speed)
+            time.sleep(0.2)
             self.throttle.setSpeedSetting(speed)
             self.stopTime = time.time()
 
