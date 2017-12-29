@@ -5,6 +5,7 @@ from myroutes import *
 import re
 import track
 import datetime
+import random
 
 # This is a mixin
 class Util:
@@ -132,6 +133,20 @@ class Util:
                 count += 1
         return count
 
+    # Accepts a list of elements each of which is a list of
+    # two elements. The zeroeth element is the things we are
+    # chooseing between and the first element is the weight.
+    # Returns the zeroeth element of the chosen item from the
+    # list.
+    def weighted_choice(self, list):
+        tot = 0.0
+        for e in list:
+            tot += e[1]
+        n = random.random() * tot
+        for e in list:
+            n -= e[1]
+            if n <= 0.0:
+                return e[0]
 
 
 
