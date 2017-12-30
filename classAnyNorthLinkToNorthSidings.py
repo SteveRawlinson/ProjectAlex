@@ -11,6 +11,8 @@ from myroutes import *
 class ClassAnyNorthLinkToNorthSidings(alex.Alex):
 
     def handle(self):
+        if self.block.getUserName() != 'North Link':
+            raise RuntimeError("I'm not on the North Link!")
         siding = self.loco.selectSiding(NORTH_SIDINGS)
         lok = lock.Lock()
         lok.getLock(NORTH, NORTHBOUND, self.loco)
