@@ -641,6 +641,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if lock and lockSensor:
             if lockSensor.getKnownState() == ACTIVE:
                 # still active, wait
+                self.log("waiting for lockSensor to go inactive before releasing lock")
                 self.waitChange([lockSensor])
             self.unlock(lock)
 
