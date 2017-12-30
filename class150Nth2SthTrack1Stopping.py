@@ -26,16 +26,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
 
         fast, medium, slow = 'fast', 'medium', 'slow'
 
-
-        # Out the nth sidings
-        # routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes("PAL P1")
-        # self.shortJourney(True, self.loco.block, "Nth Slow Link", fast, routes=routes)
-        #
-        # # on to PAL P1
-        # dest = "PAL P1"
-        # self.shortJourney(True, self.loco.block, dest, medium, slowSpeed=slow, lock=lock)
-        # self.waitAtPlatform()
-
         self.leaveNorthSidings('PAL P1')
 
         # PAL to AAP
@@ -49,17 +39,6 @@ class Class150Nth2SthTrack1Stopping(alex.Alex):
         self.waitAtPlatform()
 
         self.moveIntoSouthSidings()
-
-        # # select a siding
-        # siding = self.loco.selectSiding(SOUTH_SIDINGS)
-        # if siding.getId() == "FP sidings":
-        #     routes = self.requiredRoutes(self.loco.block) + self.requiredRoutes(siding)
-        #     self.shortJourney(True, self.loco.block, siding, medium, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-        # else:
-        #     routes = self.requiredRoutes(self.loco.block)
-        #     self.shortJourney(True, self.loco.block, "South Link", medium, routes=routes)
-        #     routes = self.requiredRoutes(siding)
-        #     self.shortJourney(True, self.loco.block, siding, fast, stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
 
         self.debug(type(self).__name__ + ' finished')
 
