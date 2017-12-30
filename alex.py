@@ -1046,14 +1046,17 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         if self.allRoutesSet:
             lrs_secs = time.time() - self.lastRouteSetTime
-            self.debug("all routes are set, last route was set " + str(lrs_secs) + "secs ago")
-            if lrs_secs < 5:
-                # all routes are set but very recently - give them time
-                self.debug("slowing loco for a few secs")
-                sp = self.loco.throttle.getSpeedSetting()
-                self.loco.setSpeedSetting(0)
-                time.sleep(5 - lrs_secs)
-                self.loco.setSpeedSetting(sp)
+            self.debug("all routes are set, last route was set " + str(lrs_secs) + " secs ago")
+            if lrs_secs < 6:
+                if self.loco.fast():
+                    # all routes are set but very recently - give them time
+                    self.debug("slowing loco for a few secs, last routes set recently")
+                    sp = self.loco.throttle.getSpeedSetting()
+                    self.loco.setSpeedSetting(0)
+                    time.sleep(8 - lrs_secs)
+                    self.loco.setSpeedSetting(sp)
+                else:
+                    self.debug("not bothering slowing loco, it's slow already")
 
         # add later routes if we haven't done so already
         if not self.allRoutesSet:
