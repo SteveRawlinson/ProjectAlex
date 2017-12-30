@@ -41,7 +41,7 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [7405, 68, 2144, 2128]
 #DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [3213]
-DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087]
+DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128]
 #DCC_ADDRESSES = [1087]
 
 DEBUG = True
@@ -88,7 +88,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getBlockOccupiedByLocoFromUser(self, loc):
         # get a list of occupied blocks with no values
         blist = ['not in use']
-        for blockName in (NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP, 'North Link']):
+        for blockName in (SOUTH_SIDINGS + NORTH_SIDINGS +  [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP, 'North Link']):
             blk = blocks.getBlock(blockName)
             if blk.getState() != OCCUPIED:
                 self.debug(blockName + " is not occupied")
@@ -279,6 +279,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if loc.block.getUserName() == 'North Link':
                     self.debug("moving loco off North Link into sidings")
                     klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
+                    loc.status = loco.ACTIVE
                     self.startJourney(loc, None, klassName=klassName)
                     loc.status = loco.SIDINGS
                     return
