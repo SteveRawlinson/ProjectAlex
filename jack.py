@@ -41,9 +41,9 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [7405, 68, 2144, 2128]
 #DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [3213]
-DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128]
+#DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [1087]
-
+DCC_ADDRESSES = [2144, 2128, 1087, 1124]
 DEBUG = True
 
 
@@ -287,21 +287,32 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # too soon since last journey started
             # TODO: turn trains around?
             return
+
         # decide whether to start another journey at all
-        if runningCount < 3:
+        startNewJourney = False
+        if runningCount < 2:
+            # always get 2 journeys going
             prob = 1.0
-        elif runningCount == 3:
-            prob = 0.2
+        elif runningCount == 2:
+            # a third journey every 100 secs
+            prob = 0.01
         else:
-            prob = 0.1
-        if random.random() > prob:
-            #self.debug("randomly deciding not to start a new journey (running count: " + str(runningCount) + ")")
+            # a 4th journey every min of 3 running
+            prob = 0.01
+        randomNumber = random.random()
+        self.log("randomNumber: " + str(randomNumber) + " prob: " + str(prob) + " running count: " + str(runningCount))
+        if randomNumber > prob:
+            self.log ("not starting a new journey")
             return
+        else:
+            self.log("starting new journey")
+            startNewJourney = True
 
         # Pick a loco to start up. This is done on the basis of the
         # available loco's rarity value - prefer non rare locos.
 
-        # get a list of candidate locos
+        # get a list of candidate locos even if startNewJourney is False: a
+        # preferred_loco means we should really get that one going regardless
         candidates = []
         preferred_loco = None
         self.log("selecting loco from list of " + str(len(self.locos)))
@@ -364,6 +375,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.log("  adding loco to candidates")
             candidates.append(loc)
 
+        # bale out now if we are not starting a new journey
+        if startNewJourney is False and preferred_loco is None:
+            self.log("no preferred loco, not starting new journey")
+            return
+
         self.log("we have " + str(len(candidates)) + " candidates")
         if len(candidates) == 0:
             self.log("no candidates, returning")
@@ -372,7 +388,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if preferred_loco is not None and preferred_loco in candidates:
             self.debug("picking preferred loco")
             loc = preferred_loco
-        else:
+        elif startNewJourney:
             # pick one according to rarity
             if len(candidates) == 0:
                 #self.debug("no locos available to start a new journey")
@@ -384,6 +400,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 for c in candidates:
                     list.append([c, 1 - c.rarity()])
                 loc = self.weighted_choice(list)
+        else:
+            # if we get here it means there was a preferred loco but
+            # it wasn't in the list of candidates - bale out
+            return
+
 
         #     tot = 0.0
         #     for c in candidates:
@@ -537,7 +558,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for s in ["LS60", "LS64"]:
             sen = sensors.getSensor(s)
             if sen.knownState == ACTIVE:
-                raise("sensor " + s + " is active")
+                raise RuntimeError("sensor " + s + " is active")
 
         # Initialise locomotives and get their location.
         cont = self.initLocos()
@@ -597,8 +618,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.status == STOPPING:
                 if len(self.memories) == 0:
                     print "All done - exiting"
-                    time.sleep(120)
-                    powermanager.setPower(jmri.PowerManager.OFF)
                     return False
                 elif loopcount % 20 == 0:
                     self.debug("waiting for " + str(len(self.memories)) + " journeys to complete")
