@@ -517,7 +517,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if routes is not None and len(routes) > 0:
             self.debug("setting initial route")
             self.setRoute(routes[0])
-            if "idings" in startBlock.getId() and not moving:
+            if "iding" in startBlock.getId() and not moving:
                 # sidings have a lot of points to move
                 time.sleep(3)
 
@@ -776,14 +776,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             else:
                 self.debug("stopped early. Jack Status: " + str(self.getJackStatus()))
-            # final check of jack status after we have stopped
-            if self.getJackStatus() == STOPPING:
-                self.debug("JackStatus is now STOPPING - moving to siding")
-                siding = self.loco.selectSiding(NORTH_SIDINGS)
-                routes = self.requiredRoutes(siding)
-                self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
-            else:
-                self.debug("Jack status: " + type(self.getJackStatus()).__name__ + " STOPPING: " + type(STOPPING).__name__)
+            # # final check of jack status after we have stopped
+            # if self.getJackStatus() == STOPPING:
+            #     self.debug("JackStatus is now STOPPING - moving to siding")
+            #     siding = self.loco.selectSiding(NORTH_SIDINGS)
+            #     routes = self.requiredRoutes(siding)
+            #     self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
+            # else:
+            #     self.debug("Jack status: " + type(self.getJackStatus()).__name__ + " STOPPING: " + type(STOPPING).__name__)
         else:
             # This is the 'normal' option - move into a siding
             # self.debug("not stopping early. status :" + str(self.getJackStatus()) + " doesn't equal normal: " + str(NORMAL) + " self.rarity(): " + str(self.loco.rarity()))
