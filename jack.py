@@ -43,7 +43,7 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [1087]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124]
+DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405]
 DEBUG = True
 
 
@@ -281,7 +281,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
                     loc.status = loco.ACTIVE
                     self.startJourney(loc, None, klassName=klassName)
-                    loc.status = loco.SIDINGS
                     return
         if time.time() - self.lastJourneyStartTime < 10.0:
             # too soon since last journey started
@@ -302,8 +301,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         randomNumber = random.random()
         self.log("randomNumber: " + str(randomNumber) + " prob: " + str(prob) + " running count: " + str(runningCount))
         if randomNumber > prob:
-            self.log ("not starting a new journey")
-            return
+            self.log ("not starting a new journey (unless a preferred loco is found)")
         else:
             self.log("starting new journey")
             startNewJourney = True
@@ -316,6 +314,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         candidates = []
         preferred_loco = None
         self.log("selecting loco from list of " + str(len(self.locos)))
+        track.Track.logTrackReport(self.tracks)
         # check if we have any locos in sidings - useful later
         locosInNorthSidings = False
         if self.locoCountInSidings(self.locos, NORTH_SIDINGS) > 0:
@@ -360,7 +359,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 continue
             # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
             if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
-                # the reverse loop is occupied and we don't know by what
+                # the reverse loop is occupied and we don't know by what (isBlockOccupied() returns the address if it recognises what in it)
                 self.log("  an unknown loco is in South Reverse Loop")
                 continue
             if loc.reversible() is False and loc.southSidings() and self.isBlockOccupied(NORTH_REVERSE_LOOP) is True:
