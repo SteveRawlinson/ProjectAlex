@@ -34,7 +34,7 @@ from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
-#DCC_ADDRESSES = [2144]
+#DCC_ADDRESSES = [2144, 2128]
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
@@ -43,7 +43,7 @@ from classAnyNorthLinkToNorthSidings import *
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [1087]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405]
+DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004]
 DEBUG = True
 
 
@@ -314,7 +314,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         candidates = []
         preferred_loco = None
         self.log("selecting loco from list of " + str(len(self.locos)))
-        track.Track.logTrackReport(self.tracks)
+        # log the track conditions
+        s = track.Track.trackReport(self.tracks)
+        for l in iter(s.splitlines()):
+            self.log(l)
         # check if we have any locos in sidings - useful later
         locosInNorthSidings = False
         if self.locoCountInSidings(self.locos, NORTH_SIDINGS) > 0:
@@ -398,7 +401,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 list = []
                 for c in candidates:
                     list.append([c, 1 - c.rarity()])
-                loc = self.weighted_choice(list)
+                loc = Jack.weighted_choice(list)
         else:
             # if we get here it means there was a preferred loco but
             # it wasn't in the list of candidates - bale out
