@@ -222,9 +222,14 @@ class Track:
         return count
 
     @classmethod
-    def trackReport(self, tracks):
+    def trackReport(cls, tracks):
         for t in tracks:
             print "track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound()
+
+    @classmethod
+    def logTrackReport(cls, tracks):
+        for t in tracks:
+            self.log("track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound())
 
     # sets the exit signal for this track to the colour specified
     def setExitSignalAppearance(self, appearance):
