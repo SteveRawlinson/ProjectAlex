@@ -31,6 +31,18 @@ class Util:
         file.write(logstr + '\n')
         file.close()
 
+    @classmethod
+    def clog(cls, message="", filename="jmri.log", loc=None, dccAddr=None):
+        file=open('C:\Users\steve\\' + filename, 'a')
+        if loc:
+            logstr = str(datetime.datetime.now()) + ' ' + str(loc.dccAddr) + ': ' + message
+        elif dccAddr:
+            logstr = str(datetime.datetime.now()) + ' ' + str(dccAddr) + ': ' + message
+        else:
+            logstr = str(datetime.datetime.now()) + ': ' + message
+        file.write(logstr + '\n')
+        file.close()
+
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
     # can be a string, a layoutblock, or a block.
     def isBlockOccupied(self, thing):
@@ -138,19 +150,20 @@ class Util:
     # chooseing between and the first element is the weight.
     # Returns the zeroeth element of the chosen item from the
     # list.
-    def weighted_choice(self, list):
+    @classmethod
+    def weighted_choice(cls, list):
         tot = 0.0
         for e in list:
             tot += e[1]
         n = random.random() * tot
-        self.log("tot: " + str(tot) + " random number: " + str(n))
+        cls.clog("tot: " + str(tot) + " random number: " + str(n))
         for e in list:
             n -= e[1]
-            self.log("deducting " + e[0].name() + " weight: " + str(e[1]))
+            cls.clog("deducting " + e[0].name() + " weight: " + str(e[1]))
             if n <= 0.0:
-                self.log(e[0].name() + " wins")
+                cls.clog(e[0].name() + " wins")
                 return e[0]
-            self.log(str(n) + " remaining")
+            cls.clog(str(n) + " remaining")
 
 
 

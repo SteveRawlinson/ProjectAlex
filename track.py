@@ -4,10 +4,11 @@ import jmri
 import time
 from jmri_bindings import *
 from myroutes import ROUTEMAP
+import util
 
 DEBUG = True
 
-class Track:
+class Track():
 
     def __init__(self, nr, stops, fast, unserviceable, blks, signal):
         self.nr = nr
@@ -58,8 +59,8 @@ class Track:
             s = t.score(loco)
             if s > 0:
                 list.append([t, s])
-        return self.weighted_choice(list)
-i
+        return util.Util.weighted_choice(list)
+
     # Returns a string describing the direction of travel for
     # this track
     def dir(self):
@@ -233,13 +234,10 @@ i
 
     @classmethod
     def trackReport(cls, tracks):
+        st = ""
         for t in tracks:
-            print "track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound()
-
-    @classmethod
-    def logTrackReport(cls, tracks):
-        for t in tracks:
-            self.log("track nr:", t.nr, "occupancy:", t.occupancy, "u/s:", t.us, "northBound:", t.northbound())
+            st +=  "track nr: "+  str(t.nr) +  " occupancy: " +  str(t.occupancy) +  " u/s: " +str(t.us) +  " northBound: "+  str(t.northbound())
+        return st
 
     # sets the exit signal for this track to the colour specified
     def setExitSignalAppearance(self, appearance):
