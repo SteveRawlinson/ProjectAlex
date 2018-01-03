@@ -415,6 +415,11 @@ class Lock(util.Util):
         else:
             return self.southSidings is not self.southTrackLink
 
+    def full(self):
+        if self.empty() or self.partial():
+            return False
+        return True
+
     # The method is called when the loco reaches the halfway point covered
     # by the lock. It needs either to upgrade to a full lock in order
     # to progress (in the case of it having a partial lock), or it needs
