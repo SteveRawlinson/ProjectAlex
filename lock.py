@@ -5,6 +5,7 @@ import loco
 import track
 import util
 import time
+
 class Lock(util.Util):
 
     def __init__(self):
@@ -46,22 +47,22 @@ class Lock(util.Util):
             self.northSidingsVal = m.getValue()
             if self.northSidingsVal == "" or self.northSidingsVal == addr:
                 self.northSidingsVal = None
-        self.log("readMemories: ")
-        self.log("  southSidingsVal: "+ str(self.southSidingsVal))
-        self.log("  southTrackLinkVal: " + str(self.southTrackLinkVal))
-        self.log("  northSidingsVal: " + str(self.northSidingsVal))
-        self.log("  northTrackLinkVal: " + str(self.northTrackLinkVal))
+        # self.log("readMemories: ")
+        # self.log("  southSidingsVal: "+ str(self.southSidingsVal))
+        # self.log("  southTrackLinkVal: " + str(self.southTrackLinkVal))
+        # self.log("  northSidingsVal: " + str(self.northSidingsVal))
+        # self.log("  northTrackLinkVal: " + str(self.northTrackLinkVal))
 
     # Write our loco's dcc address into the values of memories we have
     # got a lock on and None into values of memories we haven't, if and
     # only if we had those locks at the time of calling.
     def writeMemories(self):
-        self.log("writeMemories: ")
-        self.log("  southSidings: " + str(self.southSidings))
-        self.log("  southTrackLink: " + str(self.southTrackLink))
-        self.log("  northSidings: " + str(self.northSidings))
-        self.log("  northTrackLink: " + str(self.northTrackLink))
-        self.log(self.status())
+        # self.log("writeMemories: ")
+        # self.log("  southSidings: " + str(self.southSidings))
+        # self.log("  southTrackLink: " + str(self.southTrackLink))
+        # self.log("  northSidings: " + str(self.northSidings))
+        # self.log("  northTrackLink: " + str(self.northTrackLink))
+        # self.log(self.status())
         if self.end == SOUTH:
             m = memories.provideMemory("IMLOCKSOUTHSIDINGS")
             if self.southSidings:
@@ -488,12 +489,12 @@ class Lock(util.Util):
             slowtimeLeft = slowtime - timeItTook
             self.debug("getLockOrStopLoco: slowtimeLeft: " + str(slowtimeLeft))
             if slowtimeLeft < 3.0:
-                self.debug("nearly ran out of time, stopping loco for " + str(slowtimeLeft) + " secs")
                 # it took too long to return now, sleep for the remainder of slowtime
+                self.debug("nearly ran out of time, stopping loco for " + str(slowtimeLeft) + " secs")
                 time.sleep(slowtimeLeft)
                 # stop loco then return
                 self.loco.setSpeedSetting(0)
-                stoptime = time.time()
+                time.sleep(2)
                 return
             else:
                 self.debug("getLockOrStopLoco: got lock, returning")
