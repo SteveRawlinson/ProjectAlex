@@ -519,7 +519,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.setRoute(routes[0])
             if "iding" in startBlock.getId() and not moving:
                 # sidings have a lot of points to move
-                time.sleep(3)
+                time.sleep(6)
 
         # If we are stationary, and the current direction is different
         # from the direction requested, set direction
