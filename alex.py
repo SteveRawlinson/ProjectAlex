@@ -307,7 +307,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # The loco should be moving towards the loop already. This
     # method puts the loco into the loop and either stops it (if
     # stop is True) or gets it out again
-    def reverseLoop(self, loop, stop = True):
+    def reverseLoop(self, loop, stop = True, lock=None):
         inroute, outroute = ROUTEMAP[loop]
         self.setRoute(inroute)
         oSensor = layoutblocks.getLayoutBlock(loop).getOccupancySensor()
@@ -321,6 +321,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.waitChange([irSensor])
         self.debug('reverseLoop: waiting for IR sensor to go inactive')
         self.waitChange([irSensor])
+        if lock:
+            lock.unlock()
         if stop:
             self.debug('reverseLoop: stopping loco and returning')
             self.loco.setSpeedSetting(0)
@@ -884,12 +886,16 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # move into reverse loop
             speed = self.loco.speed('off track south', 'medium')
             self.shortJourney(True, self.loco.block, 'South Link', speed, dontStop=True, routes=routes)
-            lock.switch() # slows/stops loco if necessary
-            self.track.setExitSignalAppearance(GREEN)
+            if self.loco.trainLength() < 100 or self.loco.fast():
+                lock.switch() # slows/stops loco if necessary
+                self.track.setExitSignalAppearance(GREEN)
+            else:
+                self.debug("not switching lock: train is long and slow")
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             lock.unlock()
+            self.track.setExitSignalAppearance(GREEN)
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
             # 'normal' move into south sidings
