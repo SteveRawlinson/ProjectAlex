@@ -18,7 +18,7 @@ class Util:
                 print str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
             else:
                 print str(datetime.datetime.now()) + ': ' + message
-            self.log(message)
+            self.log('[debug]: ' + message)
 
     def log(self, message="", filename="jmri.log"):
         file=open('C:\Users\steve\\' + filename, 'a')
@@ -28,7 +28,7 @@ class Util:
             logstr = str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message
         else:
             logstr = str(datetime.datetime.now()) + ': ' + message
-        file.write(logstr + '\r\n')
+        file.write(logstr + '\n')
         file.close()
 
     # Returns True if the block indicated by +thing+ is occupied. The +thing+
