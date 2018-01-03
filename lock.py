@@ -415,6 +415,7 @@ class Lock(util.Util):
         else:
             return self.southSidings is not self.southTrackLink
 
+    # Returns true if we hold the whole lock
     def full(self):
         if self.empty() or self.partial():
             return False
