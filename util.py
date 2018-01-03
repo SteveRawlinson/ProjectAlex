@@ -143,10 +143,14 @@ class Util:
         for e in list:
             tot += e[1]
         n = random.random() * tot
+        self.log("tot: " + str(tot) + " random number: " + str(n))
         for e in list:
             n -= e[1]
+            self.log("deducting " + e[0].name() + " weight: " + str(e[1]))
             if n <= 0.0:
+                self.log(e[0].name() + " wins")
                 return e[0]
+            self.log(str(n) + " remaining")
 
 
 

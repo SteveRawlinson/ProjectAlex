@@ -23,34 +23,43 @@ class Track:
         if DEBUG:
             print "Track:", message
 
-    # Selects a track from the list supplied for the loco supplied
-    # according to the score for each track for that loco. Tracks
-    # with equal high scores are sorted by the time they were last
-    # used. If no tracks are available, returns None
+    # # Selects a track from the list supplied for the loco supplied
+    # # according to the score for each track for that loco. Tracks
+    # # with equal high scores are sorted by the time they were last
+    # # used. If no tracks are available, returns None
+    # @classmethod
+    # def preferred_track(cls, loco, tracks):
+    #     list = sorted(tracks, key=lambda t: t.score(loco, verbose=False), reverse=True)
+    #     # if DEBUG:
+    #     #     print "track in order of preference: "
+    #     #     for t in list:
+    #     #         print("track " + str(t.nr) + ": " + str(t.score(loco)) + " occupancy: " + str(t.occupancy))
+    #     if len(list) == 0:
+    #         return None
+    #     if list[0].score(loco) == 0:
+    #         return None
+    #     picked = []
+    #     for t in list:
+    #         if t.score(loco) == list[0].score(loco):
+    #             picked.append(t)
+    #     #if DEBUG:
+    #     #    print(str(len(picked)) + " tracks picked")
+    #     picked_s = sorted(picked, key=lambda t: t.last_used)
+    #     if picked_s[0].score(loco) == 0:
+    #         return None
+    #     # if DEBUG:
+    #     #     print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
+    #     return picked_s[0]
+
     @classmethod
     def preferred_track(cls, loco, tracks):
-        list = sorted(tracks, key=lambda t: t.score(loco, verbose=False), reverse=True)
-        # if DEBUG:
-        #     print "track in order of preference: "
-        #     for t in list:
-        #         print("track " + str(t.nr) + ": " + str(t.score(loco)) + " occupancy: " + str(t.occupancy))
-        if len(list) == 0:
-            return None
-        if list[0].score(loco) == 0:
-            return None
-        picked = []
-        for t in list:
-            if t.score(loco) == list[0].score(loco):
-                picked.append(t)
-        #if DEBUG:
-        #    print(str(len(picked)) + " tracks picked")
-        picked_s = sorted(picked, key=lambda t: t.last_used)
-        if picked_s[0].score(loco) == 0:
-            return None
-        # if DEBUG:
-        #     print "Track: returning selected track ", picked_s[0].nr, "score: ", picked_s[0].score(loco)
-        return picked_s[0]
-
+        list = []
+        for t in tracks:
+            s = t.score(loco)
+            if s > 0:
+                list.append([t, s])
+        return self.weighted_choice(list)
+i
     # Returns a string describing the direction of travel for
     # this track
     def dir(self):
@@ -101,6 +110,7 @@ class Track:
                 if verbose:
                     print "fast status semi-matched"
         else:
+            # slow track
             if verbose:
                 print "fast status not matched. self.fast:", self.fast, type(self.fast).__name__, "loco.fast():", loco.fast(), type(loco.fast()).__name__
         if self.fast is False and loco.freight():
@@ -238,3 +248,7 @@ class Track:
         if self.exitSignal.getAppearance == appearance:
             return
         self.exitSignal.setAppearance(appearance)
+
+    def name(self):
+        return "Track " + str(self.nr)
+
