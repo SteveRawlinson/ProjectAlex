@@ -361,25 +361,32 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) == 0 and locosInNorthSidings:
                 self.log("  there are no free sidings in North Sidings")
                 continue
+            # Don't pick a loco if there are way more locos on the other side
             if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(SOUTH_SIDINGS) - self.freeSidingCount(NORTH_SIDINGS) > 2:
                 self.log("  there are way more locos in north sidings")
                 continue
             if (loc.northSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) - self.freeSidingCount(SOUTH_SIDINGS) > 2:
                 self.log("  there are way more locos in south sidings")
                 continue
-            # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
-            if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
-                # the reverse loop is occupied and we don't know by what (isBlockOccupied() returns the address if it recognises what in it)
-                self.log("  an unknown loco is in South Reverse Loop")
-                continue
-            if loc.reversible() is False and loc.southSidings() and self.isBlockOccupied(NORTH_REVERSE_LOOP) is True:
-                # the reverse loop is occupied and we don't know by what
-                self.log("  an unknown loco is in North Reverse Loop")
-                continue
             # If there are no tracks available for this loco, don't pick it
             if track.Track.preferred_track(loc, self.tracks) is None:
                 self.log("  there are no tracks available")
                 continue
+            # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
+            if loc.reversible() is False:
+                if loc.northSidings():
+                    oppositeLoc = self.isBlockOccupied(SOUTH_REVERSE_LOOP)
+                else:
+                    oppositeLoc = self.isBlockOccupied(NORTH_REVERSE_LOOP)
+                if oppositeLoc is True:
+                    self.log("  an unknown loco is in the Opposite Reverse Loop")
+                    continue
+                # don't run non-reversible locos in the loco in the opposite reverse loop has no tracks available
+                if oppositeLoc:
+                    # it's a loco we know about
+                    if track.Track.preferred_track(loc, self.tracks) is None:
+                        self.log("  there are no tracks available for the loco in the opposite reverse loop")
+                        continue
             # add this loco to the list of candidates
             self.log("  adding loco to candidates")
             candidates.append(loc)
