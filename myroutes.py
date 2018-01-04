@@ -11,6 +11,8 @@ SOUTH_REVERSE_LOOP = 'Sth Reverse Loop'
 
 DEBUG = True
 
+LOGFILE = "C:\Users\steve\jmri.log"
+
 # Jack status codes
 NORMAL = 0
 STOPPING = 1
