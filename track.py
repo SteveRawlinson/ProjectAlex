@@ -236,15 +236,18 @@ class Track():
     def trackReport(cls, tracks):
         st = ""
         for t in tracks:
-            st +=  "track nr: "+  str(t.nr) +  " occupancy: " +  str(t.occupancy) +  " u/s: " +str(t.us) +  " northBound: "+  str(t.northbound())
+            st +=  "track nr: "+  str(t.nr) +  " occupancy: " +  str(t.occupancy) +  " u/s: " + str(t.us) +  " northBound: " +  str(t.northbound()) + "\n"
         return st
 
     # sets the exit signal for this track to the colour specified
     def setExitSignalAppearance(self, appearance):
         if self.exitSignal is None:
+            util.Util.clog("no exit signal on " + self.name())
             return
         if self.exitSignal.getAppearance == appearance:
+            util.Util.clog("exit signal on " + self.name() + " is already " + str(appearance))
             return
+        util.Util.clog("setting exit signal for " + self.name() + " " + self.exitSignal.getDisplayName() + " to " + str(appearance))
         self.exitSignal.setAppearance(appearance)
 
     def name(self):
