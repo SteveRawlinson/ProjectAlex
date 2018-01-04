@@ -7,15 +7,16 @@ get the virgin running on slow
 prioritise locking depending on how full the layout is
 if we release a lock becqause no sidings, move on until we would normally stop
 long trains southbound on south link do partial unlock too early
+rotate the log file
 
--- if all the sidings are full move a loco
+
 -- don't wait for target block to be free if there's a lock and it's a link
 
-LS65 is dicky
+LS65 is probably fine and not in use (despite having wires in it)
 LS19 is fine (and not used)
-LS40 is dicky
 LS5 is dicky
-LS37 is connected tn Nth Siding 1 occupancy has a spare coil in case LS39 (old style wiring) goes bing
+LS37 is connected tn Nth Siding 1 occupancy has a spare coil in case LS39 (old style wiring) goes bing - actually this has been used now
+
 
 LT30 lost address 28/12/2017
 LT25 failed to respond 1/1/2018
@@ -26,7 +27,7 @@ Javelin failed to stop 29/12/2017 16:50 (might be fixed)
 
 
 
-
+++ if all the sidings are full move a loco
 ++ make moveIntoNorthSiding use different speeds for layout -> fast/slow link
 ++ alex.py:840 is this the most efficient lock handling for reverse loops?
 ++ turn lights on
