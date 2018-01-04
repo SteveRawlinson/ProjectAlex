@@ -360,6 +360,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) == 0 and locosInNorthSidings:
                 self.log("  there are no free sidings in North Sidings")
                 continue
+            if (loc.southSidings() or loc.inReverseLoop()) and self.freeSidingCount(SOUTH_SIDINGS) - self.freeSidingCount(NORTH_SIDINGS) > 2:
+                self.log("  there are way more locos in north sidings")
+                continue
+            if (loc.northSidings() or loc.inReverseLoop()) and self.freeSidingCount(NORTH_SIDINGS) - self.freeSidingCount(SOUTH_SIDINGS) > 2:
+                self.log("  there are way more locos in south sidings")
+                continue
             # don't run non-reversible locos if the opposite reverse loop is occupied by an unknown thing
             if loc.reversible() is False and loc.northSidings() and self.isBlockOccupied(SOUTH_REVERSE_LOOP) is True:
                 # the reverse loop is occupied and we don't know by what (isBlockOccupied() returns the address if it recognises what in it)
