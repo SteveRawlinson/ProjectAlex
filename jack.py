@@ -13,6 +13,7 @@ import track
 import random
 import util
 import datetime
+import os
 
 # import journey classes
 from class150Nth2SthTrack1Stopping import *
@@ -520,6 +521,15 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # set status memory variable
         self.setStatus()
+
+        # rotate logs
+        if os.file.exists(LOGFILE):
+            if os.file.exists(LOGFILE + '.6'):
+                os.remove(LOGFILE + '.6')
+            for i in range(5,0,-1):
+                fn = LOGFILE + '.' + str(i)
+                if os.file.exists(fn):
+                    os.rename(fn, LOGFILE + '.' + str(i+1))
 
         # turn layout power on
         self.powerState = powermanager.getPower()
