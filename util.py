@@ -20,8 +20,10 @@ class Util:
                 print str(datetime.datetime.now()) + ': ' + message
             self.log('[debug]: ' + message)
 
-    def log(self, message="", filename="jmri.log"):
-        file=open('C:\Users\steve\\' + filename, 'a')
+    def log(self, message="", filename=None):
+        if filename is None:
+            filename = LOGFILE
+        file=open(filename, 'a')
         if hasattr(self, 'loco'):
             logstr = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
         elif hasattr(self, 'dccAddr'):
@@ -32,8 +34,10 @@ class Util:
         file.close()
 
     @classmethod
-    def clog(cls, message="", filename="jmri.log", loc=None, dccAddr=None):
-        file=open('C:\Users\steve\\' + filename, 'a')
+    def clog(cls, message="", filename=None, loc=None, dccAddr=None):
+        if filename is None:
+            filename = LOGFILE
+        file=open(filename, 'a')
         if loc:
             logstr = str(datetime.datetime.now()) + ' ' + str(loc.dccAddr) + ': ' + message
         elif dccAddr:
