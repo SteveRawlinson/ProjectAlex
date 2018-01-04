@@ -39,7 +39,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # any necessary configuration.
     def init(self):
         self.sensorStates = None
-        self.platformWaitTimeMsecs = 30000
+        self.platformWaitTimeMsecs = 20000
         return
 
     def debug(self, message):
@@ -514,14 +514,23 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("lock is supplied but we don't have lock, getting it")
                     lock = self.getLock(lock)
 
+
         # Set initial route. It is assumed that only the first route
-        # needs to be set before we start moving.
+        # needs to be set before we start moving unless we're in a siding because
+        # then the route order can be naughty
+        subsequentRoutesSet = False
         if routes is not None and len(routes) > 0:
             self.debug("setting initial route")
             self.setRoute(routes[0])
             if "iding" in startBlock.getId() and not moving:
+                self.debug("in sidings and not moving; setting subsequent routes")
+                for r in routes:
+                    if r == routes[0]:
+                        continue
+                    self.setRoute(r)
+                subsequentRoutesSet = True
                 # sidings have a lot of points to move
-                time.sleep(6)
+                time.sleep(4)
 
         # If we are stationary, and the current direction is different
         # from the direction requested, set direction
@@ -543,8 +552,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("not moving, setting normal Speed: " +  str(normalSpeed))
             self.loco.setSpeedSetting(normalSpeed)
 
-        # Set remaining routes
-        if routes is not None and len(routes) > 1:
+        # Set remaining routes if there are any
+        if routes is not None and len(routes) > 1 and not subsequentRoutesSet:
             self.debug("setting subsequent routes")
             for r in routes:
                 if r == routes[0]:
@@ -920,7 +929,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     if lock and lock.empty():
                         lock.getLock()
             self.debug("selected siding " + siding.getId())
-            if not lock.partial():
+            if lock.full():
                 moreRoutes = self.requiredRoutes(siding)
                 self.debug("moveIntoSouthSidings: adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
@@ -933,9 +942,21 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 routes = None
             lock.switch()
             self.track.setExitSignalAppearance(GREEN)
-            speed = self.loco.speed('south link to sidings', 'fast')
-            slowSpeed = self.loco.speed('south sidings entry', 'medium')
-            self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes)
+            if siding.getId() == "FP sidings":
+                speed = self.loco.speed('south link to fp sidings', 'fast')
+                slowSpeed = self.loco.speed('south sidings entry', 'medium')
+                self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, routes=routes, stopIRClear=IRSENSORS[siding.getId()])
+            else: # normal siding
+                # select the speed for the next bit - if a fast loco needs to set routes
+                # we need to go slower
+                if routes is None or not self.loco.fast():
+                    speed = self.loco.speed('south link to back passage', 'fast')
+                else:
+                    speed = self.loco.speed('south link to back passage slow', 'slow')
+                self.shortJourney(dir, self.loco.block, 'Back Passage', speed, routes=routes, dontStop=True)
+                speed = self.loco.speed('back passage to south sidings', 'fast')
+                slowSpeed = self.loco.speed('south sidings entry', 'medium')
+                self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()])
             lock.unlock()
             self.loco.unselectSiding(siding)
             if not self.loco.reversible():
