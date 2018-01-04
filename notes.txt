@@ -1,15 +1,13 @@
 TODO
-don't bring a non-reversible loco out unless the other one has a track available
-implement three-way lock for south sidings?
 JMRI: 'select default roster group for throttle' option
 graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever it is
 get the virgin running on slow
 prioritise locking depending on how full the layout is
-if we release a lock becqause no sidings, move on until we would normally stop
-long trains southbound on south link do partial unlock too early
-rotate the log file
+if we release a lock because no sidings, move on until we would normally stop
 
-
+-- don't bring a non-reversible loco out unless the other one has a track available
+-- long trains southbound on south link do partial unlock too early
+-- rotate the log file
 -- don't wait for target block to be free if there's a lock and it's a link
 
 LS65 is probably fine and not in use (despite having wires in it)
