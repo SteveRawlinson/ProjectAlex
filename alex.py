@@ -370,6 +370,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.getJackStatus() == ESTOP:
             return RuntimeError("shortJourney called while status is ESTOP")
 
+        # wait until the power comes back on
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
+
         # passBlock implies dontStop
         if dontStop is None:
             if passBlock is True:
@@ -712,6 +716,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None):
 
+        # wait until the power comes back on
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
+
+
         # deal with locking
         if type(lock) == str or type(lock) == unicode:
             raise RuntimeError("old style lock used with moveIntoSouthSidings")
@@ -852,6 +861,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # moves a train from their current block into the south sidings
     def moveIntoSouthSidings(self, lock=None):
 
+        # wait until the power comes back on
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
+
         # deal with locking
         if type(lock) == str or type(lock) == unicode:
             raise RuntimeError("old style lock used with moveIntoSouthSidings")
@@ -966,6 +979,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
     def leaveSouthSidings(self, endBlock, stop=None):
+
+        # wait until the power comes back on
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
+
         self.loco.status = MOVING
 
         # determine direction
@@ -1140,6 +1158,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
     def leaveNorthSidings(self, endBlock, stop=None):
+        # wait until the power comes back on
+        while powermanager.getPower() == jmri.PowerManager.OFF:
+            time.sleep(1)
+
         self.loco.status = MOVING
         dir = True
         # Set default stop value if not set by caller
