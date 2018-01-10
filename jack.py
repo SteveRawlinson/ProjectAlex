@@ -250,6 +250,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # This is the method that starts new journeys. It is called as part
     # of the main loop, once every second.
     def startNewJourneys(self):
+        # wait until the power comes back on
+        if powermanager.getPower() == jmri.PowerManager.OFF:
+            return
         runningCount = len(self.memories)
         if self.status == STOPPING:
             # no new journeys
