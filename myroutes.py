@@ -99,7 +99,7 @@ SPEEDMAP = {
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6, 'north interlink southbound': 0.7},
     # Javelin
     5004: {'fast': 0.35, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'track to south link': 'fast'},
+           'track to south link': 'fast', 'south sidings entry': 0.1},
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
@@ -119,7 +119,7 @@ SPEEDMAP = {
 
 SLOWTIMEMAP = {
     # class 47
-    "class47": {'FPK P7': 8, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 7, "FPK P3": 5},
+    "class47": {'FPK P7': 8, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 7, "FPK P3": 5, "FPK P1": 7},
     # Mallard
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 5, "FPK P3": 4},
     # class 150s
