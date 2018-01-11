@@ -42,7 +42,7 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 class Class47Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
-class Loco3213Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
+class Loco1124Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
         # loc = loco.Loco(7405)
