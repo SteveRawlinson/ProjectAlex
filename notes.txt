@@ -18,6 +18,7 @@ LS37 is connected tn Nth Siding 1 occupancy has a spare coil in case LS39 (old s
 
 LT30 lost address 28/12/2017
 LT25 failed to respond 1/1/2018
+LS56 went strangely low until I pulled it out, put it back in, 10/1/2018
 
 Javelin derailed at LT18 northbound 29/12/2017 11:00
 Javelin failed to stop 29/12/2017 16:50 (might be fixed)
