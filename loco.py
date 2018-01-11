@@ -28,6 +28,7 @@ class Loco(util.Util):
         self.wrongway = False
         self.track = None
         self._canGoFast = None
+        self._canGoSlow = None
         self._freight = None
         self.stopTime = time.time()
 
@@ -220,7 +221,19 @@ class Loco(util.Util):
             else:
                 self._canGoFast = False
         return self._canGoFast
-    
+
+    def canGoSlow(self):
+        if self._canGoSlow is None:
+            r = self.rosterEntry().getAttribute('canGoSlow')
+            if r is None:
+                self._canGoSlow = False
+            if r == 'true':
+                self._canGoSlow = True
+            else:
+                self._canGoSlow = False
+        return self._canGoSlow
+
+
     # Returns the roster entry for the current loco
     def rosterEntry(self):
         if self._rosterEntry is None:
