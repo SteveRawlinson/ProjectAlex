@@ -112,8 +112,13 @@ class Track():
                     print "fast status semi-matched"
         else:
             # slow track
-            if verbose:
-                print "fast status not matched. self.fast:", self.fast, type(self.fast).__name__, "loco.fast():", loco.fast(), type(loco.fast()).__name__
+            if loco.fast() and loco.canGoSlow():
+                score += 1
+                if verbose:
+                    print "fast status not matched but loco can go slow"
+            else:
+                if verbose:
+                    print "fast status not matched. self.fast:", self.fast, type(self.fast).__name__, "loco.fast():", loco.fast(), type(loco.fast()).__name__
         if self.fast is False and loco.freight():
             score += 1
             if verbose:
