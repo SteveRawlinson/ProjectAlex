@@ -103,6 +103,9 @@ SPEEDMAP = {
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
+    # Eurostar
+    4404: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3,
            'north sidings entry': 0.2, 'track to south link': 0.4, 'south sidings exit': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
@@ -134,6 +137,8 @@ SLOWTIMEMAP = {
     6719: {'Nth Fast Outer 1': 4, "FPK P7": 4},
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 3},
+    # TGV
+    4404: {"FPK P7": 5, "Nth Fast Outer 1": 3},
     # Virgin class 91
     1124: {"FPK P7": 6, "Nth Fast Outer 1": 1},
 }

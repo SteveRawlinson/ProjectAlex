@@ -60,3 +60,7 @@ class Loco6719Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
 class Loco1124Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     pass
 
+# TGV
+class Loco4404Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    pass
+
