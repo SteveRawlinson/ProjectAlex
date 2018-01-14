@@ -814,6 +814,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if siding is None:
                     if not self.getJackStatus() == NORMAL:
                         self.debug("no available sidings and jack status stopping, giving up")
+                        self.loco.setSpeedSetting(0)
                         return
                     if lock and not lock.empty():
                         # nothing can move out of a siding while I hold the lock
