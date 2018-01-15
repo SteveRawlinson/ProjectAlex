@@ -720,7 +720,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         while powermanager.getPower() == jmri.PowerManager.OFF:
             time.sleep(1)
 
-
         # deal with locking
         if type(lock) == str or type(lock) == unicode:
             raise RuntimeError("old style lock used with moveIntoSouthSidings")
