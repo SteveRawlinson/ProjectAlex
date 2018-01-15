@@ -431,6 +431,7 @@ class Lock(util.Util):
             self.debug("****************************** switch called on empty lock ^^^^^^^^^^^^^^^^^^^^^^")
             return
         if slowOnPartial is None:
+            # work out a sensible default
             if self.end == SOUTH and self.direction == NORTHBOUND:
                 slowOnPartial = True
             else:
