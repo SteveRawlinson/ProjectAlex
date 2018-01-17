@@ -47,7 +47,7 @@ class Loco(util.Util):
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
         self.debug("setSpeedSetting: " + str(speed))
-        self.throttle.setSpeedSetting(speed)
+        self.throttle.setSpeedSettingAgain(speed)
         if self.track and self.isBlockVisible(self.block):
             mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
             mem.setValue(str(round(speed, 2)))
@@ -58,9 +58,9 @@ class Loco(util.Util):
 #            self.throttle.setSpeedSetting(self.throttle.getSpeedIncrement())
             # set zero again
 #            time.sleep(0.05)
-            self.throttle.setSpeedSetting(speed)
+            self.throttle.setSpeedSettingAgain(speed)
             time.sleep(0.2)
-            self.throttle.setSpeedSetting(speed)
+            self.throttle.setSpeedSettingAgain(speed)
             self.stopTime = time.time()
 
     def timeStopped(self):
@@ -78,9 +78,9 @@ class Loco(util.Util):
     def repeatSpeedMessage(self, speed):
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
-        self.throttle.setSpeedSetting(speed - self.minimumSpeedIncrement())
+        self.throttle.setSpeedSettingAgain(speed - self.minimumSpeedIncrement())
         time.sleep(0.2)
-        self.throttle.setSpeedSetting(speed)
+        self.throttle.setSpeedSettingAgain(speed)
 
     # Changes the loco's speed setting in 0.5 second steps over
     # the duration. So, if duration is 2 secs then there are 5 steps 0.5
