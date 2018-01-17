@@ -907,6 +907,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         mem.setValue(None)
         mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
         mem.setValue(None)
+        self.debug("set memory IMTRACK" + str(slef.track.nr) + "SPEED to None: new value: "+ str(mem.getValue()))
 
 
         # we are ready to move
