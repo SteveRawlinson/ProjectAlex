@@ -316,6 +316,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("reverseLoop: waiting for occupancy sensor to go active")
             self.waitChange([oSensor])
             self.loco.setBlock(loop)
+            if lock and lock.full():
+                lock.unlock(partialUnlock=True)
         if irSensor.knownState != ACTIVE:
             self.debug('reverseLoop: waiting for IR sensor to go active')
             self.waitChange([irSensor])
@@ -768,12 +770,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
-            lock.switch()
+            # reverse loops are used by long trains, be more cautious with locks
+            if lock.partial():
+                self.loco.setSpeedSetting(0)
+                lock.upgradeLock(keepOldPartial=True)
             self.track.setExitSignalAppearance(GREEN)
             speed = self.loco.speed('into reverse loop', 'fast')
             self.loco.setSpeedSetting(speed)
-            self.reverseLoop(NORTH_REVERSE_LOOP)
-            lock.unlock()
+            self.reverseLoop(NORTH_REVERSE_LOOP, lock=lock)
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
         elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations
@@ -814,6 +818,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     if not self.getJackStatus() == NORMAL:
                         self.debug("no available sidings and jack status stopping, giving up")
                         self.loco.setSpeedSetting(0)
+                        lock.unlock()
                         return
                     if lock and not lock.empty():
                         # nothing can move out of a siding while I hold the lock
@@ -928,6 +933,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if siding is None:
                     if not self.getJackStatus() == NORMAL:
                         self.debug("no available sidings and jack status stopping, giving up")
+                        self.loco.setSpeedSetting(0)
+                        lock.unlock()
                         return
                     if lock and not lock.empty():
                         # nothing can move out of a siding while I hold the lock
