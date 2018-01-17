@@ -84,8 +84,8 @@ TRACKS = [
     [3, False, False, ['FPK P2', 'AAP P3', 'PAL P2'], 'LH4'],
     [3, False, False, ['FPK P3', 'AAP P2', 'NSG P1'], 'LH2'],
     [3, False, False, ['FPK P4', 'AAP P1', 'NSG P2'], 'LH5'],
-    [1, True, False, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1'], 'LH3'],
-    [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH103']
+    [1, True, True, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1'], 'LH3'],
+    [1, True, True, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH103']
 ]
 
 # A hash of hashes. Keys are either a loco's dcc addr (eg. 68) or the name of
@@ -104,7 +104,7 @@ SPEEDMAP = {
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
     # TGV
-    4404: {'fast': 0.4, 'bend': 0.3, 'medium': 0.3, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+    4404: {'fast': 0.5, 'bend': 0.3, 'medium': 0.3, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
     # Ave Talgo
     6719: {'fast': 0.4, 'bend': 'fast', 'medium': 0.25, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3,
@@ -113,7 +113,7 @@ SPEEDMAP = {
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
            'north interlink northbound': 0.5, 'track to south link:': 0.5, 'north sidings entry': 0.1, 'north link to sidings': 'slow', 'north interlink southbound': 'fast',
-           'north link to layout': 'fast'},
+           'north link to layout': 'fast', 'fast going slow': 'slow'},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink southbound': 'fast'},
     # Underground
@@ -122,7 +122,7 @@ SPEEDMAP = {
 
 SLOWTIMEMAP = {
     # class 47
-    "class47": {'FPK P7': 8, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 7, "FPK P3": 5, "FPK P1": 7},
+    "class47": {'FPK P7': 8, "NORTH FAST": 13, "NSG P2": 5, "Nth Fast Outer 1": 7, "FPK P3": 5, "FPK P1": 7, "PAL P2": 3},
     # Mallard
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 5, "FPK P3": 4},
     # class 150s
