@@ -38,11 +38,13 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
 
         self.leaveSouthSidings("FPK P2")
 
+        speed = self.loco.getSpeed('fast going slow', 'medium')
+
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P3", medium, dontStop=True)
+        self.shortJourney(True, self.loco.block, "AAP P3", speed, dontStop=True)
 
         # AAP to PAL
-        self.shortJourney(True, self.loco.block, "PAL P2", medium, dontStop=True)
+        self.shortJourney(True, self.loco.block, "PAL P2", speed, dontStop=True)
 
         # see if we can get a lock but don't wait for one
         lock = self.loco.getLockNonBlocking(NORTH)

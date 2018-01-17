@@ -29,11 +29,13 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 
         self.leaveSouthSidings('FPK P4', stop=False)
 
+        speed = self.loco.getSpeed('fast going slow', 'medium')
+
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P1", 'medium', dontStop=True)
+        self.shortJourney(True, self.loco.block, "AAP P1", speed, dontStop=True)
 
         # AAP to PAL
-        self.shortJourney(True, self.loco.block, "NSG P2", 'medium', dontStop=True)
+        self.shortJourney(True, self.loco.block, "NSG P2", speed, dontStop=True)
 
         self.moveIntoNorthSidings()
 

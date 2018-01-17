@@ -33,14 +33,14 @@ class ClassAnyNth2SthTrack1Nonstop(alex.Alex):
 
         self.loco.status = loco.MOVING
 
-
         self.leaveNorthSidings('PAL P1')
 
+        speed = self.loco.getSpeed('fast going slow', 'medium')
         # NSG to AAP
-        self.shortJourney(True, "PAL P1", "AAP P4", self.loco.speed('medium'), dontStop=True)
+        self.shortJourney(True, "PAL P1", "AAP P4", speed, dontStop=True)
 
         # AAP to FPK
-        self.shortJourney(True, "AAP P4", "FPK P1", self.loco.speed('medium'), dontStop=True)
+        self.shortJourney(True, "AAP P4", "FPK P1", speed, dontStop=True)
 
         self.moveIntoSouthSidings()
 
