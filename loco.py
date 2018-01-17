@@ -48,7 +48,7 @@ class Loco(util.Util):
             speed = self.speed(speed)
         self.debug("setSpeedSetting: " + str(speed))
         self.throttle.setSpeedSetting(speed)
-        if self.track:
+        if self.track and self.isBlockVisible(self.block):
             mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
             mem.setValue(str(round(speed, 2)))
         if float(speed) ==  0.0:
