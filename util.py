@@ -72,6 +72,8 @@ class Util:
     # a string, a block, or a layoutBlock) is on the visible part of
     # the layout
     def isBlockVisible(self, thing):
+        if thing is None:
+            return False
         if type(thing) != str and type(thing) != unicode:
             block, sensor = self.convertToLayoutBlockAndSensor(thing)
             blockname = block.getId()
