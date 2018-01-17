@@ -4,6 +4,7 @@ graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever i
 get the virgin running on slow
 prioritise locking depending on how full the layout is
 if we release a lock because no sidings, move on until we would normally stop
+if we give up because no sidings, release the lock
 
 -- don't bring a non-reversible loco out unless the other one has a track available
 -- long trains southbound on south link do partial unlock too early
