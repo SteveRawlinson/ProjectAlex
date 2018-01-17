@@ -716,7 +716,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 
 
     # moves a train from their current block into the north sidings
-    def moveIntoNorthSidings(self, lock=None):
+    def moveIntoNorthSidings(self, lock=None, speed=None):
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -767,7 +767,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if not self.loco.reversible() and b is not None:
             # we need a reverse loop and it's available
             self.debug("moving into North reverse loop")
-            speed = self.loco.speed('off track north', 'medium')
+            if speed is None:
+                speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
@@ -785,7 +786,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link
             self.debug("stopping early")
-            speed = self.loco.speed('off track north', 'medium')
+            if speed is None:
+                speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(False, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(False, self.loco.block, 'North Link', normalSpeed=speed, slowSpeed=speed, routes=[route], eStop=True)
@@ -842,7 +844,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             else:
                 dir = True
             self.debug("calling shortJourney")
-            speed = self.loco.speed('off track north', 'medium')
+            if speed is None:
+                speed = self.loco.speed('off track north', 'medium')
             self.shortJourney(dir, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=routes)
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(dir, self.loco.block, 'North Link', speed, dontStop=True)
@@ -865,7 +868,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
 
     # moves a train from their current block into the south sidings
-    def moveIntoSouthSidings(self, lock=None):
+    def moveIntoSouthSidings(self, lock=None, speed=None):
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -912,7 +915,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             b = self.loco.selectReverseLoop(SOUTH_REVERSE_LOOP)
         if not self.loco.reversible() and b is not None:
             # move into reverse loop
-            speed = self.loco.speed('off track south', 'medium')
+            if speed is None:
+                speed = self.loco.speed('off track south', 'medium')
             self.shortJourney(True, self.loco.block, 'South Link', speed, dontStop=True, routes=routes)
             if self.loco.trainLength() < 100 or self.loco.fast():
                 lock.switch() # slows/stops loco if necessary
@@ -954,7 +958,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 moreRoutes = self.requiredRoutes(siding)
                 self.debug("moveIntoSouthSidings: adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
-            speed = self.loco.speed('track to south link', 'medium')
+            if speed is None:
+                speed = self.loco.speed('track to south link', 'medium')
             dir = True
             self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, dontStop=True)
             if lock.partial():
@@ -968,12 +973,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 slowSpeed = self.loco.speed('south sidings entry', 'medium')
                 self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, routes=routes, stopIRClear=IRSENSORS[siding.getId()])
             else: # normal siding
-                # select the speed for the next bit - if a fast loco needs to set routes
-                # we need to go slower
-                if routes is None or not self.loco.fast():
-                    speed = self.loco.speed('south link to back passage', 'fast')
-                else:
-                    speed = self.loco.speed('south link to back passage slow', 'slow')
+                if speed is None:
+                    # select the speed for the next bit - if a fast loco needs to set routes
+                    # we need to go slower
+                    if routes is None or not self.loco.fast():
+                        speed = self.loco.speed('south link to back passage', 'fast')
+                    else:
+                        speed = self.loco.speed('south link to back passage slow', 'slow')
                 self.shortJourney(dir, self.loco.block, 'Back Passage', speed, routes=routes, dontStop=True)
                 speed = self.loco.speed('back passage to south sidings', 'fast')
                 slowSpeed = self.loco.speed('south sidings entry', 'medium')
@@ -986,7 +992,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
-    def leaveSouthSidings(self, endBlock, stop=None):
+    def leaveSouthSidings(self, endBlock, stop=None, speed=None):
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -1128,8 +1134,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # all routes are now set
 
         # get the speed
-        sp = self.loco.speed('south link to layout', 'medium')
-        # and slowspeed
+        if speed is None:
+            sp = self.loco.speed('south link to layout', 'medium')
+            # and slowspeed
+        else:
+            sp = speed
         ssp = self.loco.speed('slow')
         # do this now because it can be a while before we call shortJourney
         self.debug('setting speed early before calling shortJourney: new speed: ' + str(sp))
@@ -1165,7 +1174,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # Brings a loco out of the south sidings (or reverse loop) onto the
     # layout.
-    def leaveNorthSidings(self, endBlock, stop=None):
+    def leaveNorthSidings(self, endBlock, stop=None, speed=None):
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
             time.sleep(1)
@@ -1212,7 +1221,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             eb = "Nth Slow Link"
         self.shortJourney(dir, self.loco.block, eb, sp, routes=routes, dontStop=True)
         # new speed
-        sp = self.loco.speed('north link to layout', 'medium')
+        if speed is None:
+            sp = self.loco.speed('north link to layout', 'medium')
+        else:
+            sp = speed
         # and slowspeed
         ssp = self.loco.speed('slow')
         # complete the move
