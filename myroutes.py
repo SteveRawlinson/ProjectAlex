@@ -84,8 +84,8 @@ TRACKS = [
     [3, False, False, ['FPK P2', 'AAP P3', 'PAL P2'], 'LH4'],
     [3, False, False, ['FPK P3', 'AAP P2', 'NSG P1'], 'LH2'],
     [3, False, False, ['FPK P4', 'AAP P1', 'NSG P2'], 'LH5'],
-    [1, True, True, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1'], 'LH3'],
-    [1, True, True, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH103']
+    [1, True, False, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1'], 'LH3'],
+    [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH103']
 ]
 
 # A hash of hashes. Keys are either a loco's dcc addr (eg. 68) or the name of
@@ -113,7 +113,7 @@ SPEEDMAP = {
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
            'north interlink northbound': 0.5, 'track to south link:': 0.5, 'north sidings entry': 0.1, 'north link to sidings': 'slow', 'north interlink southbound': 'fast',
-           'north link to layout': 'fast', 'fast going slow': 'slow'},
+           'north link to layout': 'fast', 'fast going slow': 0.27},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink southbound': 'fast'},
     # Underground
