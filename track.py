@@ -3,12 +3,12 @@
 import jmri
 import time
 from jmri_bindings import *
-from myroutes import ROUTEMAP
+from myroutes import *
 import util
 
 DEBUG = True
 
-class Track():
+class Track:
 
     def __init__(self, nr, stops, fast, unserviceable, blks, signal):
         self.nr = nr
@@ -257,4 +257,19 @@ class Track():
 
     def name(self):
         return "Track " + str(self.nr)
+
+    def sensor(self):
+        s = sensors.getSensor(TRACKSENSORS[self.nr])
+        return s
+
+    # Checks the u/s status against a designated
+    def checkStatus(self):
+        state = self.sensor().getKnownState()
+        if state == ACTIVE and self.us is True:
+            self.debug(self.name() + " is now ACTIVE")
+            self.us = False
+        if state != ACTIVE and self.us is not True:
+            self.debug(self.name() + " is now U/S")
+            self.us = True
+
 
