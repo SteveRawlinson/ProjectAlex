@@ -475,11 +475,13 @@ class Lock(util.Util):
     # as it's going slowly until slowtime expires. If it gets the lock
     # it returns, if the time expires it stops the loco and and then
     # waits till the lock is got.
-    def getLockOrStopLoco(self, destination):
+    def getLockOrStopLoco(self, destination=None, slowtime=None, speed=None):
         stoptime = None
         self.log("getLockOrStopLoco called: lock status: " + self.status())
-        self.loco.setSpeedSetting('slow')
-        slowtime = self.loco.getSlowtime(destination)
+        if speed is None:
+            self.loco.setSpeedSetting('slow')
+        if slowtime is None:
+            slowtime = self.loco.getSlowtime(destination)
         self.debug("getLockOrStopLoco: slowtime: " + str(slowtime))
         tn = time.time()
         while self.empty() and ((time.time() - tn) < slowtime):
