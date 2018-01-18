@@ -31,12 +31,26 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         self.leaveSouthSidings('FPK P4', stop=False, speed=speed)
 
         # FPK to AAP
-        self.shortJourney(True, self.loco.block, "AAP P1", speed, dontStop=True)
+        self.shortJourney(False, self.loco.block, "AAP P1", speed, dontStop=True)
 
-        # AAP to PAL
-        self.shortJourney(True, self.loco.block, "NSG P2", speed, dontStop=True)
+        # we need to do some jiggery pokery here because NSG doesn't get
+        # 'occupied' until the engine (at the back) goes into the block
+        loc = self.loco.getLockNonBlocking(NORTH)
+        if loc.empty():
+            loc.getLockOrStopLoco(speed='fast going slow', slowtime=12)
+            self.setRoute(self.loco.track.exitRoute())
+            time.sleep(3)
+            b, s = self.convertToLayoutBlockAndSensor("NSG P2")
+            if s.getKnownState() == ACTIVE:
+                self.loco.setBlock(b)
+            else:
+                self.shortJourney(False, self.loco.block, "NSG P2", speed, dontStop=True)
+        else:
+            self.setRoute(self.loco.track.exitRoute())
+            # AAP to NSG
+            self.shortJourney(False, self.loco.block, "NSG P2", speed, dontStop=True)
 
-        self.moveIntoNorthSidings(speed=speed)
+        self.moveIntoNorthSidings(speed=speed, lock=loc)
 
         return False
 
