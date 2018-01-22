@@ -37,15 +37,16 @@ from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
 #DCC_ADDRESSES = [2144, 2128]
-#DCC_ADDRESSES = [2128, 2144, 1124, 5004]
+DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
-#DCC_ADDRESSES = [7405, 68, 2144, 2128]
+#DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
-#DCC_ADDRESSES = [1087]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004]
+#DCC_ADDRESSES = [4404]
+#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6716]
+#DCC_ADDRESSES = []
 DEBUG = True
 
 
@@ -298,8 +299,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # always get 2 journeys going
             prob = 1.0
         elif runningCount == 2:
-            # a third journey every 100 secs
-            prob = 0.01
+            # a third journey every 50 secs
+            prob = 0.02
         else:
             # a 4th journey every min of 3 running
             prob = 0.01
@@ -523,6 +524,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sen = sensors.getSensor("Add Loco")
             sen.setKnownState(INACTIVE)
 
+    def checkTrackStatus(self):
+        for t in self.tracks:
+            t.checkStatus()
 
     # ------------------------ Main -----------------------------------
     def handle(self):
@@ -657,6 +661,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.startNewJourneys()
             # check for new locos
             self.checkForNewLocos()
+            # check to see if track status has changed
+            self.checkTrackStatus()
             # bow out if there's a limit
             if maxloops is not None and loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
