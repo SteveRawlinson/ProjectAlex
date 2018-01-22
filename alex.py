@@ -438,6 +438,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # set the throttle
         throttle = self.loco.throttle
+        if self.loco.throttle.getLocoNetSlot() is None:
+            self.debug("loco throttle has no slot, getting a new throttle")
+            self.getLocoThrottle(self.loco)
 
         # turn lights on
         self.loco.throttle.setF0(True)
