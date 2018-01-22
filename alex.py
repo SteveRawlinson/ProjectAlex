@@ -800,7 +800,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # check JackStatus hasn't changed in the meantime
             if self.getJackStatus() == STOPPING:
                 self.debug("JackStatus is now STOPPING - moving to siding")
-                siding = self.loco.selectSiding(NORTH_SIDINGS)
+                siding = self.loco.selectSiding(NORTH_SIDINGS, blocking=False)
+                if siding is None:
+                    self.debug("no sidings available, JackStatus STOPPING, nothing can move, giving up")
+                    return
                 routes = self.requiredRoutes(siding)
                 self.shortJourney(False, self.loco.block, siding, 'fast', stopIRClear=IRSENSORS[siding.getId()], routes=routes, lock=lock)
             else:
