@@ -318,6 +318,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setBlock(loop)
             if lock and lock.full():
                 lock.unlock(partialUnlock=True)
+        sp = self.loco.speed('in reverse loop', 'medium')
+        self.loco.setSpeedSetting(sp)
         if irSensor.knownState != ACTIVE:
             self.debug('reverseLoop: waiting for IR sensor to go active')
             self.waitChange([irSensor])
