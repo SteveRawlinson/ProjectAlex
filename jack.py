@@ -36,8 +36,8 @@ from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
-#DCC_ADDRESSES = [2144, 2128]
-DCC_ADDRESSES = [2128, 2144, 1124, 5004]
+#CC_ADDRESSES = [2144]
+#DCC_ADDRESSES = [2128, 2144, 1124, 5004, 1087, 3213]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
@@ -45,7 +45,7 @@ DCC_ADDRESSES = [2128, 2144, 1124, 5004]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6716]
+DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6719]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -299,11 +299,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # always get 2 journeys going
             prob = 1.0
         elif runningCount == 2:
-            # a third journey every 50 secs
-            prob = 0.02
+            # a third journey every 20 secs
+            prob = 0.05
         else:
             # a 4th journey every min of 3 running
-            prob = 0.01
+            prob = 0.02
         randomNumber = random.random()
         self.log("randomNumber: " + str(randomNumber) + " prob: " + str(prob) + " running count: " + str(runningCount))
         if randomNumber > prob:
@@ -532,7 +532,14 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def handle(self):
 
         self.debug("Jack Starting")
-        self.log('Jack Starting')
+
+        if self.getJackStatus() != STOPPED:
+            # maybe still running?
+            b = JOptionPane.showConfirmDialog(None, "Jack might already be running, continue?",
+                                              "Jack might already be running, are you sure?", JOptionPane.YES_NO_OPTION)
+            if b == JOptionPane.NO_OPTION:
+                self.debug("Quitting on user command")
+                return False
 
         # set status memory variable
         self.setStatus()
@@ -646,12 +653,16 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.eStop() # stops all locos
                 time.sleep(0.5)
                 print "Jack exits on ESTOP"
+                self.status = STOPPED
+                self.setStatus()
                 return False
             # check for journeys that have completed
             self.checkJourneys()
             if self.status == STOPPING:
                 if len(self.memories) == 0:
                     print "All done - exiting"
+                    self.status = STOPPED
+                    self.setStatus()
                     return False
                 elif loopcount % 20 == 0:
                     self.debug("waiting for " + str(len(self.memories)) + " journeys to complete")
@@ -666,7 +677,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # bow out if there's a limit
             if maxloops is not None and loopcount > maxloops:
                 self.debug('exiting after ' + str(maxloops) + ' loops')
-                self.status = STOPPING
+                self.status = STOPPED
                 self.setStatus()
                 return False # stop the loop for the moment
 
