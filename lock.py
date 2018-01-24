@@ -23,6 +23,9 @@ class Lock(util.Util):
         self.northTrackLinkVal = None
         self.northSidingsVal = None
         self.loggedPowerOff = 0.0
+        self.lockTime = None # time we got the lock
+        self.unlockTime = None # time we released the lock
+        self.cleanLock = True # true unless there was a delay after getting the lock (eg. switch() took time)
 
 
     # Read the appropriate memory values indicating whether bits of track
@@ -204,6 +207,8 @@ class Lock(util.Util):
                             signal.setAppearance(GREEN)
         self.writeMemories()
         self.log(self.status())
+        if not self.empty():
+            self.lockTime = time.time()
 
     # Calls the above method repeatedly until at least a partial lock
     # is available.
@@ -294,6 +299,8 @@ class Lock(util.Util):
                     rv = True
         if rv:
             self.writeMemories()
+        else:
+            self.cleanLock = False
         self.log("upgradeLockNonBlocking returning " + str(rv))
         return rv
 
@@ -401,7 +408,9 @@ class Lock(util.Util):
                 elif partialUnlock is True and self.direction == SOUTHBOUND:
                     # we are doing a partial unlock and this is the bit that needs to be unlocked
                     self.southTrackLink = None
-        self.debug(self.status())
+        self.log(self.status())
+        if self.empty():
+            self.unlockTime = time.time()
         self.writeMemories()
 
     # Releases part of a lock
@@ -421,7 +430,7 @@ class Lock(util.Util):
             return False
         return True
 
-    # The method is called when the loco reaches the halfway point covered
+    # This method is called when the loco reaches the halfway point covered
     # by the lock. It needs either to upgrade to a full lock in order
     # to progress (in the case of it having a partial lock), or it needs
     # to release the first part of the lock (in the case of having a full
@@ -446,6 +455,7 @@ class Lock(util.Util):
                 # this is a convoluted way of slowing and then stopping the loco while we
                 # upgrade the lock to a full lock
                 if self.upgradeLockNonBlocking() is False:
+                    self.cleanLock = False
                     self.debug("slowing loco while lock upgraded")
                     if not slowOnPartial:
                         # if slowOnPartial is true, we already did this
@@ -521,7 +531,7 @@ class Lock(util.Util):
     # This can happen as a result of a race condition. Setting the
     # values to None gets the corresponding memory value set to
     # None whereas setting them to False leaves the value alone
-    # when we call writeMemories(). So
+    # when we call writeMemories().
     def blankMyLockyBits(self):
         if self.northSidings:
             self.northSidings = None
@@ -570,6 +580,22 @@ class Lock(util.Util):
             self.blankMyLockyBits()
             return False
         return True
+
+    def logLock(self):
+        if self.cleanLock:
+            if self.end == NORTH:
+                end_s = 'north'
+            else:
+                end_s = 'south'
+            if self.direction == NORTHBOUND:
+                dir_s = 'northbound'
+            else:
+                dir_s = 'southbound'
+            logStr = str(self.loco.dccAddr) + ',' + end_s + ',' + dir_s, + ',' + self.loco.track.name() + ',' + str(self.unlockTime - self.lockTime) + "\n"
+            logfile = open('C:\Users\steve\lock.log', 'a')
+            logfile.write(logStr)
+            logfile.close()
+
 
 
 
