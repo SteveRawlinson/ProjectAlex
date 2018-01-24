@@ -17,6 +17,7 @@ LOGFILE = "C:\Users\steve\jmri.log"
 NORMAL = 0
 STOPPING = 1
 ESTOP = 2
+STOPPED = 3
 
 # loco status
 SIDINGS = 1
