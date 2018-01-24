@@ -102,7 +102,7 @@ SPEEDMAP = {
            'track to south link': 'fast', 'south sidings entry': 0.1},
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.1},
     # TGV
     4404: {'fast': 0.6, 'bend': 0.3, 'medium': 0.3, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
@@ -126,7 +126,7 @@ SLOWTIMEMAP = {
     # Mallard
     "classA4": {'FPK P7': 13, "NORTH FAST": 15, 'FPK P8': 17, "FPK P4": 5, "NSG P2": 6, "PAL P2": 5 , "FPK P2": 5, "FPK P3": 4},
     # class 150s
-    "class150": {"FPK P2": 3, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 4, "AAP P4": 3, "FPK P1": 10, "FPK P4": 2, "AAP P1": 1, "NSG P2": 3,
+    "class150": {"FPK P2": 3, "AAP P3": 1.5, "PAL P2": 2, "North Link": 4, "PAL P1": 3, "AAP P4": 3, "FPK P1": 10, "FPK P4": 2, "AAP P1": 1, "NSG P2": 3,
                  "FPK P3": 8, "AAP P2": 3, "NSG P1": 4},
     # Underground
     1087: {"FPK P3": 9, "AAP P2": 4, "NSG P1": 2.5, "PAL P1": 5, "AAP P4": 5, "FPK P1": 11, "FPK P4": 3, "AAP P1": 3, "NSG P2": 3, "FPK P2": 4,
