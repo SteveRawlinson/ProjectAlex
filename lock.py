@@ -591,7 +591,7 @@ class Lock(util.Util):
                 dir_s = 'northbound'
             else:
                 dir_s = 'southbound'
-            logStr = str(self.loco.dccAddr) + ',' + end_s + ',' + dir_s, + ',' + self.loco.track.name() + ',' + str(self.unlockTime - self.lockTime) + "\n"
+            logStr = str(self.loco.dccAddr) + ',' + end_s + ',' + dir_s + ',' + self.loco.track.name() + ',' + str(self.unlockTime - self.lockTime) + "\n"
             logfile = open('C:\Users\steve\lock.log', 'a')
             logfile.write(logStr)
             logfile.close()
