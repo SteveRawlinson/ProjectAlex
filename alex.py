@@ -145,12 +145,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         return lck
 
     def unlock(self, lck):
-        if not lck.empty():
-            if lck.end == NORTH:
-                end_s = 'North'
-            else:
-                end_s = 'South'
-            self.debug("unlocking " + end_s + " Link")
+        if DEBUG:
+            if not lck.empty():
+                if lck.end == NORTH:
+                    end_s = 'North'
+                else:
+                    end_s = 'South'
+                self.debug("unlocking " + end_s + " Link")
             lck.unlock()
 
     # Returns true if the loco supplied has a lock on the
@@ -325,6 +326,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.waitChange([irSensor])
         if lock:
             lock.unlock()
+            lock.logLock()
         if stop:
             self.debug('reverseLoop: stopping loco and returning')
             self.loco.setSpeedSetting(0)
@@ -618,7 +620,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # a sensor has changed
             # check if we should release the lock
             if unlockSensor and unlockSensor in changedList:
-                self.unlock(lock)
+                lock.unlock()
+                lock.logLock()
             # check if we have reached the endBlock
             if endBlockSensor in changedList or endIRSensor in changedList:
                 arrived = True
@@ -642,7 +645,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if lockSensor and lockSensor.getKnownState() == ACTIVE:
                 pass
             else:
-                self.unlock(lock)
+                lock.unlock()
+                lock.logLock()
                 lock = None
 
 
@@ -663,7 +667,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # still active, wait
                 self.log("waiting for lockSensor to go inactive before releasing lock")
                 self.waitChange([lockSensor])
-            self.unlock(lock)
+            lock.unlock()
+            lock.logLock()
+
 
         if stopIRClear:
             # check if we have a sensor or the name of a sensor
@@ -701,7 +707,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("waiting until block " + endBlock.getId() + " is unoccupied")
             self.waitSensorInactive(endBlockSensor)
             if lock is not None:
-                self.unlock(lock)
+                lock.unlock()
+                lock.logLock()
             # set the loco's block to 'nextBlock' which is the block
             # has now moved into (and which has no sensor)
             if nextBlock:
@@ -854,6 +861,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             slowSpeed = self.loco.speed('north sidings entry', 'medium')
             self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()], routes=routes)
             lock.unlock()
+            lock.logLock()
             self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
@@ -923,6 +931,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             lock.unlock()
+            log.logLock()
             self.track.setExitSignalAppearance(GREEN)
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
@@ -981,6 +990,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 slowSpeed = self.loco.speed('south sidings entry', 'medium')
                 self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()])
             lock.unlock()
+            lock.logLock()
             self.loco.unselectSiding(siding)
             if not self.loco.reversible():
                 self.loco.wrongway = True
