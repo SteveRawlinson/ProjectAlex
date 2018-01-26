@@ -9,7 +9,7 @@ from myroutes import *
 
 class SouthReverseLoopToSouthSidings(alex.Alex):
 
-    def handle(self):
+    def go(self):
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -45,7 +45,7 @@ class SouthReverseLoopToSouthSidings(alex.Alex):
 
 class SouthSidingsToSouthReverseLoop(alex.Alex):
 
-    def handle(self):
+    def go(self):
 
         # check we have a block and the block is occupied
         if not self.loco.southSidings():
@@ -71,7 +71,7 @@ class SouthSidingsToSouthReverseLoop(alex.Alex):
 
 class NorthReverseLoopToNorthSidings(alex.Alex):
 
-    def handle(self):
+    def go(self):
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -107,7 +107,7 @@ class NorthReverseLoopToNorthSidings(alex.Alex):
 
 class NorthSidingsToNorthReverseLoop(alex.Alex):
 
-    def handle(self):
+    def go(self):
 
         # check we have a block and the block is occupied
         if not self.loco.northSidings():

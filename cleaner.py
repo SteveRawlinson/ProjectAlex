@@ -261,7 +261,7 @@ class Cleaner(alex.Alex):
 
 
 
-    def handle(self):
+    def go(self):
 
         # get track info
         self.initTracks()
