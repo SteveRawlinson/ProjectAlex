@@ -17,7 +17,7 @@ class ClassFreightNth2SthTrack1Nonstop(alex.Alex):
     def getSpeeds(self):
         return CLASS_47_SPEEDS
 
-    def handle(self):
+    def go(self):
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")
 
