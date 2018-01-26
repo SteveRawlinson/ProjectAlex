@@ -4,11 +4,11 @@ graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever i
 get the virgin running on slow
 prioritise locking depending on how full the layout is
 if we release a lock because no sidings, move on until we would normally stop
-if we give up because no sidings, release the lock
+journeys should check for estop more often
 
+-- if we give up because no sidings, release the lock
 -- don't bring a non-reversible loco out unless the other one has a track available
 -- long trains southbound on south link do partial unlock too early
--- rotate the log file
 -- don't wait for target block to be free if there's a lock and it's a link
 
 LS65 is probably fine and not in use (despite having wires in it)
@@ -26,7 +26,7 @@ Javelin failed to stop 29/12/2017 16:50 (might be fixed)
 
 
 
-
+++ rotate the log file
 ++ if all the sidings are full move a loco
 ++ make moveIntoNorthSiding use different speeds for layout -> fast/slow link
 ++ alex.py:840 is this the most efficient lock handling for reverse loops?
