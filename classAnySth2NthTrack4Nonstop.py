@@ -9,7 +9,7 @@ from myroutes import *
 
 class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 
-    def handle(self):
+    def go(self):
 
         if self.loco.block is None:
             raise RuntimeError("I don't have a block!")

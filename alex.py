@@ -18,6 +18,9 @@ NORMAL = 0
 STOPPING = 1
 ESTOP = 2
 
+class EstopError(RuntimeError):
+    pass
+
 # The Alex class provides a series of utility methods which can be used
 # to control a locomotive around a layout. It is intended to be used as
 # a parent to a particular journey class
@@ -374,7 +377,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
-            return RuntimeError("shortJourney called while status is ESTOP")
+            raise EstopError("Estop")
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -589,13 +592,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             repeatedSpeed = False
             while len(changedList) == 0:
                 self.changedSensors(sensorList) # record the current states
-                # wait up to5 seconds for sensors to change
+                # wait for sensors to change
                 self.waitChange(sensorList, 500)
                 if self.getJackStatus() == ESTOP:
                     # abort
                     self.debug("aborting shortJourney, ESTOP status detected")
                     self.loco.emergencyStop()
-                    return False
+                    raise EstopError("Estop")
                 # else:
                     # self.debug("getJackStatus(): " + str(self.getJackStatus()) + " " + type(self.getJackStatus()).__name__ + "ESTOP: " + str(ESTOP) + ' ' + type(ESTOP).__name__  + " don't match")
                 if repeatedSpeed is False and time.time() - shortJourneyStart > 3.0:
@@ -651,6 +654,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 lock.logLock()
                 lock = None
 
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
 
         # slow the loco down in preparation for a stop (if slowSpeed is set)
         if slowSpeed is not None and slowSpeed > 0:
@@ -662,6 +668,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("setting slowSpeed: " + str(slowSpeed))
                 self.loco.setSpeedSetting(slowSpeed)
 
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
+
         # if we didn't unlock above because the lockSensor was still active,
         # do it now.
         if lock and lockSensor:
@@ -672,6 +682,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             lock.unlock()
             lock.logLock()
 
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
 
         if stopIRClear:
             # check if we have a sensor or the name of a sensor
@@ -690,6 +703,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug(" ********************** waiting slowtime at " + endBlock.getId() + ' :' + str(slowTime / 1000) + " **********************************************")
             self.waitMsec(slowTime)
 
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
+
         if dontStop is False:
             # stop the train
             if stopIRClear is not None or eStop is True:
@@ -703,6 +720,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # we know where we are now
         self.knownLocation = endBlock
+
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
 
         if passBlock is True:
             # wait until the endblock is empty
@@ -729,6 +750,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the north sidings
     def moveIntoNorthSidings(self, lock=None, speed=None):
+
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -877,6 +902,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     # moves a train from their current block into the south sidings
     def moveIntoSouthSidings(self, lock=None, speed=None):
+
+        # check we're not in ESTOP status
+        if self.getJackStatus() == ESTOP:
+            raise EstopError("Estop")
 
         # wait until the power comes back on
         while powermanager.getPower() == jmri.PowerManager.OFF:
@@ -1248,7 +1277,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.debug('leaveNorthSidings done')
 
     def handle(self):
-        pass
+        try:
+            go()
+        except EstopError:
+            if self.loco:
+                self.loco.emergencyStop()
+            debug("Exiting on Estop")
+            return false
+
 
         
 

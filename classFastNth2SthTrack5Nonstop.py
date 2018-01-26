@@ -9,7 +9,7 @@ from myroutes import *
 
 class ClassFastNth2SthTrack5Nonstop(alex.Alex):
 
-    def handle(self):
+    def go(self):
         if not self.loco.northSidings():
             raise RuntimeError("I'm not in the north sidings")
 

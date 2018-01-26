@@ -10,7 +10,7 @@ from myroutes import *
 
 class ClassAnyNorthLinkToNorthSidings(alex.Alex):
 
-    def handle(self):
+    def go(self):
         self.loco.status = loco.ACTIVE
         siding = self.loco.selectSiding(NORTH_SIDINGS)
         lok = lock.Lock()
