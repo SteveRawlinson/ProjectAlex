@@ -1278,7 +1278,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
     def handle(self):
         try:
-            go()
+            self.go()
         except EstopError:
             if self.loco:
                 self.loco.emergencyStop()
