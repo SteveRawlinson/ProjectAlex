@@ -36,7 +36,7 @@ from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
-#CC_ADDRESSES = [2144]
+DCC_ADDRESSES = [2144, 2128]
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004, 1087, 3213]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
@@ -606,6 +606,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if cont is False:
             # User cancelled
             print "Jack exiting on user cancel"
+            self.status = STOPPED
+            self.setStatus()
             return False
 
         # give the sensors time to wake up if we just turned power on
