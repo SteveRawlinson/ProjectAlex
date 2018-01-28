@@ -31,7 +31,7 @@ class ClassFastSth2NthTrack6Nonstop(alex.Alex):
         lock = self.loco.getLockNonBlocking(NORTH)
         if lock.empty():
             # stop the train at North Fast Outer 1
-            sp = loco.speed("north fast outer 1 halting", 'medium')
+            sp = self.loco.speed("north fast outer 1 halting", 'medium')
             self.shortJourney(False, self.loco.block, "Nth Fast Outer 1", sp, 'slow')
             # wait for a lock
             lock = self.loco.getLock(NORTH)
