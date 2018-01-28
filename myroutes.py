@@ -137,11 +137,11 @@ SLOWTIMEMAP = {
     # Ave Talgo
     6719: {'Nth Fast Outer 1': 4, "FPK P7": 4},
     # Eurostar
-    3213: {"FPK P7": 5, "Nth Fast Outer 1": 3},
+    3213: {"FPK P7": 5, "Nth Fast Outer 1": 1},
     # TGV
     4404: {"FPK P7": 5, "Nth Fast Outer 1": 3},
     # Virgin class 91
-    1124: {"FPK P7": 6, "Nth Fast Outer 1": 1},
+    1124: {"FPK P7": 6, "Nth Fast Outer 1": 0},
 }
 
 TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
