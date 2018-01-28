@@ -137,7 +137,7 @@ SLOWTIMEMAP = {
     # Ave Talgo
     6719: {'Nth Fast Outer 1': 4, "FPK P7": 4},
     # Eurostar
-    3213: {"FPK P7": 5, "Nth Fast Outer 1": 1},
+    3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
     4404: {"FPK P7": 5, "Nth Fast Outer 1": 3},
     # Virgin class 91
