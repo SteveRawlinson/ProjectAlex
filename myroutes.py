@@ -105,10 +105,10 @@ SPEEDMAP = {
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.1},
     # TGV
-    4404: {'fast': 0.6, 'bend': 0.3, 'medium': 0.3, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.15},
+    4404: {'fast': 0.65, 'bend': 0.45, 'medium': 0.45, 'slow': 0.25, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.2},
     # Ave Talgo
-    6719: {'fast': 0.5, 'bend': 'fast', 'medium': 0.35, 'slow': 0.2, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.3,
+    6719: {'fast': 0.5, 'bend': 'fast', 'medium': 0.35, 'slow': 0.25, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.35,
            'north sidings entry': 0.3, 'track to south link': 0.5, 'south sidings exit': 0.3, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
            'north link to layout': 'fast'},
     # class 91 virgin
@@ -133,9 +133,9 @@ SLOWTIMEMAP = {
     1087: {"FPK P3": 9, "AAP P2": 4, "NSG P1": 2.5, "PAL P1": 5, "AAP P4": 5, "FPK P1": 11, "FPK P4": 3, "AAP P1": 3, "NSG P2": 3, "FPK P2": 4,
            "AAP P3": 5, "PAL P2": 5, "North Link": 4},
     # Javelin
-    5004: {'North Link': 5, 'FPK P7': 7, "Nth Fast Outer 1": 5},
+    5004: {'North Link': 5, 'FPK P7': 7, "Nth Fast Outer 1": 6},
     # Ave Talgo
-    6719: {'Nth Fast Outer 1': 4, "FPK P7": 4},
+    6719: {'Nth Fast Outer 1': 6, "FPK P7": 4},
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
