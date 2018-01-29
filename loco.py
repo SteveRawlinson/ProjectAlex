@@ -48,8 +48,9 @@ class Loco(util.Util):
             speed = self.speed(speed)
         self.debug("setSpeedSetting: " + str(speed))
         self.throttle.setSpeedSettingAgain(speed)
-        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
-        mem.setValue(str(round(speed, 2)))
+        if self.track:
+            mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+            mem.setValue(str(round(speed, 2)))
         if float(speed) ==  0.0:
             # make sure the message gets through - wait a bit
             time.sleep(0.1)
