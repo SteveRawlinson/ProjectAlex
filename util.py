@@ -68,6 +68,12 @@ class Util:
         else:
             return False
 
+    # Returns the contents of the 'thing'
+    def getBlockContents(self, thing):
+        layoutblock, sensor = self.convertToLayoutBlockAndSensor(thing)
+        block = layoutblock.getBlock()
+        return block.getValue()
+
     # Returns True if the block referred to be +thing+ (which can be
     # a string, a block, or a layoutBlock) is on the visible part of
     # the layout

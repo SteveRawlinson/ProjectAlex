@@ -204,18 +204,33 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 time.sleep(0.2)
             self.debug("route not busy")
 
+    def whatsInSidings(self, sidings):
+        for s in sidings:
+            if self.isBlockOccupied(s):
+                addr = self.getBlockContents(s)
+                if addr is None:
+                    addr = JOptionPane.showInputDialog("DCC loco in: " + s)
+                    addr = int(addr)
+                loc = None
+                loc = loco.Loco.getLocoByAddr(addr, self.locos)
+                if loc is None:
+                    loc = loco.Loco(addr)
+                    self.locos.append(l)
+                loc.setBlock(s)
 
-    # # removes a lock
-    # def unlock(self, mem, loco=None):
-    #     # if there's no lock silently return
-    #     if memories.getMemory(mem).getValue() is None or memories.getMemory(mem).getValue() == "":
-    #         return
-    #     if loco is None:
-    #         loco = self.loco
-    #     self.debug('unlocking ' + mem)
-    #     if memories.getMemory(mem).getValue() != str(loco.dccAddr):
-    #         raise RuntimeError("loco " + str(loco.dccAddr) + " attempted to remove lock it does not own on mem " + mem)
-    #     memories.getMemory(mem).setValue(None)
+    def clearSidings(self, end):
+        if end == NORTH:
+            sidings = NORTH_SIDINGS
+        else:
+            sidings = SOUTH_SIDINGS
+        self.whatsInSidings(sidings)
+        for s in sidings:
+            if not self.isBlockOccupied():
+                continue
+            block = blocks.getBlock(s)
+            loc = loco.Loco.getLocoByAddr(block.getValue(), self.locos)
+
+
 
     # Calculates the routes required to connect the siding using
     # a dictionary (aka hash) specified in an external file
