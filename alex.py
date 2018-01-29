@@ -818,10 +818,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP, lock=lock)
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
-            # If this loco has a rarity of zero and we're not shutting down operations
+        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible() and self.loco in self.locos:
+            # If this loco has a rarity of zero and we're not shutting down operations, and it hasn't been retired
             # there's no point in going all the way to the sidings because we'll just get
-            # started up again. Stop on the North Link
+            # started up again. Stop on the North Link.
             self.debug("stopping early")
             if speed is None:
                 speed = self.loco.speed('off track north', 'medium')
