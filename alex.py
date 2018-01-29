@@ -965,7 +965,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(SOUTH_REVERSE_LOOP)
             lock.unlock()
-            log.logLock()
+            lock.logLock()
             self.track.setExitSignalAppearance(GREEN)
             self.loco.unselectReverseLoop(SOUTH_REVERSE_LOOP)
         else:
