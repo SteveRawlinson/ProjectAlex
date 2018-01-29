@@ -524,6 +524,31 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sen = sensors.getSensor("Add Loco")
             sen.setKnownState(INACTIVE)
 
+    # Checks a memory for a value, if there is one, adds a loco
+    # to the list by prompting the user for a dcc address
+    def checkForRetiringLocos(self):
+        m = memories.provideMemory("IMRETIRELOCO")
+        if m.getValue() is not None and m.getValue() != "" and m.getValue() != 0:
+            # put up a dropbox for the user to select the loco
+            b = JOptionPane.showInputDialog(None,
+                                            "Select loco to retire",
+                                            "Loco to retire",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            None,
+                                            map(lambda l: l.nameAndAddress(), self.locos),
+                                            self.locos[0].nameAndAddress())
+            if b is None:
+                # User cancelled
+                return False
+            for l in self.locos:
+                if l.nameAndAddress() == b:
+                    self.debug("retiring loco " + b)
+                    self.locos.remove(l)
+            m.setValue(None)
+            sen = sensors.getSensor("Retire Loco")
+            sen.setKnownState(INACTIVE)
+
+
     def checkTrackStatus(self):
         for t in self.tracks:
             t.checkStatus()
@@ -676,6 +701,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.startNewJourneys()
             # check for new locos
             self.checkForNewLocos()
+            # check for locos to retire
+            self.checkForRetiringLocos()
             # check to see if track status has changed
             self.checkTrackStatus()
             # bow out if there's a limit
