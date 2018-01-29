@@ -1,11 +1,10 @@
 TODO
 JMRI: 'select default roster group for throttle' option
 graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever it is
-get the virgin running on slow
 prioritise locking depending on how full the layout is
 if we release a lock because no sidings, move on until we would normally stop
-test fast trains stopping at end of track 6, they don't stop in time
 south sidings 2 train can break siding 3 IR
+need an 'empty sidings' method
 
 -- journeys should check for estop more often
 -- if we give up because no sidings, release the lock
@@ -27,8 +26,8 @@ LT3 lost its address 26/1/2018
 Javelin derailed at LT18 northbound 29/12/2017 11:00
 Javelin failed to stop 29/12/2017 16:50 (might be fixed)
 
-
-
+++ get the virgin running on slow
+++ test fast trains stopping at end of track 6, they don't stop in time
 ++ rotate the log file
 ++ if all the sidings are full move a loco
 ++ make moveIntoNorthSiding use different speeds for layout -> fast/slow link

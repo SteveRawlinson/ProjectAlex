@@ -23,13 +23,11 @@ class Cleaner(alex.Alex):
         else:
             self.clean = clean
 
-
     # Initialises the tracks[] array, according to information in the myroutes.py file
     def initTracks(self):
         for t in TRACKS:
-            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3])
+            tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3], t[4])
             self.tracks.append(tr)
-            print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # Cleans a pair of tracks, eg. tracks 1 and 2
     def trackPair(self):
@@ -334,5 +332,3 @@ class Cleaner(alex.Alex):
         return False
 
 
-loc = loco.Loco(7405)
-Cleaner(loc, 'southsidings').start()

@@ -86,7 +86,7 @@ TRACKS = [
     [3, False, False, ['FPK P3', 'AAP P2', 'NSG P1'], 'LH2'],
     [3, False, False, ['FPK P4', 'AAP P1', 'NSG P2'], 'LH5'],
     [1, True, False, ['FPK P7', 'Sth Fast Inner 2', 'Nth Fast Inner 1'], 'LH3'],
-    [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH103']
+    [1, True, False, ['FPK P8', 'Nth Fast Outer 2', 'Nth Fast Outer 1'], 'LH6']
 ]
 
 # A hash of hashes. Keys are either a loco's dcc addr (eg. 68) or the name of
