@@ -36,16 +36,16 @@ from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
-DCC_ADDRESSES = [2144, 2128]
+#DCC_ADDRESSES = [2144, 2128]
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004, 1087, 3213]
 #DCC_ADDRESSES = [1124]
-#DCC_ADDRESSES = [6719]
+DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [7405]
-#DCC_ADDRESSES = [5004]
+#DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6719]
+#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6719]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -536,7 +536,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.getJackStatus() != STOPPED:
             # maybe still running?
             b = JOptionPane.showConfirmDialog(None, "Jack might already be running, continue?",
-                                              "Jack might already be running, are you sure?", JOptionPane.YES_NO_OPTION)
+                                              "JackStatus: " + str(self.getJackStatus()), JOptionPane.YES_NO_OPTION)
             if b == JOptionPane.NO_OPTION:
                 self.debug("Quitting on user command")
                 return False
@@ -636,6 +636,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # final status check before we hit main loop
         if self.checkStatus() != NORMAL:
+            self.status = STOPPED
+            self.setStatus()
             self.debug("exiting on non-normal status")
             return False
 
