@@ -11,6 +11,7 @@ import track
 import lock
 import pprint
 import loco
+from javax.swing import JOptionPane
 
 DEBUG = True
 
@@ -49,7 +50,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def debug(self, message):
         if DEBUG:
             calling_method = sys._getframe(1).f_code.co_name
-            s = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + calling_method + ': ' + message
+            if hasattr(self, 'loco') and self.loco is not None:
+                addr = str(self.loco.dccAddr)
+            else:
+                addr = 'unknown'
+            s = str(datetime.datetime.now()) + ' ' + addr + ': ' + calling_method + ': ' + message
             print s
             self.log(message)
 
@@ -205,18 +210,26 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 time.sleep(0.2)
             self.debug("route not busy")
 
+    # Iterates through a list of sidings and makes sure we know
+    # the identity of the loco in those which are occupied
     def whatsInSidings(self, sidings):
         for s in sidings:
+            self.debug("checking siding " + s)
             if self.isBlockOccupied(s):
                 addr = self.getBlockContents(s)
-                if addr is None:
+                if addr is None or addr == '':
+                    self.debug("  getting loco from user")
                     addr = JOptionPane.showInputDialog("DCC loco in: " + s)
                     addr = int(addr)
                 loc = loco.Loco.getLocoByAddr(addr, self.locos)
                 if loc is None:
+                    self.debug("  new loco addr " + str(addr) + " found")
                     loc = loco.Loco(addr)
                     self.locos.append(loc)
+                self.debug("setting + " + loc.nameAndAddress() + " block to " + s)
                 loc.setBlock(s)
+            else:
+                self.debug("  not occupied")
 
     def clearSidings(self, end):
         list = []
