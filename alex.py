@@ -212,11 +212,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if addr is None:
                     addr = JOptionPane.showInputDialog("DCC loco in: " + s)
                     addr = int(addr)
-                loc = None
                 loc = loco.Loco.getLocoByAddr(addr, self.locos)
                 if loc is None:
                     loc = loco.Loco(addr)
-                    self.locos.append(l)
+                    self.locos.append(loc)
                 loc.setBlock(s)
 
     def clearSidings(self, end):
