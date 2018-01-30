@@ -13,9 +13,10 @@ DEBUG = True
 class Mytest(alex.Alex):
 
     def __init__(self):
-        pass
+        self.locos =[]
 
     def do(self):
+        print "here"
         self.whatsInSidings(SOUTH_SIDINGS)
 
 
