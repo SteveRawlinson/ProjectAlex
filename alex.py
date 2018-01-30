@@ -220,16 +220,68 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 loc.setBlock(s)
 
     def clearSidings(self, end):
+        list = []
         if end == NORTH:
             sidings = NORTH_SIDINGS
         else:
             sidings = SOUTH_SIDINGS
+        # check we know what's there
         self.whatsInSidings(sidings)
+        # get the tracks
+        self.initTracks()
         for s in sidings:
-            if not self.isBlockOccupied():
+            self.debug("checking siding " + s)
+            if not self.isBlockOccupied(s):
+                self.debug("  not occupied")
                 continue
             block = blocks.getBlock(s)
+            self.debug("  block value: " + str(block.getValue()) )
             loc = loco.Loco.getLocoByAddr(block.getValue(), self.locos)
+            # work out where we're going to put this loco
+            chosenblock = None
+            for t in self.tracks[::-1]:
+                self.debug("    checking " + t.name())
+                if end == NORTH:
+                    blocklist = t.blocks[:] # copy
+                else:
+                    blocklist = t.blocks[::-1] # reversed copy
+                for b in blocklist:
+                    self.debug("      checking block " + b)
+                    i = blocklist.index(b)
+                    if self.isBlockOccupied(b):
+                        if i == 0:
+                            # first block, can't use this track
+                            continue
+                        else:
+                            chosenblock = blocklist[i - 1]
+                            break
+                    else:
+                        if i == len(blocklist) - 1:
+                            # last block
+                            chosenblock = b
+                            break
+                if chosenblock:
+                    self.debug("      choosing block")
+                    list.append([loc, t, b, s])
+                    break
+            if chosenblock is None:
+                self.debug("unable to find enough free blocks")
+                return False
+        for i in list:
+            loc = i[0]
+            trak = i[1]
+            blok = i[2]
+            siding = i[3]
+            self.debug("moving loco " + loc.nameAndAddress() + " from " + siding + " to " + trak.name() + " block " + blok)
+            routes = self.requiredRoutes(siding)
+            if trak.southbound() and end == NORTH or trak.northbound() and send == SOUTH:
+                rightway = True
+            else:
+                rightway = False
+            routes.append(trak.exitroute(rightway))
+            self.shortJourney(dir, siding, blok, 'medium', slowTime=1, slowSpeed='slow')
+        return True
+
 
 
 
