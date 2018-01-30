@@ -13,15 +13,10 @@ DEBUG = True
 class Mytest(alex.Alex):
 
     def __init__(self):
-        self.tracks = []
+        pass
 
     def do(self):
-        self.initTracks()
-        t = self.tracks[1]
-        blk = blocks.getBlock("PAL P2")
-        b = t.nextBlockNorth(blk)
-        print type(b).__name__
-        print b.getUserName()
+        self.whatsInSidings(SOUTH_SIDINGS)
 
 
 Mytest().do()
