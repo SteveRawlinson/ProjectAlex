@@ -3,7 +3,7 @@ NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 
 
 CLEANER_SIDING_TIME = {
     'Nth Siding 1': 7.3, 'Nth Sidings 2': 8.3, 'Nth Sidings 3': 7.1, 'Nth Sidings 4': 12.5, 'Nth Sidings 5': 9.7,
-    'FP sidings': 3.2, 'Sth Sidings 1': 9.5, 'Sth Sidings 2': 9, 'Sth Sidings 3': 7.8, 'Sth Sidings 4': 7, 'Sth Sidings 5': 7
+    'FP sidings': 6.0, 'Sth Sidings 1': 14.5, 'Sth Sidings 2': 13, 'Sth Sidings 3': 12, 'Sth Sidings 4': 11.5, 'Sth Sidings 5': 10
 }
 
 NORTH_REVERSE_LOOP = 'Nth Reverse Loop'
