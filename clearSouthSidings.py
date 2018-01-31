@@ -10,15 +10,17 @@ from myroutes import *
 
 DEBUG = True
 
-class Mytest(alex.Alex):
+class ClearSouthSidings(alex.Alex):
 
     def __init__(self):
         self.locos =[]
+        self.tracks = []
+        self.loco = None
+        self.sensorStates = None
 
-    def do(self):
-        print "here"
-        self.whatsInSidings(SOUTH_SIDINGS)
+    def go(self):
+        self.clearSidings(SOUTH)
 
 
-Mytest().do()
+ClearSouthSidings().start()
 
