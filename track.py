@@ -136,7 +136,6 @@ class Track:
     # block can be a string, a block, or a layoutBlock
     @classmethod
     def findTrackByBlock(cls, tracks, block):
-        print "findTrackByBlock: block type is: " + type(block).__name__
         blockName = None
         if type(block) == jmri.jmrit.display.layoutEditor.LayoutBlock:
             blockName = block.getBlock().getUserName()
