@@ -305,7 +305,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             routes.append(trak.exitRoute(rightway))
             self.loco = loc
             self.getLocoThrottle(loc)
-            self.shortJourney(dir, siding, blok, 'medium', slowTime=1, slowSpeed='slow', routes=routes, clearThisBlock=prevBlock)
+            self.shortJourney(end == NORTH, siding, blok, 'medium', slowTime=1, slowSpeed='slow', routes=routes, clearThisBlock=prevBlock)
             locolist.append(str(loc.dccAddr))
         if end == NORTH:
             memname = 'IMNORTHSIDINGSEMPTIED'
