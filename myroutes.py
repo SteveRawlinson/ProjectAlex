@@ -135,7 +135,7 @@ SLOWTIMEMAP = {
     # Javelin
     5004: {'North Link': 5, 'FPK P7': 7, "Nth Fast Outer 1": 6},
     # Ave Talgo
-    6719: {'Nth Fast Outer 1': 6, "FPK P7": 4},
+    6719: {'Nth Fast Outer 1': 6, "FPK P7": 6},
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
