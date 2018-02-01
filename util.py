@@ -94,7 +94,6 @@ class Util:
         for t in TRACKS:
             tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3], t[4])
             self.tracks.append(tr)
-            self.debug("geting sensor " + TRACKSENSORS[tr.nr])
             s = sensors.getSensor(TRACKSENSORS[tr.nr])
             if tr.us:
                 s.setKnownState(INACTIVE)
