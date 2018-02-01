@@ -33,6 +33,7 @@ class Cleaner(alex.Alex):
     def trackPair(self):
 
         startBlock = self.loco.block
+        self.debug("startblock is " + startBlock.getDisplayName())
         self.loco.status = loco.MOVING
 
         # we will shortly start moving but we don't know which
@@ -180,12 +181,13 @@ class Cleaner(alex.Alex):
         # wait for the original block to go active
         s = startBlock.getSensor()
         if s.knownState != ACTIVE:
+            self.debug("waiting for startblock " + startBlock.getDisplayName() + " sensor " + s.getDisplayName() + " to go active")
             self.waitChange([s])
         # go past
         self.waitChange([s])
         # come back a bit
         self.loco.reverse()
-        time.sleep(6)
+        time.sleep(20)
         self.loco.setSpeedSetting(0)
 
     def sidings(self, which='north'):
