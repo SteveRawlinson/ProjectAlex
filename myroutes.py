@@ -2,7 +2,7 @@ SOUTH_SIDINGS = ['FP sidings', 'Sth Sidings 1', 'Sth Sidings 2', 'Sth Sidings 3'
 NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 4', 'Nth Sidings 5']
 
 CLEANER_SIDING_TIME = {
-    'Nth Siding 1': 7.3, 'Nth Sidings 2': 8.3, 'Nth Sidings 3': 7.1, 'Nth Sidings 4': 12.5, 'Nth Sidings 5': 9.7,
+    'Nth Siding 1': 11.31, 'Nth Sidings 2': 10.3, 'Nth Sidings 3': 10.5, 'Nth Sidings 4': 16.5, 'Nth Sidings 5': 14.3,
     'FP sidings': 6.0, 'Sth Sidings 1': 14.5, 'Sth Sidings 2': 13, 'Sth Sidings 3': 12, 'Sth Sidings 4': 11.5, 'Sth Sidings 5': 10
 }
 
