@@ -220,6 +220,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if addr is None or addr == '':
                     self.debug("  getting loco from user")
                     addr = JOptionPane.showInputDialog("DCC loco in: " + s)
+                    if addr is None or addr == "":
+                        continue
                     addr = int(addr)
                 loc = loco.Loco.getLocoByAddr(addr, self.locos)
                 if loc is None:
