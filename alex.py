@@ -1014,6 +1014,70 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         self.loco.status = SIDINGS
 
 
+    # Moves a loco from any block on the track into a siding
+    def moveToASiding(self):
+        # get the track we're on
+        trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
+        if trak is None:
+            return False
+        # work out if we have clear track to either sidings
+        clearNorth = None
+        nb = self.loco.block
+        while clearNorth is None:
+            nb = trak.nextBlockNorth(nb)
+            if nb is None:
+                clearNorth = True
+                continue
+            if nb.getState() == OCCUPIED:
+                clearNorth = False
+                continue
+        clearSouth = None
+        nb = self.loco.block
+        while clearSouth is None:
+            nb = trak.nextBlockSouth(nb)
+            if nb is None:
+                clearSouth = True
+                continue
+            if nb.getState() == OCCUPIED:
+                clearSouth = False
+                continue
+        # if we can't go either way, bale out
+        if not clearSouth and not clearNorth:
+            return False
+        if not self.loco.reversible():
+            # check reverse loops 
+            if self.track.northbound():
+                rl = blocks.getBlock(NORTH_REVERSE_LOOP)
+                if rl.getState() != OCCUPIED:
+                    self.moveIntoNorthSidings()
+                    return True
+            else:
+                rl = blocks.getBlock(SOUTH_REVERSE_LOOP)
+                if rl.getState() != OCCUPIED:
+                    self.moveIntoSouthSidings()
+                    return True
+            return False
+        # see if there are sidings free
+        nSiding = sSiding = None
+        if clearNorth:
+            nSiding = self.loco.shortestBlockTrainFits(NORTH_SIDINGS)
+        if clearSouth:
+            sSiding = self.loco.shortestBlockTrainFits(SOUTH_SIDINGS)
+        if nSiding and sSiding:
+            if self.freeSidingCount(NORTH_SIDINGS) > self.freeSidingCount(SOUTH_SIDINGS):
+                self.moveIntoNorthSidings()
+            else:
+                self.moveIntoSouthSidings()
+            return True
+        if nSiding:
+            self.moveIntoNorthSidings()
+            return True
+        if sSiding:
+            self.moveIntoSouthSidings()
+            return True
+        return False
+
+
 
     # moves a train from their current block into the south sidings
     def moveIntoSouthSidings(self, lock=None, speed=None):
@@ -1027,8 +1091,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             time.sleep(1)
 
         # deal with locking
-        if type(lock) == str or type(lock) == unicode:
-            raise RuntimeError("old style lock used with moveIntoSouthSidings")
         if lock is None or lock.empty():
             if self.loco.throttle.getSpeedSetting() > 0:
                 # we need a lock promptly or we must stop
@@ -1040,7 +1102,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 else:
                     sleepTime = None # get getLock() decide
                 lock = self.loco.getLock(SOUTH, sleepTime=sleepTime)
-        if lock.empty():
+        if lock.empty(): # implies we are moving
             # set the signal to red
             self.track.setExitSignalAppearance(RED)
             # bring loco to a halt
@@ -1055,12 +1117,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.memory is not None:
             m = memories.provideMemory(self.memory)
             m.setValue(0)
-        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "LOCO")
-        mem.setValue(None)
-        mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
-        mem.setValue(None)
-        self.debug("set memory IMTRACK" + str(self.track.nr) + "SPEED to None: new value: "+ str(mem.getValue()))
-
+        if self.track:
+            mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "LOCO")
+            mem.setValue(None)
+            mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+            mem.setValue(None)
 
         # we are ready to move
         routes = [self.track.exitRoute(self.track.northbound())]
