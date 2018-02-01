@@ -24,7 +24,7 @@ class Util:
         if filename is None:
             filename = LOGFILE
         file=open(filename, 'a')
-        if hasattr(self, 'loco'):
+        if hasattr(self, 'loco') and self.loco is not None:
             logstr = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + message
         elif hasattr(self, 'dccAddr'):
             logstr = str(datetime.datetime.now()) + ' ' + str(self.dccAddr) + ': ' + message

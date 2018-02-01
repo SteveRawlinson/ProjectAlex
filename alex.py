@@ -11,6 +11,7 @@ import track
 import lock
 import pprint
 import loco
+from javax.swing import JOptionPane
 
 DEBUG = True
 
@@ -49,7 +50,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def debug(self, message):
         if DEBUG:
             calling_method = sys._getframe(1).f_code.co_name
-            s = str(datetime.datetime.now()) + ' ' + str(self.loco.dccAddr) + ': ' + calling_method + ': ' + message
+            if hasattr(self, 'loco') and self.loco is not None:
+                addr = str(self.loco.dccAddr)
+            else:
+                addr = 'unknown'
+            s = str(datetime.datetime.now()) + ' ' + addr + ': ' + calling_method + ': ' + message
             print s
             self.log(message)
 
@@ -205,31 +210,113 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 time.sleep(0.2)
             self.debug("route not busy")
 
+    # Iterates through a list of sidings and makes sure we know
+    # the identity of the loco in those which are occupied
     def whatsInSidings(self, sidings):
         for s in sidings:
+            self.debug("checking siding " + s)
             if self.isBlockOccupied(s):
                 addr = self.getBlockContents(s)
-                if addr is None:
+                if addr is None or addr == '':
+                    self.debug("  getting loco from user")
                     addr = JOptionPane.showInputDialog("DCC loco in: " + s)
+                    if addr is None or addr == "":
+                        continue
                     addr = int(addr)
-                loc = None
                 loc = loco.Loco.getLocoByAddr(addr, self.locos)
                 if loc is None:
-                    loc = loco.Loco(addr)
-                    self.locos.append(l)
+                    self.debug("  new loco addr " + str(addr) + " found")
+                    loc = loco.Loco(int(addr))
+                self.locos.append(loc)
+                self.debug("setting + " + loc.nameAndAddress() + " block to " + s)
                 loc.setBlock(s)
+            else:
+                self.debug("  not occupied")
 
     def clearSidings(self, end):
+        list = []
         if end == NORTH:
             sidings = NORTH_SIDINGS
         else:
             sidings = SOUTH_SIDINGS
+        # check we know what's there
         self.whatsInSidings(sidings)
+        # get the tracks
+        self.initTracks()
+        usedblocks = []
         for s in sidings:
-            if not self.isBlockOccupied():
+            self.debug("checking siding " + s)
+            if not self.isBlockOccupied(s):
+                self.debug("  not occupied")
                 continue
             block = blocks.getBlock(s)
+            self.debug("  block value: " + str(block.getValue()) )
             loc = loco.Loco.getLocoByAddr(block.getValue(), self.locos)
+            self.debug("  loco: " + loc.nameAndAddress())
+            # work out where we're going to put this loco
+            chosenblock = None
+            prevBlock = None
+            for t in self.tracks[::-1]:
+                self.debug("    checking " + t.name())
+                if end == SOUTH:
+                    blocklist = t.blocks[:] # copy
+                else:
+                    blocklist = t.blocks[::-1] # reversed copy
+                for b in blocklist:
+                    self.debug("      checking block " + b)
+                    i = blocklist.index(b)
+                    if self.isBlockOccupied(b) or b in usedblocks:
+                        self.debug(    "      block is occupied or already chosen")
+                        if i == 0:
+                            # first block, can't use this track
+                            self.debug("      can't use this track, next ")
+                            break
+                        else:
+                            chosenblock = blocklist[i - 1]
+                            if i > 1:
+                                prevBlock = blocklist[i - 2]
+                            break
+                    else:
+                        if i == len(blocklist) - 1:
+                            # last block
+                            chosenblock = b
+                            if i > 1:
+                                prevBlock = blocklist[i - 2]
+                            break
+                if chosenblock:
+                    self.debug("        choosing block " + chosenblock)
+                    list.append([loc, t, chosenblock, s, prevBlock])
+                    usedblocks.append(chosenblock)
+                    break
+            if chosenblock is None:
+                self.debug("unable to find enough free blocks")
+                return False
+        locolist = []
+        for i in list:
+            loc = i[0]
+            trak = i[1]
+            blok = i[2]
+            siding = i[3]
+            prevBlock = i[4]
+            self.debug("moving loco " + loc.nameAndAddress() + " from " + siding + " to " + trak.name() + " block " + blok)
+            routes = self.requiredRoutes(siding)
+            if trak.southbound() and end == NORTH or trak.northbound() and end == SOUTH:
+                rightway = True
+            else:
+                rightway = False
+            routes.append(trak.exitRoute(rightway))
+            self.loco = loc
+            self.getLocoThrottle(loc)
+            self.shortJourney(end == NORTH, siding, blok, 'medium', slowTime=1, slowSpeed='slow', routes=routes, clearThisBlock=prevBlock)
+            locolist.append(str(loc.dccAddr))
+        if end == NORTH:
+            memname = 'IMNORTHSIDINGSEMPTIED'
+        else:
+            memname = 'IMSOUTHSIDINGSEMPTIED'
+        mem = memories.provideMemory(memname)
+        mem.setValue(','.join(locolist))
+        return True
+
 
 
 
@@ -385,9 +472,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     # endIRSensor: use this sensor to indicate arrival rather than endBlock's sensor
     # lockSensor: wait until this sensor (or the sensor this string indicates) is inactive before releasing supplied lock
     # eStop: issue an emergency stop rather than an idle command when stopping the loco
+    # ignoreOccupiedEndblock: long trains are sometimes in their destination block already
+    # lockToUpgrade: a lock which needs upgrading from a partial asap in order to give routes time. We try to upgrade it while we're waiting for sensors
+    # upgradeLockRoutes: routes to be set after the lock is upgraded
+    # clearThisBlock: make sure this block is not occupied before we stop the loco
     def shortJourney(self, direction, startBlock=None, endBlock=None, normalSpeed=None, slowSpeed=None, slowTime=None, unlockOnBlock=False,
                      stopIRClear=None, routes=None, lock=None, passBlock=False, nextBlock=None, dontStop=None, endIRSensor=None,
-                     lockSensor=None, eStop=False, ignoreOccupiedEndBlock=False, lockToUpgrade=None, upgradeLockRoutes=None):
+                     lockSensor=None, eStop=False, ignoreOccupiedEndBlock=False, lockToUpgrade=None, upgradeLockRoutes=None, clearThisBlock=None):
 
         self.log("startJourney called")
 
@@ -436,6 +527,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # sensors too.
         startBlock, startBlockSensor = self.convertToLayoutBlockAndSensor(startBlock)
         endBlock, endBlockSensor = self.convertToLayoutBlockAndSensor(endBlock)
+        if clearThisBlock:
+            clearBlock, clearBlockSensor = self.convertToLayoutBlockAndSensor(clearThisBlock)
 
         if routes:
             self.debug('shortjourney: ' + startBlock.getUserName() + " -> " + endBlock.getUserName() + " routes: " + ', '.join(routes))
@@ -723,6 +816,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if self.getJackStatus() == ESTOP:
             raise EstopError("Estop")
 
+        # wait till we've cleared this block
+        if clearThisBlock:
+            if clearBlockSensor.knownState == ACTIVE:
+                self.debug("waiting till block " + clearBlock.getId() + " is clear before stopping loco")
+                self.waitSensorInactive(clearBlockSensor)
+
         if dontStop is False:
             # stop the train
             if stopIRClear is not None or eStop is True:
@@ -834,7 +933,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP, lock=lock)
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible() and self.loco in self.locos:
+        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
             # If this loco has a rarity of zero and we're not shutting down operations, and it hasn't been retired
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link.

@@ -10,7 +10,7 @@ DEBUG = True
 class Loco(util.Util):
     
     def __init__(self, dccAddr):
-        self.dccAddr = dccAddr
+        if dccAddr is not None: self.dccAddr = int(dccAddr)
         self._trainLength = None
         self._rosterEntry = None
         self._rarity = None
@@ -94,8 +94,9 @@ class Loco(util.Util):
         s = speed + grad
         for i in range(int(gradCount)):
             self.throttle.setSpeedSetting(s)
-            m = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
-            m.setValue(str(round(s, 2)))
+            if self.track:
+                m = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
+                m.setValue(str(round(s, 2)))
             s += grad
             if i != gradCount - 1:
                 time.sleep(0.5)

@@ -33,6 +33,7 @@ class Cleaner(alex.Alex):
     def trackPair(self):
 
         startBlock = self.loco.block
+        self.debug("startblock is " + startBlock.getDisplayName())
         self.loco.status = loco.MOVING
 
         # we will shortly start moving but we don't know which
@@ -180,12 +181,13 @@ class Cleaner(alex.Alex):
         # wait for the original block to go active
         s = startBlock.getSensor()
         if s.knownState != ACTIVE:
+            self.debug("waiting for startblock " + startBlock.getDisplayName() + " sensor " + s.getDisplayName() + " to go active")
             self.waitChange([s])
         # go past
         self.waitChange([s])
         # come back a bit
         self.loco.reverse()
-        time.sleep(6)
+        time.sleep(20)
         self.loco.setSpeedSetting(0)
 
     def sidings(self, which='north'):
@@ -193,6 +195,7 @@ class Cleaner(alex.Alex):
         self.debug("track: " + str(trak.nr))
 
         startBlock = self.loco.block
+        speed = 0.3
 
         # set exit route for this track
         route = trak.exitRoute()
@@ -211,7 +214,7 @@ class Cleaner(alex.Alex):
             if siding == "FP sidings" and siding != sidings[0]:
                 # reverse out behind the south link clear sensor
                 self.loco.reverse()
-                self.loco.setSpeedSetting(0.4)
+                self.loco.setSpeedSetting(speed)
                 sensor = sensors.getSensor(IRSENSORS["South Link Clear"])
                 if sensor.knownState != ACTIVE:
                     self.waitChange([sensor])
@@ -221,7 +224,7 @@ class Cleaner(alex.Alex):
             for route in routes:
                 self.setRoute(route)
             self.loco.forward()
-            self.loco.setSpeedSetting(0.4)
+            self.loco.setSpeedSetting(speed)
             # wait for the siding to become occupied
             lb = layoutblocks.getLayoutBlock(siding)
             ls = lb.getOccupancySensor()
@@ -230,9 +233,15 @@ class Cleaner(alex.Alex):
             else:
                 self.waitChange([ls], 60 * 1000)
             # wait for a bit to get into the siding
-            time.sleep(CLEANER_SIDING_TIME[siding])
+            st = CLEANER_SIDING_TIME[siding]
+            self.debug("waiting " + str(st) + " seconds before stopping")
+            time.sleep(st)
+            # stop
+            self.loco.emergencyStop()
             # switch direction
             self.loco.reverse()
+            # set speed
+            self.loco.setSpeedSetting(speed)
             # wait till IR sensor goes active
             if which == 'north':
                 irsensor = IRSENSORS["North Link Clear"]
@@ -249,7 +258,7 @@ class Cleaner(alex.Alex):
 
         # reverse back to the block we started on
         self.loco.reverse()
-        self.loco.setSpeedSetting(0.4)
+        self.loco.setSpeedSetting(speed)
         sen = startBlock.getSensor()
         self.waitChange([sen], 120 * 1000)
         # and just past it

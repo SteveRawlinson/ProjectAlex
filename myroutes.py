@@ -2,8 +2,8 @@ SOUTH_SIDINGS = ['FP sidings', 'Sth Sidings 1', 'Sth Sidings 2', 'Sth Sidings 3'
 NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 4', 'Nth Sidings 5']
 
 CLEANER_SIDING_TIME = {
-    'Nth Siding 1': 7.3, 'Nth Sidings 2': 8.3, 'Nth Sidings 3': 7.1, 'Nth Sidings 4': 12.5, 'Nth Sidings 5': 9.7,
-    'FP sidings': 3.2, 'Sth Sidings 1': 9.5, 'Sth Sidings 2': 9, 'Sth Sidings 3': 7.8, 'Sth Sidings 4': 7, 'Sth Sidings 5': 7
+    'Nth Siding 1': 11.31, 'Nth Sidings 2': 10.3, 'Nth Sidings 3': 10.5, 'Nth Sidings 4': 16.5, 'Nth Sidings 5': 14.3,
+    'FP sidings': 6.0, 'Sth Sidings 1': 14.5, 'Sth Sidings 2': 13, 'Sth Sidings 3': 12, 'Sth Sidings 4': 11.5, 'Sth Sidings 5': 10
 }
 
 NORTH_REVERSE_LOOP = 'Nth Reverse Loop'
@@ -131,11 +131,11 @@ SLOWTIMEMAP = {
                  "FPK P3": 8, "AAP P2": 3, "NSG P1": 4},
     # Underground
     1087: {"FPK P3": 9, "AAP P2": 4, "NSG P1": 2.5, "PAL P1": 5, "AAP P4": 5, "FPK P1": 11, "FPK P4": 3, "AAP P1": 3, "NSG P2": 3, "FPK P2": 4,
-           "AAP P3": 5, "PAL P2": 5, "North Link": 4},
+           "AAP P3": 4, "PAL P2": 4, "North Link": 4},
     # Javelin
     5004: {'North Link': 5, 'FPK P7': 7, "Nth Fast Outer 1": 6},
     # Ave Talgo
-    6719: {'Nth Fast Outer 1': 6, "FPK P7": 4},
+    6719: {'Nth Fast Outer 1': 6, "FPK P7": 6},
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
