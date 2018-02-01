@@ -1,14 +1,14 @@
 import alex
 from jmri_bindings import *
-import util
 import loco
-
+from javax.swing import JOptionPane
 
 class MoveLocosToSidings(alex.Alex):
 
     def __init__(self):
         self.locos = []
         self.tracks = []
+        self.memory = None
 
     def go(self):
 
@@ -21,10 +21,11 @@ class MoveLocosToSidings(alex.Alex):
                 if blk.getState() == OCCUPIED:
                     addr = blk.getValue()
                     if addr is None or addr == '':
-                        addr = JOptionPane.showInputDialog("DCC loco in: " + s)
+                        addr = JOptionPane.showInputDialog("DCC addr of loco in: " + blk.getUserName())
                     l = loco.Loco(addr)
                     self.getLocoThrottle(l)
                     self.locos.append(l)
+                    l.setBlock(blk)
 
         # keep looping until we've gone through the whole list
         # and failed on all of them
@@ -33,10 +34,13 @@ class MoveLocosToSidings(alex.Alex):
         while keepGoing:
             keepGoing = False
             for l in locolist:
-                self.debug("trying to move " + l.nameAndSAddress())
+                self.debug("trying to move " + l.nameAndAddress())
+                self.loco = l
                 rc = self.moveToASiding()
                 if rc:
                     locolist.remove(l)
                     keepGoing = True
 
         return False
+
+MoveLocosToSidings().start()
