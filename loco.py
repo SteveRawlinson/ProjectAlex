@@ -10,7 +10,7 @@ DEBUG = True
 class Loco(util.Util):
     
     def __init__(self, dccAddr):
-        self.dccAddr = int(dccAddr)
+        if dccAddr is not None: self.dccAddr = int(dccAddr)
         self._trainLength = None
         self._rosterEntry = None
         self._rarity = None
