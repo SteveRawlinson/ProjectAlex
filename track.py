@@ -165,7 +165,6 @@ class Track:
                     nb = self.blocks[i]
                 return blocks.getBlock(nb)
         # the block supplied is not on this track
-        self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
     # See comment for nextBlockNorth() above
@@ -184,7 +183,6 @@ class Track:
                     #self.debug("  returning block " + nb)
                 return blocks.getBlock(nb)
         # the block supplied is not on this track
-        self.debug("block " + block.getUserName() + " is not part of track " + str(self.nr))
         return None
 
     def northernmostBlock(self):
