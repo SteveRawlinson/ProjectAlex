@@ -34,18 +34,19 @@ from classAnySth2NthTrack4Nonstop import *
 from classAnyNth2SthTrack5 import *
 from classAnySth2NthTrack6 import *
 from classAnyNorthLinkToNorthSidings import *
+from moveLocoToSidings import *
 
 #DCC_ADDRESSES = [68, 2128, 2144, 7405, 1087]
 #DCC_ADDRESSES = [2144, 2128]
 #DCC_ADDRESSES = [2128, 2144, 1124, 5004, 1087, 3213]
 #DCC_ADDRESSES = [1124]
-DCC_ADDRESSES = [5004]
+#DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 68, 7405, 5004, 4404, 6719]
+DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 5004, 4404, 6719]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -56,9 +57,10 @@ DEBUG = True
 class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     
     def init(self):
-        self.locos = [] # array of Loco
-        self.tracks = [] # keeping  track of tracks
-        self.memories = [] # list of names of  active journeys
+        self.locos = []        # array of Loco
+        self.retiredlocos = [] # array of locos we were using but not any more
+        self.tracks = []       # keeping  track of tracks
+        self.memories = []     # list of names of  active journeys
         self.status = NORMAL
         self.lastJourneyStartTime = time.time() - 300 # 5 minutes ago
         self.status = NORMAL
@@ -262,9 +264,11 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # enough activity for now, return
             # TODO: turn trains round?
             return
-        # if runningCount == 1 and time.time() - self.lastJourneyStartTime < 30.0:
-        #     # we're just starting up, stagger first two journeys
-        #     return
+        # check for retired locos not in sidings
+        for l in self.retiredlocos:
+            if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
+                MoveLocoToSidings(l, None, None).start()
+                return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
@@ -426,16 +430,6 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # it wasn't in the list of candidates - bale out
             return
 
-
-        #     tot = 0.0
-        #     for c in candidates:
-        #         tot += (1 - c.rarity())
-        #     n = tot * random.random()
-        #     for c in candidates:
-        #         n -= (1 - c.rarity())
-        #         if n < 0.0:
-        #             loc = c
-        #             break
         self.debug("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
         #self.log("picked loco " + loc.nameAndAddress() + " status: " + str(loc.status))
         # pick a track
@@ -544,6 +538,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if l.nameAndAddress() == b:
                     self.debug("retiring loco " + b)
                     self.locos.remove(l)
+                    self.retiredlocos.append(l)
             m.setValue(None)
             sen = sensors.getSensor("Retire Loco")
             sen.setKnownState(INACTIVE)
