@@ -1020,6 +1020,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
         if trak is None:
             return False
+        self.loco.track = trak
+        self.track = trak
         # work out if we have clear track to either sidings
         clearNorth = None
         nb = self.loco.block
