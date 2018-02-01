@@ -21,6 +21,11 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         if not self.loco.reversible() and self.loco.wrongway:
             raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
 
+        if self.loco.reversible():
+            direction = True
+        else:
+            direction = False
+
         # check we have a throttle
         if self.loco.throttle is None:
             self.getLocoThrottle(self.loco)
@@ -31,24 +36,28 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
         self.leaveSouthSidings('FPK P4', stop=False, speed=speed)
 
         # FPK to AAP
-        self.shortJourney(False, self.loco.block, "AAP P1", speed, dontStop=True)
+        self.shortJourney(direction, self.loco.block, "AAP P1", speed, dontStop=True)
 
-        # we need to do some jiggery pokery here because NSG doesn't get
-        # 'occupied' until the engine (at the back) goes into the block
-        loc = self.loco.getLockNonBlocking(NORTH)
-        if loc.empty():
-            loc.getLockOrStopLoco(speed='fast going slow', slowtime=12)
-            self.setRoute(self.loco.track.exitRoute())
-            time.sleep(3)
-            b, s = self.convertToLayoutBlockAndSensor("NSG P2")
-            if s.getKnownState() == ACTIVE:
-                self.loco.setBlock(b)
+        if self.loco.fast():
+            # we need to do some jiggery pokery here because NSG doesn't get
+            # 'occupied' until the engine (at the back) goes into the block
+            loc = self.loco.getLockNonBlocking(NORTH)
+            if loc.empty():
+                loc.getLockOrStopLoco(speed='fast going slow', slowtime=12)
+                self.setRoute(self.loco.track.exitRoute())
+                time.sleep(3)
+                b, s = self.convertToLayoutBlockAndSensor("NSG P2")
+                if s.getKnownState() == ACTIVE:
+                    self.loco.setBlock(b)
+                else:
+                    self.shortJourney(direction, self.loco.block, "NSG P2", speed, dontStop=True)
             else:
-                self.shortJourney(False, self.loco.block, "NSG P2", speed, dontStop=True)
+                self.setRoute(self.loco.track.exitRoute())
+                # AAP to NSG
+                self.shortJourney(direction, self.loco.block, "NSG P2", speed, dontStop=True)
         else:
-            self.setRoute(self.loco.track.exitRoute())
-            # AAP to NSG
-            self.shortJourney(False, self.loco.block, "NSG P2", speed, dontStop=True)
+            loc = None
+            self.shortJourney(direction, self.loco.block, "NSG P2", speed, dontStop=True)
 
         self.moveIntoNorthSidings(speed=speed, lock=loc)
 
@@ -60,6 +69,3 @@ class Class47Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
 class Loco1124Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
-        # loc = loco.Loco(7405)
-# loc.setBlock(SOUTH_REVERSE_LOOP)
-# Class47Sth2NthTrack4Nonstop(loc, None).start()
