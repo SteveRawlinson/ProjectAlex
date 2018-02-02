@@ -1462,6 +1462,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.loco.emergencyStop()
             debug("Exiting on Estop")
             return false
+        self.debug(type(self).__name__ + ' finished')
+        return False
 
 
         
