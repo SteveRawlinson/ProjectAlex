@@ -44,25 +44,30 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         # FPK to AAP
         self.shortJourney(True, self.loco.block, "AAP P3", speed, dontStop=True)
 
-        # AAP to PAL
-        self.shortJourney(True, self.loco.block, "PAL P2", speed, dontStop=True)
+        if self.loco.fast():
+            # we need to do some jiggery pokery here because NSG doesn't get
+            # 'occupied' until the engine (at the back) goes into the block
+            loc = self.loco.getLockNonBlocking(NORTH)
+            if loc.empty():
+                loc.getLockOrStopLoco(speed='fast going slow', slowtime=12)
+                self.setRoute(self.loco.track.exitRoute())
+                time.sleep(3)
+                b, s = self.convertToLayoutBlockAndSensor("PAL P2")
+                if s.getKnownState() == ACTIVE:
+                    self.loco.setBlock(b)
+                else:
+                    self.shortJourney(direction, self.loco.block, "PAL P2", speed, dontStop=True)
+            else:
+                self.setRoute(self.loco.track.exitRoute())
+                # AAP to NSG
+                self.shortJourney(direction, self.loco.block, "PAL P2", speed, dontStop=True)
+        else:
+            loc = None
+            self.shortJourney(direction, self.loco.block, "PAL P2", speed, dontStop=True)
 
-        # see if we can get a lock but don't wait for one
-        lock = self.loco.getLockNonBlocking(NORTH)
-        if lock.empty():
-            # we didn't get a lock, stop at the signal
-            self.loco.graduallyChangeSpeed('slow')
-            time.sleep(self.getSlowtime("PAL P2"))
-            self.loco.setSpeedSetting(0)
-
-        # one way or another we now have the lock
-        # self.shortJourney(True, self.loco.block, 'North Link', medium, routes=routes, dontStop=True)
+        self.moveIntoNorthSidings(speed=speed, lock=loc)
 
 
-        self.moveIntoNorthSidings(speed=speed)
-
-        self.loco.status = loco.SIDINGS
-        self.debug(type(self).__name__ + ' finished')
         return False
 
 class Class47Sth2NthTrack2Nonstop(ClassAnySth2NthTrack2Nonstop):
