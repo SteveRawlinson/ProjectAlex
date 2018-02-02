@@ -21,7 +21,10 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
         if not self.loco.reversible() and self.loco.wrongway:
             raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
 
-        medium = self.loco.speed('medium')
+        if self.loco.reversible():
+            direction = True
+        else:
+            direction = False
 
         # check we have a throttle
         if self.loco.throttle is None:
@@ -49,7 +52,7 @@ class ClassAnySth2NthTrack2Nonstop(alex.Alex):
             # 'occupied' until the engine (at the back) goes into the block
             loc = self.loco.getLockNonBlocking(NORTH)
             if loc.empty():
-                loc.getLockOrStopLoco(speed='fast going slow', slowtime=12)
+                loc.getLockOrStopLoco(speed='fast going slow', slowtime=15)
                 self.setRoute(self.loco.track.exitRoute())
                 time.sleep(3)
                 b, s = self.convertToLayoutBlockAndSensor("PAL P2")
