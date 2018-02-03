@@ -1,4 +1,5 @@
 import alex
+from myroutes import *
 from jmri_bindings import *
 
 class WhatsInSidings(alex.Alex):
