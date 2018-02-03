@@ -59,6 +59,7 @@ import jmri.SignalHead.FLASHLUNAR  as FLASHLUNAR
 
 import jmri.Block.OCCUPIED as OCCUPIED
 
+import jmri.jmrix.loconet.LnConstants.LOCO_IDLE as LOCO_IDLE
 
 # import jmri
 #
