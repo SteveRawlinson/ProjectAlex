@@ -403,6 +403,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             throttleAttempts += 1
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
+        slot = loc.throttle.getLocoNetSlot()
+
         self.debug("throttle is set, type is " + type(loc.throttle).__name__)
 
 
