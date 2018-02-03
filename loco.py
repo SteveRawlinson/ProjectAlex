@@ -275,7 +275,7 @@ class Loco(util.Util):
                 self.log("  considering block " + b + " state: " + str(block.getState()) + " mem value: no such memory IMSIDING" + b.upper())
             else:
                 self.log("  considering block " + b + " state: " + str(block.getState()) + " sensor: " + sens.getDisplayName() + " sensor state: " + str(sens.getKnownState()) +
-                         " mem value: " + str(mem.getValue()))
+                         " mem value: " + str(mem.getValue()) + " length: " + str(block.getBlock().getLengthCm()))
             if block is None:
                 self.debug("no such block: " + b)
                 self.log("no such block: " + b)
@@ -314,7 +314,7 @@ class Loco(util.Util):
     def selectSiding(self, sidings, blocking=True):
         while powermanager.getPower() == jmri.PowerManager.OFF:
             time.sleep(1)
-        self.log("selecting siding")
+        self.log("selecting siding for loco length " + str(self.trainLength()))
         if blocking:
             siding = self.shortestBlockTrainFitsBlocking(sidings)
         else:
