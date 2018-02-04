@@ -23,6 +23,9 @@ ESTOP = 2
 class EstopError(RuntimeError):
     pass
 
+class StopError(RuntimeError):
+    pass
+
 # The Alex class provides a series of utility methods which can be used
 # to control a locomotive around a layout. It is intended to be used as
 # a parent to a particular journey class
@@ -404,8 +407,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
         slot = loc.throttle.getLocoNetSlot()
+        if slot:
+            self.debug("got throttle for loco addr " + str(loc.dccAddr) + " slot " + str(slot.getSlot()) + " status: " + LN_SLOT_STATUS[slot.slotStatus()])
+        else:
+            self.debug("throttle for loco addr " + str(loc.dccAddr) + " has no slot ")
 
-        self.debug("throttle is set, type is " + type(loc.throttle).__name__)
 
 
     # Returns the value of the JACKSTATUS memory
@@ -1236,6 +1242,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         # get a lock
         lock = self.loco.getLock(SOUTH)
 
+        # status might have changed
+        if self.getJackStatus() == STOPPING:
+            raise StopError
+
         # determine the routes we need to set to start moving
         if self.loco.inReverseLoop():
             routes = [self.requiredRoutes(self.loco.block)[1]]
@@ -1407,8 +1417,14 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 stop = True
             else:
                 stop = False
+
         # get a lock
         lock = self.loco.getLock(NORTH)
+
+        # status might have changed
+        if self.getJackStatus() == STOPPING:
+            raise StopError
+
         if self.loco.block.getUserName() != "North Link":
             # determine the routes we need to set to start moving
             if self.loco.inReverseLoop():
@@ -1462,8 +1478,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         except EstopError:
             if self.loco:
                 self.loco.emergencyStop()
-            debug("Exiting on Estop")
-            return false
+            self.debug("Exiting on Estop")
+            return False
+        except StopError:
+            if self.loco:
+                self.loco.emergencyStop()
+            self.debug("Exiting because status == STOPPING")
+            return False
         self.debug(type(self).__name__ + ' finished')
         return False
 
