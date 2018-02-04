@@ -1,3 +1,6 @@
+
+from jmri_bindings import *
+
 SOUTH_SIDINGS = ['FP sidings', 'Sth Sidings 1', 'Sth Sidings 2', 'Sth Sidings 3', 'Sth Sidings 4', 'Sth Sidings 5']
 NORTH_SIDINGS = ['Nth Siding 1', 'Nth Sidings 2', 'Nth Sidings 3', 'Nth Sidings 4', 'Nth Sidings 5']
 
@@ -147,3 +150,5 @@ SLOWTIMEMAP = {
 TROUBLESOME_TURNOUTS = [] # ['LT17', 'LT20', 'LT23']
 
 TRACKSENSORS = {1: "IS41", 2: "IS42", 3: "IS43", 4: "IS44", 5: "IS45", 6: "IS46"}
+
+LN_SLOT_STATUS = {LOCO_IDLE: 'idle', LOCO_COMMON: 'common', LOCO_IN_USE: 'in use', LOCO_FREE: 'free'}
