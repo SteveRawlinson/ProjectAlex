@@ -8,6 +8,7 @@ need an 'empty sidings' method
 moveIntoSidings gets locks wrong because it relies on the track to determine direction
 tracks should read the sensors to get u/s status
 after getting a throttle check the slot isn't idle
+moveLocosIntoSdings should check North Link first
 
 -- journeys should check for estop more often
 -- if we give up because no sidings, release the lock
