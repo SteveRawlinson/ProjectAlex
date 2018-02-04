@@ -60,6 +60,10 @@ import jmri.SignalHead.FLASHLUNAR  as FLASHLUNAR
 import jmri.Block.OCCUPIED as OCCUPIED
 
 import jmri.jmrix.loconet.LnConstants.LOCO_IDLE as LOCO_IDLE
+import jmri.jmrix.loconet.LnConstants.LOCO_IN_USE as LOCO_IN_USE
+import jmri.jmrix.loconet.LnConstants.LOCO_COMMON as LOCO_COMMON
+import jmri.jmrix.loconet.LnConstants.LOCO_FREE as LOCO_FREE
+import jmri.jmrix.loconet.LnConstants.LOCOSTAT_MASK as LOCOSTAT_MASK
 
 # import jmri
 #
