@@ -22,7 +22,9 @@ class MoveLocosToSidings(alex.Alex):
                     addr = blk.getValue()
                     if addr is None or addr == '':
                         addr = JOptionPane.showInputDialog("DCC addr of loco in: " + blk.getUserName())
+                    self.debug("getting loco for " + str(addr))
                     l = loco.Loco(addr)
+                    self.debug("getting throttle for " + str(addr))
                     self.getLocoThrottle(l)
                     self.locos.append(l)
                     l.setBlock(blk)
@@ -41,6 +43,7 @@ class MoveLocosToSidings(alex.Alex):
                     locolist.remove(l)
                     keepGoing = True
 
+        print "MoveLocosToSidings all done."
         return False
 
 MoveLocosToSidings().start()
