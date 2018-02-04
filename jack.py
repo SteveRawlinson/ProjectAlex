@@ -81,6 +81,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 time.sleep(5)
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
+        slot = loc.throttle.getLocoNetSlot()
+        if slot:
+            self.debug("got throttle for loco addr " + str(loc.dccAddr) + " slot " + str(slot.getSlot()) + " status: " + LN_SLOT_STATUS[slot.slotStatus()])
+        else:
+            self.debug("throttle for loco addr " + str(loc.dccAddr) + " has no slot ")
+
 
     # gets a new loco and appends it to self.locos
     def getNewLoco(self, addr):
