@@ -42,11 +42,12 @@ class Loco(util.Util):
         self.stopTime = time.time()
 
     def setSpeedSetting(self, speed):
-        if self.throttle.getLocoNetSlot() is None:
+        slot = self.throttle.getLocoNetSlot()
+        if slot is None:
             print "***************************** Throttle for loco ", self.nameAndAddress(), "has no slot ***********************************"
         if type(speed) == str or type(speed) == unicode:
             speed = self.speed(speed)
-        self.debug("setSpeedSetting: " + str(speed))
+        self.debug("setSpeedSetting: " + str(speed) + " slot status: " + LN_SLOT_STATUS[slot.slotStatus()] + " (" + str(slot.slotStatus()) + ")")
         self.throttle.setSpeedSettingAgain(speed)
         if self.track:
             mem = memories.provideMemory("IMTRACK" + str(self.track.nr) + "SPEED")
@@ -594,6 +595,11 @@ class Loco(util.Util):
         self.debug("got lock: " + l.status())
         return l
 
+    def disableMomentum(self):
+        self.throttle.setF4(True)
+
+    def enableMomentum(self):
+        self.throttle.setF4(False)
 
 
 
