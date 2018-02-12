@@ -246,10 +246,10 @@ class Track:
         if self.exitSignal is None:
             util.Util.clog("no exit signal on " + self.name())
             return
-        if self.exitSignal.getAppearance == appearance:
+        if self.exitSignal.getAppearance() == appearance:
             util.Util.clog("exit signal on " + self.name() + " is already " + str(appearance))
             return
-        util.Util.clog("setting exit signal for " + self.name() + " " + self.exitSignal.getDisplayName() + " to " + str(appearance))
+        util.Util.clog("setting exit signal for " + self.name() + " signal:" + self.exitSignal.getDisplayName() + " to " + str(appearance))
         self.exitSignal.setAppearance(appearance)
 
     def name(self):
