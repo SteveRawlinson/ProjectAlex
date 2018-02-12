@@ -1004,6 +1004,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=routes)
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(dir, self.loco.block, 'North Link', speed, dontStop=True)
+            self.loco.disableMomentum()
             if lock.partial():
                 routes = self.requiredRoutes(siding)
             else:
@@ -1187,6 +1188,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 speed = self.loco.speed('track to south link', 'medium')
             dir = True
             self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, dontStop=True)
+            self.loco.disableMomentum()
             if lock.partial():
                 routes = self.requiredRoutes(siding)
             else:
@@ -1293,6 +1295,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.shortJourney(dir, self.loco.block, "South Link", sp, routes=routes, dontStop=True)
 
         # we are now at South Link
+        self.loco.enableMomentum()
 
         # see if we're past the IR sensor at the sidings side of the link
         irs = sensors.getSensor("LS59")
@@ -1437,6 +1440,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # get the loco speed
             sp = self.loco.speed('north sidings exit', 'fast')
             self.shortJourney(dir, self.loco.block, "North Link", sp, routes=routes, dontStop=True)
+            self.loco.enableMomentum()
             # update the lock
             lock.switch() # stops loco if necessary
             # add later routes if we haven't done so already
