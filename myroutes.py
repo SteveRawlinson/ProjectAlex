@@ -102,8 +102,8 @@ SPEEDMAP = {
     # class 150s
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6, 'north interlink southbound': 0.7},
     # Javelin
-    5004: {'fast': 0.35, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'track to south link': 'fast', 'south sidings entry': 0.1},
+    5004: {'fast': 0.6, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'track to south link': 'fast', 'south sidings entry': 'slow'},
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.1},
@@ -136,7 +136,7 @@ SLOWTIMEMAP = {
     1087: {"FPK P3": 9, "AAP P2": 4, "NSG P1": 2.5, "PAL P1": 5, "AAP P4": 5, "FPK P1": 11, "FPK P4": 3, "AAP P1": 3, "NSG P2": 3, "FPK P2": 4,
            "AAP P3": 4, "PAL P2": 4, "North Link": 4},
     # Javelin
-    5004: {'North Link': 5, 'FPK P7': 7, "Nth Fast Outer 1": 6},
+    5004: {'North Link': 5, 'FPK P7': 5, "Nth Fast Outer 1": 1},
     # Ave Talgo
     6719: {'Nth Fast Outer 1': 6, "FPK P7": 6},
     # Eurostar
