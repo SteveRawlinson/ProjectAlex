@@ -197,14 +197,11 @@ class Lock(util.Util):
         # set the signal if we're leaving the layout
         if (end == NORTH and direction == NORTHBOUND) or (end == SOUTH and direction == SOUTHBOUND):
             if self.loco.track:
-                signal = self.loco.track.exitSignal
-                if signal is not None:
-                    if self.empty():
-                        if signal.getAppearance != RED:
-                            signal.setAppearance(RED)
-                    else:
-                        if signal.getAppearance != GREEN:
-                            signal.setAppearance(GREEN)
+                if self.empty():
+                    app = RED
+                else:
+                    app = GREEN
+                self.loco.track.setExitSignalAppearance(app)
         self.writeMemories()
         self.log(self.status())
         if not self.empty():
@@ -230,6 +227,8 @@ class Lock(util.Util):
         if sleepTime < 0.2:
             sleepTime = 0.2
         while self.empty() or self.checkLock() is False:
+            if self.getJackStatus() == ESTOP or self.getJackStatus() == STOPPED:
+                return
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
                 time.sleep(sleepTime)
