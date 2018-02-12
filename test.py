@@ -1,21 +1,30 @@
 import jmri
 import java
 from jmri_bindings import *
-from myroutes import *
+import time
 
 class Test(jmri.jmrit.automat.AbstractAutomaton):
     def handle(self):
-        t = self.getThrottle(68, False)
+        print 'boo'
+        # list = jmri.jmrit.roster.Roster.instance().getEntriesByDccAddress('68')
+        # re = list[0]
+        # print re.getDccAddress()
+        t = self.getThrottle(2128, True)
+        re = t.getRosterEntry()
+        print re
         s = t.getLocoNetSlot()
         print "slot", s.getSlot()
         print "id", s.id()
         print "status", s.slotStatus()
-        for k in LN_SLOT_STATUS:
-            print str(k), 'correspond to', str(LN_SLOT_STATUS[k])
-        print 'in-use', LOCO_IN_USE
-        print 'free', LOCO_FREE
-        print 'idle', LOCO_IDLE
-        print 'common', LOCO_COMMON
+        time.sleep(1)
+        t2 = self.getThrottle(2128, True)
+        print "t == t2: ", t == t2
+        t.setSpeedSetting(0.2)
+        time.sleep(3)
+        t2.setSpeedSetting(0)
+        time.sleep(2)
+        self.releaseThrottle(t)
+        print 'done'
 
 Test().start()
 
