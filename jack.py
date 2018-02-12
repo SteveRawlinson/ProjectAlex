@@ -43,10 +43,10 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [1124]
-#DCC_ADDRESSES = [3213]
+DCC_ADDRESSES = [5004]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 5004, 4404, 6719]
+#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -281,7 +281,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 continue
             if loc.active():
                 continue
-            self.debug("found idle loco with rarity 0: " + loc.nameAndAddress())
+            self.log("found idle loco with rarity 0: " + loc.nameAndAddress())
             # get this loco moving if possible
             trak = track.Track.preferred_track(loc, self.tracks)
             if trak is not None:
@@ -289,7 +289,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.startJourney(loc, trak)
                 return
             else:
-                self.debug("no available tracks to run loco " + loc.name())
+                self.log("no available tracks to run loco " + loc.name())
                 # if this loco has stopped early on North Link we need to move it to
                 # sidings to get it out the way
                 if loc.block.getUserName() == 'North Link':
