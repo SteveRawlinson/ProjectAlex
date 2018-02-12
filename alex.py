@@ -401,9 +401,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def getLocoThrottle(self, loc):
         throttleAttempts = 0
         while throttleAttempts < 2 and loc.throttle is None:
-            time.sleep(5)
             loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr())
             throttleAttempts += 1
+            time.sleep(5)
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
         slot = loc.throttle.getLocoNetSlot()
