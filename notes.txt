@@ -9,6 +9,7 @@ moveIntoSidings gets locks wrong because it relies on the track to determine dir
 tracks should read the sensors to get u/s status
 after getting a throttle check the slot isn't idle
 moveLocosIntoSdings should check North Link first
+need to set signal aspects at startup because the panel load might be out of sync with layout signals
 
 -- journeys should check for estop more often
 -- if we give up because no sidings, release the lock
