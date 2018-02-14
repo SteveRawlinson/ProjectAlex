@@ -103,7 +103,7 @@ SPEEDMAP = {
     "class150": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink northbound': 0.6, 'north interlink southbound': 0.7},
     # Javelin
     5004: {'fast': 0.6, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'track to south link': 'fast', 'south sidings entry': 'slow'},
+           'track to south link': 'fast', 'south sidings entry': 'slow', "north fast outer 1 halting": 'slow'},
     # Eurostar
     3213: {'fast': 0.3, 'bend': 0.2, 'medium': 0.2, 'slow': 0.1, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.1},
