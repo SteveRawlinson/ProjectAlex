@@ -353,6 +353,7 @@ class Lock(util.Util):
             if self.northSidings:
                 # check we actually hold the lock
                 if self.northSidingsVal is not None and self.northSidingsVal != self.loco.dccAddr:
+                    self.loco.emergencyStop()
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northSidings it does not own")
                 elif partialUnlock is False:
                     self.northSidings = None
@@ -364,6 +365,7 @@ class Lock(util.Util):
                     self.northSidings = None
             if self.northTrackLink:
                 if self.northTrackLinkVal is not None and self.northTrackLinkVal != self.loco.dccAddr:
+                    self.loco.emergencyStop()
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on northTrackLink it does not own")
                 elif partialUnlock is False:
                     self.northTrackLink = None
@@ -378,6 +380,7 @@ class Lock(util.Util):
             if self.southSidings:
                 # check we actually hold the lock
                 if self.southSidingsVal is not None and self.southSidingsVal != self.loco.dccAddr:
+                    self.loco.emergencyStop()
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southSidings it does not own")
                 elif partialUnlock is False:
                     # partial == False, set everything to None
@@ -396,6 +399,7 @@ class Lock(util.Util):
             if self.southTrackLink:
                 # check we hold the lock
                 if self.southTrackLinkVal is not None and self.southTrackLinkVal != self.loco.dccAddr:
+                    self.loco.emergencyStop()
                     raise RuntimeError("loco" + self.loco.nameAndAddress() + " attempted to remove a lock on southTracklink it does not own")
                 elif partialUnlock is False:
                     # full unlock - set everything to None
