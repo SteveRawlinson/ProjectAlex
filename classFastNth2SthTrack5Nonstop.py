@@ -40,9 +40,11 @@ class ClassFastNth2SthTrack5Nonstop(alex.Alex):
             routes = self.requiredRoutes("FPK P7")
             if lock.partial():
                 sp = self.loco.speed('off track south partial lock', 'fast')
+                moreRoutes = ["Back Passage"]
             else:
+                moreRoutes = None
                 sp = fullSpeed
-            self.shortJourney(True, endBlock="FPK P7", normalSpeed=sp, dontStop=True, routes=routes)
+            self.shortJourney(True, endBlock="FPK P7", normalSpeed=sp, dontStop=True, routes=routes, lockToUpgrade=lock, upgradeLockRoutes=moreRoutes)
 
         self.moveIntoSouthSidings(lock)
 
