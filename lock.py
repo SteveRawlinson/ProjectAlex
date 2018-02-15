@@ -139,6 +139,7 @@ class Lock(util.Util):
             self.direction = direction
         if loc is not None:
             self.loco = loc
+        self.debug("lock.getLockNonBlocking: end: " + str(self.end) + " direction: " + str(self.direction))
         if self.end is None or self.direction is None or self.loco is None:
             # something is wrong, report stuff and blow up
             self.debug("end: " + str(self.end))
@@ -210,6 +211,8 @@ class Lock(util.Util):
     # Calls the above method repeatedly until at least a partial lock
     # is available.
     def getLock(self, end=None, direction=None, loc=None, sleepTime=None):
+        if loc is not None:
+            self.loco = loc
         if DEBUG:
             if loc is not None:
                 self.loco = loc
@@ -217,7 +220,13 @@ class Lock(util.Util):
                 end_s = 'North'
             else:
                 end_s = 'South'
-            self.debug(str(self.loco.dccAddr) + " getting (blocking) lock on " + end_s + " link")
+            if direction is None:
+                dir_s = 'none'
+            elif direction == NORTHBOUND or self.direction == NORTHBOUND:
+                dir_s = 'northbound'
+            else:
+                dir_s = 'southbound'
+            self.debug(str(self.loco.dccAddr) + " lock.getLock: getting (blocking) lock on " + end_s + " link direction: " + dir_s)
         if sleepTime is None:
             # give priority to locos entering the layout
             if end == NORTH and direction == SOUTHBOUND or (end == SOUTH and direction == NORTHBOUND):
@@ -226,12 +235,14 @@ class Lock(util.Util):
                 sleepTime = 1.0
         if sleepTime < 0.2:
             sleepTime = 0.2
+        self.debug("lock.getLock: empty: " + str(self.empty()))
         while self.empty() or self.checkLock() is False:
             if self.getJackStatus() == ESTOP or self.getJackStatus() == STOPPED:
                 return
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
                 time.sleep(sleepTime)
+        self.debug("lock.getLock: returning, lock status: " + self.status())
 
 
     # Get a lock on the whole link, emulating the old style lock
