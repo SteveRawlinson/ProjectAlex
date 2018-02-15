@@ -1185,7 +1185,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("moveIntoSouthSidings: adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
             if speed is None:
-                speed = self.loco.speed('track to south link', 'medium')
+                speed = self.loco.speed('off track south', 'medium')
             dir = True
             self.shortJourney(dir, self.loco.block, "South Link", speed, routes=routes, dontStop=True)
             self.loco.disableMomentum()
