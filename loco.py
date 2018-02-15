@@ -576,23 +576,24 @@ class Loco(util.Util):
         l.getLockNonBlocking(end, dir, self)
         if l.empty():
             self.debug("failed to get lock (non-blocking) returning empty lock")
-        self.debug("got lock: " + l.status())
+        self.debug("loco.getLockNonBlocking: got lock: " + l.status())
         return l
 
     # Gets a lock. See lock.py for details
     def getLock(self, end, sleepTime=None):
         if self.track.northbound():
+            self.debug(self.track.name() + " is northbound")
             dir = NORTHBOUND
         else:
+            self.debug(self.track.name() + " is southbound")
             dir = SOUTHBOUND
         if end == NORTH:
             end_s = 'North'
         else:
             end_s = 'South'
-        self.debug("getting (new) lock on " + end_s + " link (end = " + str(end) + ")")
+        self.debug("getting lock on " + end_s + " link (end = " + str(end) + ")")
         l = lock.Lock()
         l.getLock(end=end, direction=dir, loc=self, sleepTime=sleepTime)
-        self.debug("got lock: " + l.status())
         return l
 
     def disableMomentum(self):
