@@ -3,16 +3,28 @@ from jmri_bindings import *
 import loco
 from javax.swing import JOptionPane
 
+
+# statuses
+NORMAL = 0
+STOPPING = 1
+ESTOP = 2
+
 class MoveLocosToSidings(alex.Alex):
 
     def __init__(self):
         self.locos = []
         self.tracks = []
         self.memory = None
+        self.knownLocation = None
 
     def go(self):
 
         self.initTracks()
+
+        # set jeckstatus()
+        old_status = self.getJackStatus()
+        mem = memories.provideMemory('IMJACKSTATUS')
+        mem.setValue(NORMAL)
 
         # gather up the locos
         for t in self.tracks:
@@ -43,7 +55,8 @@ class MoveLocosToSidings(alex.Alex):
                     locolist.remove(l)
                     keepGoing = True
 
-        print "MoveLocosToSidings all done."
+        mem = memories.provideMemory('IMJACKSTATUS')
+        mem.setValue(old_status)
         return False
 
 MoveLocosToSidings().start()
