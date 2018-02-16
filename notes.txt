@@ -1,13 +1,10 @@
 TODO
 JMRI: 'select default roster group for throttle' option
 graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever it is
-prioritise locking depending on how full the layout is
 if we release a lock because no sidings, move on until we would normally stop
 south sidings 2 train can break siding 3 IR
-need an 'empty sidings' method
 moveIntoSidings gets locks wrong because it relies on the track to determine direction
 tracks should read the sensors to get u/s status
-after getting a throttle check the slot isn't idle
 moveLocosIntoSdings should check North Link first
 need to set signal aspects at startup because the panel load might be out of sync with layout signals
 
@@ -31,6 +28,8 @@ LT3 lost its address 26/1/2018
 Javelin derailed at LT18 northbound 29/12/2017 11:00
 Javelin failed to stop 29/12/2017 16:50 (might be fixed)
 
+++ need an 'empty sidings' method
+++ after getting a throttle check the slot isn't idle
 ++ get the virgin running on slow
 ++ test fast trains stopping at end of track 6, they don't stop in time
 ++ rotate the log file
