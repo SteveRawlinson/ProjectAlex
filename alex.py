@@ -1202,7 +1202,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # call shortJourney, with the lock to upgrade (it it's partial) and the south link IR sensor as the signal that
             # the journey is finished (otherwise we might release the tail of the lock too early
             self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True,
-                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes, endIRSensor=IRSENSORS['south link clear'])
+                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes, endIRSensor=IRSENSORS['South Link Clear'])
             if lock.partial():
                 routes = self.requiredRoutes(siding)
                 self.debug("lock is still partial, stopping loco ,adding required routes: " + ', '.join(routes))
