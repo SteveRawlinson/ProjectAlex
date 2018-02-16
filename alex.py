@@ -403,7 +403,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         while throttleAttempts < 2 and loc.throttle is None:
             loc.throttle = self.getThrottle(loc.dccAddr, loc.longAddr())
             throttleAttempts += 1
-            time.sleep(5)
+            if loc.throttle is None:
+                time.sleep(5)
         if loc.throttle is None:
             raise RuntimeError("failed to get a throttle for " + loc.name())
         slot = loc.throttle.getLocoNetSlot()
@@ -1188,7 +1189,6 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                         lock.getLock()
             self.debug("selected siding " + siding.getId())
             moreRoutes = self.requiredRoutes(siding)
-            self.debug(lock.status())
             if lock.full():
                 self.debug("moveIntoSouthSidings: full lock, adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
@@ -1199,16 +1199,18 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if speed is None:
                 speed = self.loco.speed('off track south', 'medium')
             direction = True
-            self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True, lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes)
-            self.loco.disableMomentum()
-            self.debug(lock.status())
+            # call shortJourney, with the lock to upgrade (it it's partial) and the south link IR sensor as the signal that
+            # the journey is finished (otherwise we might release the tail of the lock too early
+            self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True,
+                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes, endIRSensor=IRSENSORS['south link clear'])
             if lock.partial():
                 routes = self.requiredRoutes(siding)
-                self.debug("lock is still partial adding required routes: " + ', '.join(routes))
+                self.debug("lock is still partial, stopping loco ,adding required routes: " + ', '.join(routes))
+                self.loco.setSpeedSetting(0) # this might have to change to estop
             else:
                 self.debug("full lock, no routes required")
                 routes = None
-            self.debug(lock.status())
+            self.loco.disableMomentum()
             lock.switch()
             self.track.setExitSignalAppearance(GREEN)
             if siding.getId() == "FP sidings":
