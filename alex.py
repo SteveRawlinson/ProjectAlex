@@ -524,6 +524,10 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if lockSensor and type(lockSensor) != jmri.Sensor:
             lockSensor = sensors.getSensor(lockSensor)
 
+        # convert endIRSensor
+        if endIRSensor and type(endIRSensor) != jmri.Sensor:
+            endIRSensor = sensors.getSensor(endIRSensor)
+
         # convert string speeds to floats
         origNormalSpeed = 'dunno'
         if type(normalSpeed) == str or type(normalSpeed) == unicode:
