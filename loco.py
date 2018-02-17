@@ -494,6 +494,8 @@ class Loco(util.Util):
     # If it gets a string it searches again using the string as the
     # key.
     def speed(self, speed, fallback = 'medium'):
+        if speed == 'stop': return 0.0
+        if speed == 'estop': return -1
         sp = speed
         while type(sp) != float:
             sp = self.getSpeed(sp, fallback)
