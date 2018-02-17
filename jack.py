@@ -42,8 +42,8 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-#DCC_ADDRESSES = [1124]
-DCC_ADDRESSES = [5004]
+DCC_ADDRESSES = [1124]
+#DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
 #DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
@@ -293,7 +293,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 # if this loco has stopped early on North Link we need to move it to
                 # sidings to get it out the way
                 if loc.block.getUserName() == 'North Link':
-                    self.debug("moving loco off North Link into sidings")
+                    self.debug("moving loco off North Link into sidings because there are no available tracks to run it")
                     klassName = self.constructClassName(loc, None, ending='NorthLinkToNorthSidings')
                     loc.status = loco.ACTIVE
                     self.startJourney(loc, None, klassName=klassName)
@@ -647,10 +647,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # clear block values in unoccupied blocks
         for name in blocks.getSystemNameList():
-            self.debug("checking block " + name)
+            self.log("checking block " + name)
             b = blocks.getBlock(name)
             if b.getState() != OCCUPIED:
-                self.debug("setting value of block " + name + " to None")
+                self.log("setting value of block " + name + " to None")
                 b.setValue(None)
                 if b.getUserName() is not None:
                     self.debug("getting memory for " + b.getUserName())
