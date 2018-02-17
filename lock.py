@@ -139,7 +139,6 @@ class Lock(util.Util):
             self.direction = direction
         if loc is not None:
             self.loco = loc
-        self.debug("lock.getLockNonBlocking: end: " + str(self.end) + " direction: " + str(self.direction))
         if self.end is None or self.direction is None or self.loco is None:
             # something is wrong, report stuff and blow up
             self.debug("end: " + str(self.end))
