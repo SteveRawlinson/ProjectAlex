@@ -259,7 +259,7 @@ class Track:
         s = sensors.getSensor(TRACKSENSORS[self.nr])
         return s
 
-    # Checks the u/s status against a designated
+    # Checks the u/s status against a designated virtual sensor
     def checkStatus(self):
         state = self.sensor().getKnownState()
         if state == ACTIVE and self.us is True:
