@@ -1267,7 +1267,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         lock = self.loco.getLock(SOUTH)
 
         # status might have changed
-        if self.getJackStatus() == STOPPING:
+        if self.getJackStatus() == STOPPING or self.getJackStatus() == STOPPED:
+            # remove the memory
+            if self.memory is not None:
+                m = memories.provideMemory(self.memory)
+                m.setValue(0)
             raise StopError
 
         # determine the routes we need to set to start moving
@@ -1447,7 +1451,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         lock = self.loco.getLock(NORTH)
 
         # status might have changed
-        if self.getJackStatus() == STOPPING:
+        if self.getJackStatus() == STOPPING or self.getJackStatus() == STOPPED:
+            # remove the memory
+            if self.memory is not None:
+                m = memories.provideMemory(self.memory)
+                m.setValue(0)
             raise StopError
 
         if self.loco.block.getUserName() != "North Link":
