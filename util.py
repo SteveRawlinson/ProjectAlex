@@ -94,13 +94,8 @@ class Util:
         for t in TRACKS:
             tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3], t[4])
             self.tracks.append(tr)
-            s = sensors.getSensor(TRACKSENSORS[tr.nr])
-            if tr.us:
-                s.setKnownState(INACTIVE)
-            else:
-                s.setKnownState(ACTIVE)
+            tr.checkStatus()
             #print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
-
 
     # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
     # and return the layout block and the sensor (if there is one).
