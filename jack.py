@@ -42,11 +42,11 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-DCC_ADDRESSES = [1124]
+#DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
+DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -271,11 +271,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # TODO: turn trains round?
             return
         # check for retired locos not in sidings
-        for l in self.retiredlocos:
-            if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
-                MoveLocoToSidings(l, None, None).start()
-                self.retiredlocos.remove(l)
-                return
+        # for l in self.retiredlocos:
+        #     if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
+        #         MoveLocoToSidings(l, None, None).start()
+        #         if l in self.retiredlocos:
+        #             self.retiredlocos.remove(l)
+        #         return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
@@ -540,6 +541,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                                             self.locos[0].nameAndAddress())
             if b is None:
                 # User cancelled
+                sen = sensors.getSensor("Retire Loco")
+                sen.setKnownState(INACTIVE)
                 return False
             for l in self.locos:
                 if l.nameAndAddress() == b:
@@ -547,16 +550,17 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("retiring loco " + b)
                     # see if this loco is on a journey
                     for m in self.memories:
-                        bits = m.getSystemname().split('-')
+                        bits = m.split('-')
+                        self.debug("bit[1]: " + bits[1])
                         if int(bits[1]) == l.dccAddr:
                             # set a memory so the journey picks it up
                             mem = memories.provideMemory('IMRETIREDLOCO')
+                            self.debug("setting IMRETIREDLOCO to value " + str(l.dccAddr))
                             mem.setValue(l.dccAddr)
+                        else:
+                            self.debug(bits[1] + " != " + str(l.dccAddr))
                     self.locos.remove(l)
                     self.retiredlocos.append(l)
-
-
-            m.setValue(None)
             sen = sensors.getSensor("Retire Loco")
             sen.setKnownState(INACTIVE)
 
