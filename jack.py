@@ -274,6 +274,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for l in self.retiredlocos:
             if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
                 MoveLocoToSidings(l, None, None).start()
+                self.retiredlocos.remove(l)
                 return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
@@ -542,9 +543,19 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 return False
             for l in self.locos:
                 if l.nameAndAddress() == b:
+                    # found the loco
                     self.debug("retiring loco " + b)
+                    # see if this loco is on a journey
+                    for m in self.memories:
+                        bits = m.getSystemname().split('-')
+                        if int(bits[1]) == l.dccAddr:
+                            # set a memory so the journey picks it up
+                            mem = memories.provideMemory('IMRETIREDLOCO')
+                            mem.setValue(l.dccAddr)
                     self.locos.remove(l)
                     self.retiredlocos.append(l)
+
+
             m.setValue(None)
             sen = sensors.getSensor("Retire Loco")
             sen.setKnownState(INACTIVE)
