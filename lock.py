@@ -595,7 +595,7 @@ class Lock(util.Util):
         return True
 
     def logLock(self):
-        if self.cleanLock and self.loco and self.loco.track:
+        if self.cleanLock and self.loco and self.loco.track and self.lockTime and self.unlockTime:
             if self.end == NORTH:
                 end_s = 'north'
             else:
