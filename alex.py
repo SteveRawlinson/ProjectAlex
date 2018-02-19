@@ -902,6 +902,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     sleepTime = None # get getLock() decide
                 lock = self.loco.getLock(NORTH, sleepTime=sleepTime)
         if lock.empty():
+            if self.getJackStatus() == ESTOP:
+                self.loco.emergencyStop()
+                raise EstopError
             self.track.setExitSignalAppearance(RED)
             # bring loco to a halt
             self.loco.graduallyChangeSpeed('slow')
@@ -993,10 +996,11 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                         # not sure this ever happens
                         time.sleep(5)
                 else:
+                    # we got a siding, now get a lock
                     if lock and lock.empty():
                         lock.getLock()
             self.debug("selected siding: " + siding.getId())
-            if not lock.partial():
+            if lock.full():
                 # full lock - might as well set all the routes
                 routes = routes + self.requiredRoutes(siding)
             if self.loco.reversible():
@@ -1124,6 +1128,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("not moving, getting blocking lock")
                 lock = self.loco.getLock(SOUTH, sleepTime=sleepTime)
         if lock.empty(): # implies we are moving and failed to get the lock
+            if self.getJackStatus() == ESTOP:
+                self.loco.emergencyStop()
+                raise EstopError
             self.debug("loco is moving, lock is empty, slowing and stopping")
             # set the signal to red
             self.track.setExitSignalAppearance(RED)
