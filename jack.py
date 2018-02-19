@@ -102,12 +102,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for blockName in (SOUTH_SIDINGS + NORTH_SIDINGS +  [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP, 'North Link']):
             blk = blocks.getBlock(blockName)
             if blk.getState() != OCCUPIED:
-                self.debug(blockName + " is not occupied")
                 continue
             if blk.getValue() is not None and  blk.getValue() != "":
-                self.debug(blockName + " has a value: " + blk.getValue())
                 continue
-            self.debug("add block " + blockName + " to blist")
             blist.append(blockName)
         # put up a dropbox for the user to select the block
         self.debug("getting block from user")
@@ -629,9 +626,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sen.setKnownState(INACTIVE)
 
         # reset memories
-        for m in ["IMNEWLOCO"]:
+        for m in ["IMNEWLOCO", "IMRETIRELOCO", "IMRETIREDLOCO"]:
             mem = memories.getMemory(m)
-            mem.setValue(None)
+            if mem is not None:
+                mem.setValue(None)
 
         # Initialise tracks
         self.initTracks()
@@ -696,7 +694,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.status == ESTOP:
                 # Stop everything immediately
                 self.eStop() # stops all locos
-                time.sleep(0.5)
+                self.debug("Jack waiting to exit on eStop")
+                # give other processes time to read the estop
+                time.sleep(30)
                 print "Jack exits on ESTOP"
                 self.status = STOPPED
                 self.setStatus()
