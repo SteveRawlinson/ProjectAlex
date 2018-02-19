@@ -57,6 +57,7 @@ from jmri_bindings import *
 
 lssensorlist = [112, 113, 114, 115, 116, 117, 105, 106, 107, 108, 109, 110, 101, 102, 103, 119, 120, 122, 123]
 issensorlist = [18, 19, 20, 21, 22, 28, 29, 33, 34, 'IS32', 41, 42, 43, 44, 45, 46]
+
 class SetStartupSensors:
     def __init__(self, lssensorlist, issensorlist):
         self.lssensorlist = lssensorlist
@@ -77,7 +78,11 @@ class SetStartupSensors:
             m.setValue(None)
             m = memories.provideMemory("IMTRACK" + str(i) + "SPEED")
             m.setValue(None)
-
+        # set track sensors to active on load
+        for k in TRACKSENSORS:
+            s = sensors.getSensor(TRACKSENSORS[k])
+            if s is not None:
+                s.setKnownState(ACTIVE)
 
 SetStartupSensors(lssensorlist, issensorlist).do()
 
