@@ -584,7 +584,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
-            print self.loco.dccAddr, "start block", startBlock.getUserName(), "is not occupied"
+            self.debug(self.loco.dccAddr +  " start block " +  startBlock.getUserName() + " is not occupied *******************************************")
             if self.knownLocation is None:
                 errstr = str(self.loco.dccAddr) +  "start block " + startBlock.getUserName() + "is not occupied and no known location"
                 raise RuntimeError(errstr)
@@ -1203,10 +1203,9 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if speed is None:
                 speed = self.loco.speed('off track south', 'medium')
             direction = True
-            # call shortJourney, with the lock to upgrade (it it's partial) and the south link IR sensor as the signal that
-            # the journey is finished (otherwise we might release the tail of the lock too early
+            # call shortJourney, with the lock to upgrade (if it's partial)
             self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True,
-                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes, endIRSensor=IRSENSORS['South Link Clear'])
+                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes)
             if lock.partial():
                 routes = self.requiredRoutes(siding)
                 self.debug("lock is still partial, stopping loco ,adding required routes: " + ', '.join(routes))
@@ -1215,13 +1214,15 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("full lock, no routes required")
                 routes = None
             self.loco.disableMomentum()
-            lock.switch()
-            self.track.setExitSignalAppearance(GREEN)
             if siding.getId() == "FP sidings":
+                # FP sidings
+                lock.switch()
+                self.track.setExitSignalAppearance(GREEN)
                 speed = self.loco.speed('south link to fp sidings', 'fast')
                 slowSpeed = self.loco.speed('south sidings entry', 'medium')
                 self.shortJourney(dir, self.loco.block, siding, speed, slowSpeed=slowSpeed, routes=routes, stopIRClear=IRSENSORS[siding.getId()])
-            else: # normal siding
+            else:
+                # normal siding
                 if speed is None:
                     # select the speed for the next bit - if a fast loco needs to set routes
                     # we need to go slower
@@ -1230,6 +1231,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     else:
                         speed = self.loco.speed('south link to back passage slow', 'slow')
                 self.shortJourney(direction, self.loco.block, 'Back Passage', speed, routes=routes, dontStop=True)
+                lock.switch()
+                self.track.setExitSignalAppearance(GREEN)
                 speed = self.loco.speed('back passage to south sidings', 'fast')
                 slowSpeed = self.loco.speed('south sidings entry', 'medium')
                 self.shortJourney(direction, self.loco.block, siding, speed, slowSpeed=slowSpeed, stopIRClear=IRSENSORS[siding.getId()])
