@@ -22,9 +22,9 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
             raise RuntimeError(self.loco.nameAndAddress() + " is facing the wrong way")
 
         if self.loco.reversible():
-            direction = True
-        else:
             direction = False
+        else:
+            direction = True
 
         # check we have a throttle
         if self.loco.throttle is None:
