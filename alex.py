@@ -584,7 +584,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # check if we know where we are if the startblock is not occupied
         if startBlockSensor.knownState != ACTIVE:
-            self.debug(self.loco.dccAddr +  " start block " +  startBlock.getUserName() + " is not occupied *******************************************")
+            self.debug(str(self.loco.dccAddr) +  " start block " +  startBlock.getUserName() + " is not occupied *******************************************")
             if self.knownLocation is None:
                 errstr = str(self.loco.dccAddr) +  "start block " + startBlock.getUserName() + "is not occupied and no known location"
                 raise RuntimeError(errstr)
@@ -609,6 +609,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     arrived = True
                 else:
                     self.debug("my destination block " + endBlock.getId() + " is occupied")
+                    if lock:
+                        self.debug("lock: " + str(lock) + " lock.empty(): " + str(lock.empty()) + " ink in " + endBlock.getId() + ' ' + str('ink' in endBlock.getId()))
                     if lock:
                         # let another loco have the lock
                         if type(lock) != str and type(lock) != unicode:
@@ -1211,8 +1213,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 speed = self.loco.speed('off track south', 'medium')
             direction = True
             # call shortJourney, with the lock to upgrade (if it's partial)
-            self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True,
-                              lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes)
+            self.shortJourney(direction, self.loco.block, "South Link", speed, routes=routes, dontStop=True, lockToUpgrade=lock, upgradeLockRoutes=lockUpgradeRoutes)
             if lock.partial():
                 routes = self.requiredRoutes(siding)
                 self.debug("lock is still partial, stopping loco ,adding required routes: " + ', '.join(routes))
@@ -1462,6 +1463,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
 
         # status might have changed
         if self.getJackStatus() == STOPPING or self.getJackStatus() == STOPPED:
+            # unlock
+            lock.unlock()
             # remove the memory
             if self.memory is not None:
                 m = memories.provideMemory(self.memory)
