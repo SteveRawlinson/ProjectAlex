@@ -46,7 +46,7 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
+DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -447,6 +447,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             return
         self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
         self.log("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+        self.debug("north sidings free: " + str(self.freeSidingCount(NORTH_SIDINGS)) + " south sidings free: " + str(self.freeSidingCount(SOUTH_SIDINGS)))
         self.startJourney(loc, trak)
 
 
