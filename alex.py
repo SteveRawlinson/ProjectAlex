@@ -617,7 +617,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                                 lock.unlock()
                         else:
                             self.debug("relinquishing lock")
-                            self.unlock(lock)
+                            lock.unlock()
                     if moving:
                         # stop!
                         self.debug("stopping loco")
