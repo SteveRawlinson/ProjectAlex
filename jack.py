@@ -42,11 +42,11 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
-DCC_ADDRESSES = [1124]
+#DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [4404]
-#DCC_ADDRESSES = [2144, 2128, 1087, 1124, 3213, 7405, 4404, 6719]
+DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -102,12 +102,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         for blockName in (SOUTH_SIDINGS + NORTH_SIDINGS +  [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP, 'North Link']):
             blk = blocks.getBlock(blockName)
             if blk.getState() != OCCUPIED:
-                self.debug(blockName + " is not occupied")
                 continue
             if blk.getValue() is not None and  blk.getValue() != "":
-                self.debug(blockName + " has a value: " + blk.getValue())
                 continue
-            self.debug("add block " + blockName + " to blist")
             blist.append(blockName)
         # put up a dropbox for the user to select the block
         self.debug("getting block from user")
@@ -271,11 +268,12 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             # TODO: turn trains round?
             return
         # check for retired locos not in sidings
-        for l in self.retiredlocos:
-            if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
-                MoveLocoToSidings(l, None, None).start()
-                self.retiredlocos.remove(l)
-                return
+        # for l in self.retiredlocos:
+        #     if l.block.getUserName() not in NORTH_SIDINGS + SOUTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
+        #         MoveLocoToSidings(l, None, None).start()
+        #         if l in self.retiredlocos:
+        #             self.retiredlocos.remove(l)
+        #         return
         # Find idle locos with 0 rarity and get them moving if possible
         for loc in self.locos:
             if loc.rarity() > 0:
@@ -449,6 +447,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             return
         self.debug("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
         self.log("selected track " + str(trak.nr) + " for loco " + str(loc.dccAddr) + " score: " + str(trak.score(loc)))
+        self.debug("north sidings free: " + str(self.freeSidingCount(NORTH_SIDINGS)) + " south sidings free: " + str(self.freeSidingCount(SOUTH_SIDINGS)))
         self.startJourney(loc, trak)
 
 
@@ -540,6 +539,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                                             self.locos[0].nameAndAddress())
             if b is None:
                 # User cancelled
+                sen = sensors.getSensor("Retire Loco")
+                sen.setKnownState(INACTIVE)
                 return False
             for l in self.locos:
                 if l.nameAndAddress() == b:
@@ -547,16 +548,17 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("retiring loco " + b)
                     # see if this loco is on a journey
                     for m in self.memories:
-                        bits = m.getSystemname().split('-')
+                        bits = m.split('-')
+                        self.debug("bit[1]: " + bits[1])
                         if int(bits[1]) == l.dccAddr:
                             # set a memory so the journey picks it up
                             mem = memories.provideMemory('IMRETIREDLOCO')
+                            self.debug("setting IMRETIREDLOCO to value " + str(l.dccAddr))
                             mem.setValue(l.dccAddr)
+                        else:
+                            self.debug(bits[1] + " != " + str(l.dccAddr))
                     self.locos.remove(l)
                     self.retiredlocos.append(l)
-
-
-            m.setValue(None)
             sen = sensors.getSensor("Retire Loco")
             sen.setKnownState(INACTIVE)
 
@@ -625,9 +627,10 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sen.setKnownState(INACTIVE)
 
         # reset memories
-        for m in ["IMNEWLOCO"]:
+        for m in ["IMNEWLOCO", "IMRETIRELOCO", "IMRETIREDLOCO"]:
             mem = memories.getMemory(m)
-            mem.setValue(None)
+            if mem is not None:
+                mem.setValue(None)
 
         # Initialise tracks
         self.initTracks()
@@ -692,7 +695,9 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.status == ESTOP:
                 # Stop everything immediately
                 self.eStop() # stops all locos
-                time.sleep(0.5)
+                self.debug("Jack waiting to exit on eStop")
+                # give other processes time to read the estop
+                time.sleep(30)
                 print "Jack exits on ESTOP"
                 self.status = STOPPED
                 self.setStatus()

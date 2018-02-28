@@ -4,10 +4,12 @@ graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever i
 if we release a lock because no sidings, move on until we would normally stop
 south sidings 2 train can break siding 3 IR
 moveIntoSidings gets locks wrong because it relies on the track to determine direction
-tracks should read the sensors to get u/s status
 moveLocosIntoSdings should check North Link first
 need to set signal aspects at startup because the panel load might be out of sync with layout signals
+moveLocosIntoSidings needs to use reverse loops for non-reversible locos
+moveLocosIntoSidings needs to not stop class 150s on North Link
 
+-- tracks should read the sensors to get u/s status
 -- journeys should check for estop more often
 -- if we give up because no sidings, release the lock
 -- don't bring a non-reversible loco out unless the other one has a track available

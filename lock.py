@@ -521,6 +521,8 @@ class Lock(util.Util):
             slowtimeLeft = slowtime - timeItTook
             self.debug("getLockOrStopLoco: slowtimeLeft: " + str(slowtimeLeft))
             if slowtimeLeft < 3.0:
+                if slowtimeLeft < 0.0: # this happened once
+                    slowtimeLeft = 1
                 # it took too long to return now, sleep for the remainder of slowtime
                 self.debug("nearly ran out of time, stopping loco for " + str(slowtimeLeft) + " secs")
                 time.sleep(slowtimeLeft)
@@ -595,7 +597,7 @@ class Lock(util.Util):
         return True
 
     def logLock(self):
-        if self.cleanLock and self.loco and self.loco.track:
+        if self.cleanLock and self.loco and self.loco.track and self.lockTime and self.unlockTime:
             if self.end == NORTH:
                 end_s = 'north'
             else:

@@ -109,7 +109,7 @@ SPEEDMAP = {
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.1, 'off track south partial lock': 0.2},
     # TGV
     4404: {'fast': 0.65, 'bend': 0.45, 'medium': 0.45, 'slow': 0.25, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
-           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 0.2},
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 'slowf'},
     # Ave Talgo
     6719: {'fast': 0.5, 'bend': 'fast', 'medium': 0.35, 'slow': 0.25, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.35,
            'north sidings entry': 0.3, 'off track south': 0.5, 'south sidings exit': 0.3, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
@@ -117,11 +117,11 @@ SPEEDMAP = {
     # class 91 virgin
     1124: {'fast': 0.5, 'bend': 0.3, 'medium': 0.35, 'slow': 0.2, 'south link to layout': 'fast', 'off track north': 'fast', 'south link wait for route': 0.1,
            'north interlink northbound': 0.5, 'off track south:': 0.5, 'north sidings entry': 0.1, 'north link to sidings': 'slow', 'north interlink southbound': 'fast',
-           'north link to layout': 'fast', 'fast going slow': 0.27, 'south sidings exit': 0.3},
+           'north link to layout': 'fast', 'fast going slow': 0.27, 'south sidings exit': 0.3, 'FPK P3': 4, 'south sidings entry': 'slow'},
     # class 47
     "class47": {'fast': 0.6, 'medium': 0.35, 'slow': 0.25, 'north interlink southbound': 'fast'},
     # Underground
-    1087: {'fast': 0.7, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3, 'north sidings exit': 0.7, 'north interlink southbound': 0.7}
+    1087: {'fast': 0.7, 'medium': 0.3, 'slow': 0.2, 'exit south sidings': 0.3, 'north sidings exit': 0.7, 'north interlink southbound': 0.7, 'north interlink northbound': 0.7}
 }
 
 SLOWTIMEMAP = {
@@ -142,7 +142,7 @@ SLOWTIMEMAP = {
     # Eurostar
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
-    4404: {"FPK P7": 5, "Nth Fast Outer 1": 3},
+    4404: {"FPK P7": 7, "Nth Fast Outer 1": 3},
     # Virgin class 91
     1124: {"FPK P7": 6, "Nth Fast Outer 1": 0},
 }
