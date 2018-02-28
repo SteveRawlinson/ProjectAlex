@@ -604,5 +604,16 @@ class Loco(util.Util):
     def enableMomentum(self):
         self.throttle.setF4(False)
 
+    def isInSidings(self):
+        if not self.block:
+            return False
+        if self.block.getUserName() in SOUTH_SIDINGS + NORTH_SIDINGS + [NORTH_REVERSE_LOOP, SOUTH_REVERSE_LOOP]:
+            return True
+        return False
+
+    def isVisiable(self):
+        if not self.block:
+            return False
+        return isBlockVisible(self.block)
 
 
