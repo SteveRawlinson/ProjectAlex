@@ -611,7 +611,7 @@ class Loco(util.Util):
             return True
         return False
 
-    def isVisiable(self):
+    def isVisible(self):
         if not self.block:
             return False
         return isBlockVisible(self.block)

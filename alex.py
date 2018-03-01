@@ -611,7 +611,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                     self.debug("my destination block " + endBlock.getId() + " is occupied")
                     if lock:
                         self.debug("lock: " + str(lock) + " lock.empty(): " + str(lock.empty()) + " ink in " + endBlock.getId() + ' ' + str('ink' in endBlock.getId()))
-                        if self.loco.isInSidings() or self.loco.isVisiable():
+                        if self.loco.isInSidings() or self.loco.isVisible():
                             # let another loco have the lock
                             if type(lock) != str and type(lock) != unicode:
                                 if not lock.empty():
