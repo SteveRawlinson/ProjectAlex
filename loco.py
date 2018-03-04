@@ -30,6 +30,7 @@ class Loco(util.Util):
         self._canGoFast = None
         self._canGoSlow = None
         self._freight = None
+        self._decoderFamily = None
         self.stopTime = time.time()
 
     def emergencyStop(self):
@@ -253,6 +254,11 @@ class Loco(util.Util):
             re = self.rosterEntry()
             self._longAddr = re.isLongAddress()
         return self._longAddr
+
+    def decoderFamily(self):
+        if self._decoderFamily is None:
+            self._decoderFamily = self.rosterEntry().getDecoderFamily()
+        return self._decoderFamily
 
     # Returns True if the block is longer than the current train.
     # The length of the train is determined by checking the 
