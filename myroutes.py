@@ -110,6 +110,9 @@ SPEEDMAP = {
     # TGV
     4404: {'fast': 0.65, 'bend': 0.45, 'medium': 0.45, 'slow': 0.25, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
            'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 'slowf'},
+    # ICE 3
+    4030: {'fast': 0.65, 'bend': 0.45, 'medium': 0.45, 'slow': 0.25, 'south link to layout': 'fast', 'off track north': 'fast', 'north link to layout': 'fast',
+           'south sidings entry': 'slow', 'north sidings entry': 'slow', 'north link to sidings': 'slowf'},
     # Ave Talgo
     6719: {'fast': 0.5, 'bend': 'fast', 'medium': 0.35, 'slow': 0.25, 'north sidings exit': 'fast', 'track to north link': 'fast', 'north link to sidings': 0.35,
            'north sidings entry': 0.3, 'off track south': 0.5, 'south sidings exit': 0.3, 'south link to layout': 'fast', 'off track north': 'fast', 'north interlink southbound': 'fast',
@@ -143,6 +146,8 @@ SLOWTIMEMAP = {
     3213: {"FPK P7": 5, "Nth Fast Outer 1": 2},
     # TGV
     4404: {"FPK P7": 7, "Nth Fast Outer 1": 3},
+    # ICE 3
+    4030: {"FPK P7": 7, "Nth Fast Outer 1": 3},
     # Virgin class 91
     1124: {"FPK P7": 6, "Nth Fast Outer 1": 0},
 }
