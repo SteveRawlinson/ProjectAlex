@@ -70,3 +70,7 @@ class Loco1124Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
 class Loco4404Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     pass
 
+# ICE 3
+class Loco4030Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    pass
+
