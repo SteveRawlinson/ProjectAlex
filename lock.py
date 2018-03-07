@@ -237,6 +237,7 @@ class Lock(util.Util):
         self.debug("lock.getLock: empty: " + str(self.empty()))
         while self.empty() or self.checkLock() is False:
             if self.getJackStatus() == ESTOP or self.getJackStatus() == STOPPED:
+                self.debug("returning empty lock: jackStatus: " + str(self.getJackStatus()))
                 return
             self.getLockNonBlocking(end, direction, loc)
             if self.empty():
