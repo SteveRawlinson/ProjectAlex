@@ -1206,9 +1206,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("moveIntoSouthSidings: full lock, adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
                 lockUpgradeRoutes = None
-            else: # partial lock
+            elif lock.partial(): # partial lock
                 lockUpgradeRoutes = moreRoutes
-                self.debug("moveIntoSouthSidings: partial lock, not adding subsequent routes, setting lockUpgrade routes: " + ', '.join(lockUpgradeRoutes))
+                self.debug("partial lock, not adding subsequent routes, setting lockUpgrade routes: " + ', '.join(lockUpgradeRoutes))
+            else:
+                self.debug("lock is empty, abort")
+                self.loco.emergencyStop()
+                raise RuntimeError("empty lock")
             if speed is None:
                 speed = self.loco.speed('off track south', 'medium')
             direction = True
