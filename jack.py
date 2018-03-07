@@ -45,8 +45,8 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [1124]
 #DCC_ADDRESSES = [3213]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
-DCC_ADDRESSES = [4030]
-#DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004, 4030]
+#DCC_ADDRESSES = [2144, 2128, 4030]
+DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004, 4030]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -668,10 +668,8 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.log("setting value of block " + name + " to None")
                 b.setValue(None)
                 if b.getUserName() is not None:
-                    self.debug("getting memory for " + b.getUserName())
                     m = memories.getMemory(b.getUserName())
                     if m is not None:
-                        self.debug("setting memory")
                         m.setValue(None)
 
 
