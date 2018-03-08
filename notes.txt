@@ -10,11 +10,6 @@ moveLocosIntoSidings needs to use reverse loops for non-reversible locos
 moveLocosIntoSidings needs to not stop class 150s on North Link
 moveIntoNorthSidings uses north interlink speed too early on fast tracks
 
--- tracks should read the sensors to get u/s status
--- journeys should check for estop more often
--- if we give up because no sidings, release the lock
--- don't bring a non-reversible loco out unless the other one has a track available
--- long trains southbound on south link do partial unlock too early
 -- don't wait for target block to be free if there's a lock and it's a link
 
 LS65 is probably fine and not in use (despite having wires in it)
@@ -31,6 +26,11 @@ LT3 lost its address 26/1/2018
 Javelin derailed at LT18 northbound 29/12/2017 11:00
 Javelin failed to stop 29/12/2017 16:50 (might be fixed)
 
+++ tracks should read the sensors to get u/s status
+++ journeys should check for estop more often
+++ if we give up because no sidings, release the lock
+++ don't bring a non-reversible loco out unless the other one has a track available
+++ long trains southbound on south link do partial unlock too early
 ++ need an 'empty sidings' method
 ++ after getting a throttle check the slot isn't idle
 ++ get the virgin running on slow
