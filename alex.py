@@ -1038,7 +1038,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def moveToASiding(self):
         # get the track we're on
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
-        self.debug("moveToASiding: loco " + self.loco.nameAndAddress() + " is on " + trak.name())
+        self.debug("loco " + self.loco.nameAndAddress() + " is on " + trak.name() + ' in block ' + self.loco.block.getDisplayName())
         if trak is None:
             return False
         self.loco.track = trak
@@ -1206,9 +1206,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("moveIntoSouthSidings: full lock, adding routes: " + ', '.join(moreRoutes))
                 routes = routes + moreRoutes
                 lockUpgradeRoutes = None
-            else: # partial lock
+            elif lock.partial(): # partial lock
                 lockUpgradeRoutes = moreRoutes
-                self.debug("moveIntoSouthSidings: partial lock, not adding subsequent routes, setting lockUpgrade routes: " + ', '.join(lockUpgradeRoutes))
+                self.debug("partial lock, not adding subsequent routes, setting lockUpgrade routes: " + ', '.join(lockUpgradeRoutes))
+            else:
+                self.debug("lock is empty, abort")
+                self.loco.emergencyStop()
+                raise RuntimeError("empty lock")
             if speed is None:
                 speed = self.loco.speed('off track south', 'medium')
             direction = True

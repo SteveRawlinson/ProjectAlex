@@ -20,7 +20,7 @@ class Loco(util.Util):
         self.status = SIDINGS
         self._longAddr = None
         self._reversible = None
-        self._highSpeed = None
+        #self._highSpeed = None
         self._brclass = None
         self._passenger = None
         self._fast = None
@@ -30,6 +30,7 @@ class Loco(util.Util):
         self._canGoFast = None
         self._canGoSlow = None
         self._freight = None
+        self._decoderFamily = None
         self.stopTime = time.time()
 
     def emergencyStop(self):
@@ -156,16 +157,16 @@ class Loco(util.Util):
         return self._brclass
 
     # A boolean set in the JMRI roster entry, default is False
-    def highSpeed(self):
-        if self._highSpeed is None:
-            r = self.rosterEntry().getAttribute('highspeed')
-            if r is None:
-                self._highSpeed = False  # this is the default
-            if r == 'true':
-                self._highSpeed = True
-            else:
-                self._highSpeed = False
-        return self._highSpeed
+    # def highSpeed(self):
+    #     if self._highSpeed is None:
+    #         r = self.rosterEntry().getAttribute('highspeed')
+    #         if r is None:
+    #             self._highSpeed = False  # this is the default
+    #         if r == 'true':
+    #             self._highSpeed = True
+    #         else:
+    #             self._highSpeed = False
+    #     return self._highSpeed
 
     # Returns True if the roster entry is a passenger loco
     def passenger(self):
@@ -235,6 +236,11 @@ class Loco(util.Util):
                 self._canGoSlow = False
         return self._canGoSlow
 
+    # Returns true if this is a slow passenger train (eg. class 150)
+    def commuter(self):
+        if self.fast() is False and self.passenger() is True:
+            return True
+        return False
 
     # Returns the roster entry for the current loco
     def rosterEntry(self):
@@ -253,6 +259,11 @@ class Loco(util.Util):
             re = self.rosterEntry()
             self._longAddr = re.isLongAddress()
         return self._longAddr
+
+    def decoderFamily(self):
+        if self._decoderFamily is None:
+            self._decoderFamily = self.rosterEntry().getDecoderFamily()
+        return self._decoderFamily
 
     # Returns True if the block is longer than the current train.
     # The length of the train is determined by checking the 
@@ -599,10 +610,12 @@ class Loco(util.Util):
         return l
 
     def disableMomentum(self):
-        self.throttle.setF4(True)
+        if 'Lenz' in self.decoderFamily():
+            self.throttle.setF4(True)
 
     def enableMomentum(self):
-        self.throttle.setF4(False)
+        if 'Lenz' in self.decoderFamily():
+            self.throttle.setF4(False)
 
     def isInSidings(self):
         if not self.block:
