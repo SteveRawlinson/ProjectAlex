@@ -453,6 +453,7 @@ class Loco(util.Util):
             blk = b
         # remove value on old block
         if self.block:
+            self.debug("removing value on old block " + self.block.getDisplayName())
             self.block.setValue(None)
             #self.debug("set block " + self.block.getUserName() + " to None. Value now: " + str(self.block.getValue()))
             mem = memories.getMemory(self.block.getUserName())
