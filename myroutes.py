@@ -83,6 +83,7 @@ ROUTEMAP = {
 # fast: true if this is a high speed track
 # u/s: true if the track is undergoing maintenance
 # blocks: list of blocks on the track, going from South to North
+# signal at exit
 TRACKS = [
     [3, False, False, ['FPK P1', 'AAP P4', 'PAL P1'], 'LH1'],
     [3, False, False, ['FPK P2', 'AAP P3', 'PAL P2'], 'LH4'],
