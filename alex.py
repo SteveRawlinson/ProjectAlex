@@ -879,7 +879,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 
 
     # moves a train from their current block into the north sidings
-    def moveIntoNorthSidings(self, lock=None, speed=None):
+    def moveIntoNorthSidings(self, lock=None, speed=None, dontStopEarly=False):
 
         # check we're not in ESTOP status
         if self.getJackStatus() == ESTOP:
@@ -951,7 +951,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.loco.setSpeedSetting(speed)
             self.reverseLoop(NORTH_REVERSE_LOOP, lock=lock)
             self.loco.unselectReverseLoop(NORTH_REVERSE_LOOP)
-        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible():
+        elif self.getJackStatus() == NORMAL and self.loco.rarity() == 0 and self.loco.reversible() and not dontStopEarly:
             # If this loco has a rarity of zero and we're not shutting down operations, and it hasn't been retired
             # there's no point in going all the way to the sidings because we'll just get
             # started up again. Stop on the North Link.
@@ -1068,7 +1068,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if not clearSouth and not clearNorth:
             return False
         if not self.loco.reversible():
-            # check reverse loops 
+            # check reverse loops
+            self.debug("checking reverse loops")
             if self.track.northbound():
                 rl = blocks.getBlock(NORTH_REVERSE_LOOP)
                 if rl.getState() != OCCUPIED:
@@ -1079,6 +1080,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 if rl.getState() != OCCUPIED:
                     self.moveIntoSouthSidings()
                     return True
+            self.debug("no reverse loops available")
             return False
         # see if there are sidings free
         nSiding = sSiding = None
@@ -1088,12 +1090,12 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             sSiding = self.loco.shortestBlockTrainFits(SOUTH_SIDINGS)
         if nSiding and sSiding:
             if self.freeSidingCount(NORTH_SIDINGS) > self.freeSidingCount(SOUTH_SIDINGS):
-                self.moveIntoNorthSidings()
+                self.moveIntoNorthSidings(dontStopEarly=True)
             else:
                 self.moveIntoSouthSidings()
             return True
         if nSiding:
-            self.moveIntoNorthSidings()
+            self.moveIntoNorthSidings(dontStopEarly=True)
             return True
         if sSiding:
             self.moveIntoSouthSidings()
