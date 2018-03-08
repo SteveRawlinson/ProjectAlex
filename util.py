@@ -95,6 +95,7 @@ class Util:
             tr = track.Track(len(self.tracks) + 1, t[0], t[1], t[2], t[3], t[4])
             self.tracks.append(tr)
             tr.checkStatus()
+            tr.setExitSignalAppearance(tr.exitSignal.getAppearance(), force=True)
             #print "New track: array index: " + str(self.tracks.index(tr)) + " track nr: " + str(tr.nr) + " stops: " + str(tr.stops) + " fast: " + str(tr.fast)
 
     # Determine what 'thing' is (string name of a block, the block itself, or the sensor of the block)
