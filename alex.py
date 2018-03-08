@@ -1038,7 +1038,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
     def moveToASiding(self):
         # get the track we're on
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
-        self.debug("moveToASiding: loco " + self.loco.nameAndAddress() + " is on " + trak.name())
+        self.debug("loco " + self.loco.nameAndAddress() + " is on " + trak.name() + ' in block ' + self.loco.block.getDisplayName())
         if trak is None:
             return False
         self.loco.track = trak
