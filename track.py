@@ -242,11 +242,11 @@ class Track:
         return st
 
     # sets the exit signal for this track to the colour specified
-    def setExitSignalAppearance(self, appearance):
+    def setExitSignalAppearance(self, appearance, force=False):
         if self.exitSignal is None:
             util.Util.clog("no exit signal on " + self.name())
             return
-        if self.exitSignal.getAppearance() == appearance:
+        if self.exitSignal.getAppearance() == appearance and not force:
             util.Util.clog("exit signal on " + self.name() + " is already " + str(appearance))
             return
         util.Util.clog("setting exit signal for " + self.name() + " signal:" + self.exitSignal.getDisplayName() + " to " + str(appearance))
