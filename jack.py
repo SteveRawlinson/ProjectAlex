@@ -697,7 +697,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 self.debug("Jack waiting to exit on eStop")
                 # give other processes time to read the estop
                 time.sleep(30)
-                print "Jack exits on ESTOP"
+                self.debug("Jack exits on ESTOP")
                 self.status = STOPPED
                 self.setStatus()
                 return False
