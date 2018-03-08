@@ -27,6 +27,7 @@ class MoveLocosToSidings(alex.Alex):
         mem.setValue(NORMAL)
 
         # gather up the locos
+        addresses = []
         for t in self.tracks:
             for b in t.blocks:
                 blk = blocks.getBlock(b)
@@ -34,12 +35,15 @@ class MoveLocosToSidings(alex.Alex):
                     addr = blk.getValue()
                     if addr is None or addr == '':
                         addr = JOptionPane.showInputDialog("DCC addr of loco in: " + blk.getUserName())
-                    self.debug("getting loco for " + str(addr))
-                    l = loco.Loco(addr)
-                    self.debug("getting throttle for " + str(addr))
-                    self.getLocoThrottle(l)
-                    self.locos.append(l)
-                    l.setBlock(blk)
+                    addr = int(addr)
+                    if not addr in addresses:
+                        self.debug("getting loco for " + str(addr))
+                        l = loco.Loco(addr)
+                        self.debug("getting throttle for " + str(addr))
+                        self.getLocoThrottle(l)
+                        self.locos.append(l)
+                        l.setBlock(blk)
+                        addresses.append(addr)
 
         # keep looping until we've gone through the whole list
         # and failed on all of them
