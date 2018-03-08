@@ -31,6 +31,7 @@ class MoveLocosToSidings(alex.Alex):
         for t in self.tracks:
             for b in t.blocks:
                 blk = blocks.getBlock(b)
+                self.debug('checking block ' + b)
                 if blk.getState() == OCCUPIED:
                     addr = blk.getValue()
                     if addr is None or addr == '':
