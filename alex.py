@@ -939,7 +939,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("moving into North reverse loop")
             if speed is None:
                 speed = self.loco.speed('off track north', 'medium')
-            self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
+            while self.loco.isVisible():
+                self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
             # reverse loops are used by long trains, be more cautious with locks
