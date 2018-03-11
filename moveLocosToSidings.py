@@ -26,6 +26,11 @@ class MoveLocosToSidings(alex.Alex):
         mem = memories.provideMemory('IMJACKSTATUS')
         mem.setValue(NORMAL)
 
+        # If there's a loco on the North Link then that one needs to be
+        # moved before any of the others. This var keeps track of which
+        # loco it is
+        northLinkLoco = None
+
         # gather up the locos
         addresses = []
         for t in self.tracks:
@@ -45,14 +50,22 @@ class MoveLocosToSidings(alex.Alex):
                         self.locos.append(l)
                         l.setBlock(blk)
                         addresses.append(addr)
+                        if blk.getUserName() == 'North Link':
+                            northLinkLoco = l
 
         # keep looping until we've gone through the whole list
         # and failed on all of them
         locolist = self.locos[:]
+        if northLinkLoco and northLinkLoco in locolist:
+            # move it to the front of the queue
+            locolist.remove(northLinkLoco)
+            locolist.insert(0, northLinkLoco)
         keepGoing = True
         while keepGoing:
             keepGoing = False
             for l in locolist:
+                if l.isInSidings():
+                    continue
                 self.debug("trying to move " + l.nameAndAddress())
                 self.loco = l
                 rc = self.moveToASiding()
