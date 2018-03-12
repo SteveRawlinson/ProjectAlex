@@ -610,14 +610,20 @@ class Loco(util.Util):
         l.getLock(end=end, direction=dir, loc=self, sleepTime=sleepTime)
         return l
 
+    # On decoders that support disabling momentum, set the
+    # appropriate function to True
     def disableMomentum(self):
         if 'Lenz' in self.decoderFamily():
             self.throttle.setF4(True)
 
+    # On decoders that support disabling momentum, set the
+    # appropriate function to False
     def enableMomentum(self):
         if 'Lenz' in self.decoderFamily():
             self.throttle.setF4(False)
 
+    # Returns True if the loco has a block and the block
+    # is a siding or reverse loop
     def isInSidings(self):
         if not self.block:
             return False
@@ -625,9 +631,11 @@ class Loco(util.Util):
             return True
         return False
 
+    # Returns True if the loco has a block and that block
+    # is visible
     def isVisible(self):
         if not self.block:
             return False
-        return isBlockVisible(self.block)
+        return self.isBlockVisible(self.block)
 
 

@@ -939,7 +939,8 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.debug("moving into North reverse loop")
             if speed is None:
                 speed = self.loco.speed('off track north', 'medium')
-            self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
+            while self.loco.isVisible():
+                self.shortJourney(True, self.loco.block, self.loco.track.nextBlockNorth(self.loco.block), speed, dontStop=True, routes=[route])
             speed = self.loco.speed('north interlink northbound', 'medium')
             self.shortJourney(True, self.loco.block, 'North Link', speed, dontStop=True, routes=[route])
             # reverse loops are used by long trains, be more cautious with locks
@@ -1040,6 +1041,13 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         trak = track.Track.findTrackByBlock(self.tracks, self.loco.block)
         self.debug("loco " + self.loco.nameAndAddress() + " is on " + trak.name() + ' in block ' + self.loco.block.getDisplayName())
         if trak is None:
+            if self.loco.block.getUserName() == 'North Link':
+                # this is a special case
+                nSiding = self.loco.shortestBlockTrainFits(NORTH_SIDINGS)
+                if nSiding is None:
+                    raise RuntimeError('loco is on North Link and no north sidings available of appropriate length')
+                self.moveIntoNorthSidings()
+                return True
             return False
         self.loco.track = trak
         self.track = trak
