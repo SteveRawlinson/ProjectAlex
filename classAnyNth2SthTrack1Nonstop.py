@@ -52,6 +52,9 @@ class Class47Nth2SthTrack1Nonstop(ClassAnyNth2SthTrack1Nonstop):
 class Loco1124Nth2SthTrack1Nonstop(ClassAnyNth2SthTrack1Nonstop):
     pass
 
-# loc = loco.Loco(7405)
+class Loco3314Nth2SthTrack1Nonstop(ClassAnyNth2SthTrack1Nonstop):
+    pass
+
+        # loc = loco.Loco(7405)
 # loc.setBlock(NORTH_REVERSE_LOOP)
 # Class47Nth2SthTrack1Nonstop(loc, None).start()

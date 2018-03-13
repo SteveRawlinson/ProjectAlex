@@ -74,3 +74,7 @@ class Loco4404Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
 class Loco4030Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
     pass
 
+# Class 43 Virgin
+class Loco3314Nth2SthTrack5Nonstop(ClassFastNth2SthTrack5Nonstop):
+    pass
+

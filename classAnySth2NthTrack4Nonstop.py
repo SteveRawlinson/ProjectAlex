@@ -66,6 +66,6 @@ class ClassAnySth2NthTrack4Nonstop(alex.Alex):
 class Class47Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
-class Loco1124Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
+class Loco3314Sth2NthTrack4Nonstop(ClassAnySth2NthTrack4Nonstop):
     pass
 
