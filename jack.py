@@ -43,10 +43,10 @@ from moveLocoToSidings import *
 #DCC_ADDRESSES = [6719]
 #DCC_ADDRESSES = [7405]
 #DCC_ADDRESSES = [1124]
-#DCC_ADDRESSES = [3213]
+DCC_ADDRESSES = [3314]
 #DCC_ADDRESSES = [5004, 1124, 3213, 6719, 1087, 2144, 2128, 68, 7405] # full set
 #DCC_ADDRESSES = [2144, 2128, 4030]
-DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004, 4030]
+#DCC_ADDRESSES = [2144, 2128, 1087, 3213, 7405, 4404, 6719, 5004, 4030]
 #DCC_ADDRESSES = []
 DEBUG = True
 
@@ -223,7 +223,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
                 trak = self.tracks[int(tracknr) - 1]
                 # reduce the occupancy
                 trak.occupancy -= 1
-                self.debug("track " + str(trak.nr) + " occupancy reduced to " + str(trak.occupancy))
+                self.log("track " + str(trak.nr) + " occupancy reduced to " + str(trak.occupancy))
                 # update the last used time
                 trak.last_used = time.time()
                 #self.debug("track " + str(trak.nr) + " occupancy is now " + str(trak.occupancy))
@@ -705,7 +705,7 @@ class Jack(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             self.checkJourneys()
             if self.status == STOPPING:
                 if len(self.memories) == 0:
-                    print "All done - exiting"
+                    print "Jack: All done - exiting"
                     self.status = STOPPED
                     self.setStatus()
                     return False
