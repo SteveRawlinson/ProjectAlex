@@ -581,13 +581,14 @@ class Loco(util.Util):
 
     # Attempts to get a lock but doesn't wait if it's not
     # available
-    def getLockNonBlocking(self, end):
-        if self.track.northbound():
-            dir = NORTH
-        else:
-            dir = SOUTH
+    def getLockNonBlocking(self, end, direction=None):
+        if direction is None:
+            if self.track.northbound():
+                direction = NORTHOUND
+            else:
+                direction = SOUTHBOUND
         l = lock.Lock()
-        l.getLockNonBlocking(end, dir, self)
+        l.getLockNonBlocking(end, direction, self)
         if l.empty():
             self.debug("failed to get lock (non-blocking) returning empty lock")
         self.debug("loco.getLockNonBlocking: got lock: " + l.status())
