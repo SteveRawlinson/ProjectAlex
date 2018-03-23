@@ -4,9 +4,9 @@ graduallyChangeSpeed could be more clever using minimumSpeedChange or whatever i
 if we release a lock because no sidings, move on until we would normally stop
 south sidings 2 train can break siding 3 IR
 moveIntoSidings gets locks wrong because it relies on the track to determine direction
-moveLocosIntoSidings should check North Link first
-if stopping on track 6 because no free sidings, when moving we're already in the block we try to move to (Nth Fast Outer 1)
+if stopping on track 6 because no free sidings, when moving we're already in the block we try to move to (Nth Fast Outer 1) - need to test this, Nth Fast Outer one should be the block set because we use shortJourney to get there and stop
 
+-- moveLocosIntoSidings should check North Link first
 -- need to set signal aspects at startup because the panel load might be out of sync with layout signals
 -- moveLocosIntoSidings needs to use reverse loops for non-reversible locos
 -- moveLocosIntoSidings needs to not stop class 150s on North Link
