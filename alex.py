@@ -895,7 +895,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
         if lock is None or lock.empty():
             if self.loco.throttle.getSpeedSetting() > 0:
                 # we need a lock promptly or we must stop
-                lock = self.loco.getLockNonBlocking(NORTH)
+                lock = self.loco.getLockNonBlocking(NORTH, NORTHBOUND)
             else:
                 # we are stationary, we can wait for a lock
                 if self.loco.rarity() == 0.0:
@@ -1130,7 +1130,7 @@ class Alex(util.Util, jmri.jmrit.automat.AbstractAutomaton):
             if self.loco.throttle.getSpeedSetting() > 0:
                 # we need a lock promptly or we must stop
                 self.debug("attempting non-blocking lock")
-                lock = self.loco.getLockNonBlocking(SOUTH)
+                lock = self.loco.getLockNonBlocking(SOUTH, SOUTHBOUND)
             else:
                 # we are stationary, we can wait for a lock
                 if self.loco.rarity() == 0.0:
